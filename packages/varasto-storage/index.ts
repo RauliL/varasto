@@ -17,13 +17,11 @@ export class Storage {
   private readonly options: StorageOptions;
 
   public constructor(options?: Partial<StorageOptions>) {
-    this.options = Object.assign(
-      {
-        dir: './data',
-        encoding: 'utf-8',
-      },
-      options,
-    );
+    this.options = {
+      dir: './data',
+      encoding: 'utf-8',
+      ...options,
+    };
   }
 
   public getItem(key: string): Promise<Object|undefined> {

@@ -73,7 +73,7 @@ export const createServer = (
           return;
         }
 
-        const result = Object.assign(value, req.body);
+        const result = {...value, ...req.body};
 
         storage.setItem(req.params.key, result)
           .then(() => res.status(201).json(result))

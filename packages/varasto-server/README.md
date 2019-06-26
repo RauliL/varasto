@@ -82,8 +82,8 @@ returned instead.
 ### Updating items
 
 You can also partially update an already existing item with `PATCH` request.
-The JSON sent with an `PATCH` request will be merged with the already existing
-data with [Object.assign()] and the result will be sent as response.
+The JSON sent with an `PATCH` request will be shallowly merged with the already
+existing data and the result will be sent as response.
 
 For example, you have an item `person` with the following data:
 
@@ -118,8 +118,6 @@ You end up with:
     "faxNumber": "+358000000"
 }
 ```
-
-[Object.assign()]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign
 
 ## Notes
 

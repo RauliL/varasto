@@ -14,11 +14,12 @@ export class Client {
   private readonly options: ClientOptions;
 
   public constructor(options?: Partial<ClientOptions>) {
-    this.options = Object.assign({
+    this.options = {
       hostname: '0.0.0.0',
       port: 3000,
       secure: false,
-    }, options);
+      ...options,
+    };
   }
 
   public getItem(key: string): Promise<Object|undefined> {
