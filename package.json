@@ -1,6 +1,7 @@
 {
   "name": "varasto-core",
   "private": true,
+  "workspaces": ["./packages/*"],
   "engines": {
     "node": ">=8.0"
   },
