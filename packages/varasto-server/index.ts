@@ -1,5 +1,6 @@
 import basicAuth from 'basic-auth';
 import express from 'express';
+import { Express } from 'express-serve-static-core';
 import morgan from 'morgan';
 
 import { Storage } from 'varasto-storage';
@@ -14,7 +15,7 @@ export interface ServerOptions {
 export const createServer = (
   storage: Storage,
   options: Partial<ServerOptions> = {}
-) => {
+): Express => {
   const server = express();
 
   server.use(express.json());

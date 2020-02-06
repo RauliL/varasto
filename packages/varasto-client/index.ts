@@ -1,4 +1,5 @@
-import axios, { Method } from 'axios';
+/* eslint-disable @typescript-eslint/ban-types */
+import axios, { AxiosPromise, Method } from 'axios';
 
 export interface ClientOptions {
   hostname: string;
@@ -87,7 +88,7 @@ export class Client {
       });
   }
 
-  private request(method: Method, key: string, data?: any) {
+  private request(method: Method, key: string, data?: Object): AxiosPromise {
     const { hostname, port, secure } = this.options;
     const url = `http${secure ? 's' : ''}://${hostname}:${port}/${key}`;
 

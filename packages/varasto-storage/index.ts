@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import crypto from 'crypto';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
