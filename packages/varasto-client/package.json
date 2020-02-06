@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "description": "Node.js client for Varasto key-value store",
   "main": "./index.js",
+  "main:src": "./index.ts",
   "typings": "./index.d.ts",
   "author": "Rauli Laine <rauli.laine@iki.fi> (https://rauli.dev/)",
   "license": "MIT",
