@@ -19,6 +19,7 @@
     "start": "nodemon --watch './index.ts' --exec 'ts-node ./bin/varasto'",
     "build": "tsc",
     "watch": "tsc -w",
+    "lint": "eslint ./index.ts",
     "prepack": "yarn run build"
   },
   "bin": {
@@ -33,6 +34,9 @@
     "@types/morgan": "^1.7.35",
     "@types/node": "^12.0.8",
     "@types/yargs": "^13.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.19.0",
+    "@typescript-eslint/parser": "^2.19.0",
+    "eslint": "^6.8.0",
     "nodemon": "^1.19.1",
     "ts-node": "^8.2.0",
     "typescript": "^3.5.1"
@@ -43,5 +47,8 @@
     "morgan": "^1.9.1",
     "varasto-storage": "^0.2.0",
     "yargs": "^13.2.4"
+  },
+  "eslintConfig": {
+    "extends": "../../.eslintrc.js"
   }
 }
