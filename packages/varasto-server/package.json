@@ -13,7 +13,7 @@
     "url": "https://github.com/RauliL/varasto/issues"
   },
   "engines": {
-    "node": ">=8.0"
+    "node": ">=12.0"
   },
   "scripts": {
     "start": "nodemon --watch './index.ts' --exec 'ts-node ./bin/varasto'",

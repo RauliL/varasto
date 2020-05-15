@@ -1,12 +1,10 @@
 /node_modules
+/packages/*/node_modules
 /packages/varasto-client/index.d.ts
 /packages/varasto-client/index.js
-/packages/varasto-client/node_modules
 /packages/varasto-server/index.d.ts
 /packages/varasto-server/index.js
-/packages/varasto-server/node_modules
 /packages/varasto-storage/index.d.ts
 /packages/varasto-storage/index.js
-/packages/varasto-storage/node_modules
 *.log
 *.tgz

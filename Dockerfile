@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:12
 
 # Create volume
 RUN mkdir /data
@@ -12,8 +12,7 @@ COPY . .
 
 # Install dependencies.
 WORKDIR /usr/src/app/packages/varasto-server
-RUN npm install -g yarn
-RUN yarn
+RUN yarn install
 
 EXPOSE 3000
 CMD ["yarn", "start", "/data"]
