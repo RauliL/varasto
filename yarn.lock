@@ -6237,6 +6237,13 @@ validate-npm-package-name@^3.0.0:
   dependencies:
     builtins "^1.0.3"
 
+varasto-storage@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/varasto-storage/-/varasto-storage-0.3.0.tgz#c90921241aed6c40f5c916ea84a6e81fe9ee33ca"
+  integrity sha512-YMyucmfinBqmgzbVLSStaAcgesvwyfdZ63SI5PBuBsm5lonh+vPUVbQmNo0VpPoUxwZYNd8FaXdnas0/5PTXpg==
+  dependencies:
+    mkdirp "^1.0.4"
+
 vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
