@@ -1,6 +1,6 @@
 {
   "name": "varasto",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "JSON key-value store with HTTP server interface",
   "author": "Rauli Laine <rauli.laine@iki.fi> (https://rauli.dev/)",
   "license": "MIT",
