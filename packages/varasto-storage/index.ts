@@ -125,13 +125,9 @@ export class Storage {
           return;
         }
 
-        mkdirp(this.options.dir, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
+        mkdirp(this.options.dir)
+          .then(() => resolve())
+          .catch(reject);
       });
     });
   }
