@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import crypto from 'crypto';
 import fs from 'fs';
 import mkdirp from 'mkdirp';
 import path from 'path';
+import { JsonObject } from 'type-fest';
 
 /**
  * JSON key-value store that persists JSON objects to disk.
@@ -15,14 +15,14 @@ export type Storage = {
    *
    * The promise will fail if an I/O error occurs.
    */
-  getItem: (key: string) => Promise<Object | undefined>;
+  getItem: (key: string) => Promise<JsonObject | undefined>;
 
   /**
    * Attempts to store an item identified by `key`.
    *
    * The promise will fail if an I/O error occurs.
    */
-  setItem: (key: string, value: Object) => Promise<void>;
+  setItem: (key: string, value: JsonObject) => Promise<void>;
 
   /**
    * Attempts to remove an item identified by `key`. Returned promise will
@@ -71,10 +71,10 @@ export const createStorage = (options?: Partial<StorageOptions>): Storage => {
     });
 
   return {
-    getItem(key: string): Promise<Object | undefined> {
+    getItem(key: string): Promise<JsonObject | undefined> {
       const itemPath = getItemPath(key);
 
-      return new Promise<Object | undefined>((resolve, reject) => {
+      return new Promise<JsonObject | undefined>((resolve, reject) => {
         fs.readFile(
           itemPath,
           encoding,
@@ -107,7 +107,7 @@ export const createStorage = (options?: Partial<StorageOptions>): Storage => {
       });
     },
 
-    setItem(key: string, value: Object): Promise<void> {
+    setItem(key: string, value: JsonObject): Promise<void> {
       const itemPath = getItemPath(key);
 
       return ensureDirectoryExists()
