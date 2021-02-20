@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 
-const express = require('express');
-const { Storage } = require('varasto-storage');
+const { createStorage } = require('@varasto/storage');
 const yargs = require('yargs');
 
-const { createServer } = require('../index');
+const { createServer } = require('../dist');
 
 const argv = yargs
   .usage(
@@ -54,7 +53,7 @@ const createServerOptions = () => {
   return options;
 };
 
-const storage = new Storage({ dir: argv.directory });
+const storage = createStorage({ dir: argv.directory });
 const server = createServer(storage, createServerOptions());
 const { host, port } = argv;
 

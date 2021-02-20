@@ -2,6 +2,7 @@
   "name": "@varasto/server",
   "version": "0.4.0",
   "description": "JSON key-value store with HTTP server interface",
+  "keywords": ["varasto", "server"],
   "author": "Rauli Laine <rauli.laine@iki.fi> (https://rauli.dev/)",
   "license": "MIT",
   "homepage": "https://github.com/RauliL/varasto",
@@ -19,7 +20,7 @@
     "start": "nodemon --watch './index.ts' --exec 'ts-node ./bin/varasto'",
     "build": "tsc",
     "watch": "tsc -w",
-    "lint": "eslint ./index.ts",
+    "lint": "eslint './src/*.ts'",
     "prepack": "yarn run build"
   },
   "bin": {
@@ -42,10 +43,10 @@
     "typescript": "^4.1.5"
   },
   "dependencies": {
+    "@varasto/storage": "^2.0.0",
     "basic-auth": "^2.0.1",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
-    "varasto-storage": "^0.3.0",
     "yargs": "^16.2.0"
   },
   "eslintConfig": {
