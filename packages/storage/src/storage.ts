@@ -1,7 +1,13 @@
 import fs from 'fs';
+import path from 'path';
 import { JsonObject } from 'type-fest';
 
-import { buildFilename, createNamespace } from './utils';
+import {
+  buildFilename,
+  createNamespace,
+  globNamespace,
+  readItem,
+ } from './utils';
 import { Storage, StorageOptions } from './types';
 
 /**
@@ -24,45 +30,40 @@ export const createStorage = (options?: Partial<StorageOptions>): Storage => {
       return fs.existsSync(filename);
     },
 
-    get: (namespace: string, key: string): Promise<JsonObject | undefined> =>
-      new Promise<JsonObject | undefined>((resolve, reject) => {
-        let filename: string;
+    keys: (namespace: string): Promise<string[]> =>
+      globNamespace(dir, namespace)
+        .then((matches) => matches.map((match) => path.basename(match, '.json'))),
 
-        try {
-          filename = buildFilename(dir, namespace, key);
-        } catch (err) {
-          reject(err);
-          return;
-        }
+    values: (namespace: string): Promise<JsonObject[]> =>
+      globNamespace(dir, namespace)
+        .then((filenames) => Promise.all(
+          filenames.map((filename) => readItem(filename, encoding))
+        ))
+        .then((values) => (
+          values.filter((value) => value !== undefined) as JsonObject[]
+        )),
 
-        fs.readFile(
-          filename,
-          encoding,
-          (err, text) => {
-            if (err) {
-              if (err.code === 'ENOENT') {
-                resolve(undefined);
-              } else {
-                reject(err);
-              }
-              return;
-            }
+    entries: (namespace: string): Promise<[string, JsonObject][]> =>
+      globNamespace(dir, namespace)
+        .then((filenames) => Promise.all(
+          filenames.map((filename) => (
+            readItem(filename, encoding)
+              .then((value) => [path.basename(filename, '.json'), value]))
+          )
+        ))
+        .then((entries) => entries.filter((entry) => entry[1] !== undefined) as [string, JsonObject][]),
 
-            try {
-              const value = JSON.parse(text);
+    get: (namespace: string, key: string): Promise<JsonObject | undefined> => {
+      let filename: string;
 
-              if (typeof value === 'object') {
-                resolve(value);
-              } else {
-                resolve(undefined); // XXX: Perhaps this should be an error?
-              }
-            } catch (err) {
-              reject(err);
-              return;
-            }
-          },
-        );
-      }),
+      try {
+        filename = buildFilename(dir, namespace, key);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+
+      return readItem(filename, encoding);
+    },
 
     set: (namespace: string, key: string, value: JsonObject): Promise<void> =>
       createNamespace(dir, namespace)

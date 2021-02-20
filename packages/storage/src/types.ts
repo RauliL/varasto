@@ -11,6 +11,34 @@ export type Storage = {
   has: (namespace: string, key: string) => boolean;
 
   /**
+   * Lists keys stored under given namespace. Returned promise will resolve
+   * into empty array even if the namespace does not exist.
+   *
+   * The promise will fail if an I/O error occurs, or if given namespace or
+   * key are invalid.
+   */
+  keys: (namespace: string) => Promise<string[]>;
+
+  /**
+   * Lists all items stored under given namespace. Returned promise will
+   * resolve into empty array even if the namespace does not exist.
+   *
+   * The promise will fail if an I/O error occurs, or if given namespace or
+   * key are invalid.
+   */
+  values: (namespace: string) => Promise<JsonObject[]>;
+
+  /**
+   * Lists all items stored under given namespace, alongside their keys.
+   * Returned promise will resolve into empty array even if the namespace
+   * does not exist.
+   *
+   * The promise will fail if an I/O error occurs, or if given namespace or
+   * key are invalid.
+   */
+  entries: (namespace: string) => Promise<[string, JsonObject][]>;
+
+  /**
    * Attempts to retrieve an item identified by given key and namespace.
    * Returned promise will resolve into the value, or `undefined` if the
    * item does not exist.
