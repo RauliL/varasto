@@ -4,7 +4,5 @@
 /packages/varasto-client/index.js
 /packages/varasto-server/index.d.ts
 /packages/varasto-server/index.js
-/packages/varasto-storage/index.d.ts
-/packages/varasto-storage/index.js
 *.log
 *.tgz

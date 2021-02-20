@@ -1,5 +1,6 @@
+/jest.config.js
 /node_modules
-/index.ts
+/src
 /tsconfig.json
 *.log
 *.tgz
