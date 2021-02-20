@@ -2,9 +2,9 @@
   "name": "varasto-storage",
   "version": "1.0.0",
   "description": "Persistent JSON key-value store",
-  "main": "./index.js",
-  "main:src": "./index.ts",
-  "typings": "./index.d.ts",
+  "main": "./dist/index.js",
+  "main:src": "./src/index.ts",
+  "typings": "./dist/index.d.ts",
   "author": "Rauli Laine <rauli.laine@iki.fi> (https://rauli.dev/)",
   "license": "MIT",
   "homepage": "https://github.com/RauliL/varasto",
@@ -22,7 +22,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "eslint ./index.ts",
-    "test": "ts-jest",
+    "test": "jest",
     "prepack": "yarn run build"
   },
   "devDependencies": {
