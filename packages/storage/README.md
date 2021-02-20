@@ -1,22 +1,27 @@
-# varasto-storage
+# @varasto/storage
 
 Low level API for the Varasto JSON key-value store.
 
 ## Installation
 
 ```bash
-$ npm install --save varasto-storage
+$ npm install --save @varasto/storage
 ```
 
 ## Usage
 
-The package provides class called `Storage`, which provides an API very similar
-to [Web Storage API].
+The package provides an function called `createStorage`, which returns an
+object that is capable of storing JSON objects into disk, where each object
+is identified by _namespace_ and _key_, that must be [valid URL slugs].
+
+[valid url slugs]: https://ihateregex.io/expr/url-slug/
+
+The package also provides slug validation function called `isValidSlug`.
 
 Basic usage of storage looks like this:
 
 ```TypeScript
-import { createStorage } from 'varasto-storage';
+import { createStorage } from '@varasto/storage';
 
 const storage = createStorage({ dir: './data' });
 ```
@@ -35,32 +40,57 @@ storage.
 ### Storing items
 
 ```TypeScript
-setItem(key: string, value: JsonObject): Promise<void>
+set(namespace: string, key: string, value: JsonObject): Promise<void>
 ```
 
-Attempts to store an item identified by `key`. Returned promise will fail if an
-I/O error occurs while storing the item.
+Attempts to store an item identified by `namespace` and `key`. Returned
+promise will fail if an I/O error occurs while storing the item.
 
 ### Retrieving items
 
 ```TypeScript
-getItem(key: string): Promise<JsonObject|undefined>
+get(namespace: string, key: string): Promise<JsonObject|undefined>
 ```
 
-Attempts to retrieve an item identified by `key`. Returned promise will either
-resolve into the value, or `undefined` if item with the given identifier does
-not exist. The promise will fail if an I/O error occurs while retrieving the
-item.
+Attempts to retrieve an item identified by `namespace` and `key`. Returned
+promise will either resolve into the value, or `undefined` if item with the
+given identifier does not exist. The promise will fail if an I/O error
+occurs while retrieving the item.
 
 ### Removing items
 
 ```TypeScript
-removeItem(key: string): Promise<boolean>
+delete(namespace: string, key: string): Promise<boolean>
 ```
 
-Attempts to remove an item identified by `key`. Returned promise will resolve
-into a boolean value which tells whether an value with the given identifier
-existed or not. The promise will fail if an I/O error occurs while removing the
-item.
+Attempts to remove an item identified by `namespace` and `key`. Returned
+promise will resolve into a boolean value which tells whether an value with
+the given identifier existed or not. The promise will fail if an I/O error
+occurs while removing the item.
 
-[web storage api]: https://developer.mozilla.org/en-US/docs/Web/API/Storage
+### Listing keys stored in a namespace
+
+```TypeScript
+keys(namespace: string): Promise<string[]>
+```
+
+Returns keys of all items stored under an namespace. The promise will fail if
+an I/O error occurs while listing the keys.
+
+### Listing values stored in a namespace
+
+```TypeScript
+values(namespace: string): Promise<JsonObject[]>
+```
+
+Returns all items stored under an namespace. The promise will fail if an I/O
+error occurs.
+
+### Listing entries stored in a namespace
+
+```TypeScript
+values(namespace: string): Promise<[string, JsonObject][]>
+```
+
+Returns all items stored under an namespace, with the keys they are identified
+by. The promise will fail if an I/O error occurs.
