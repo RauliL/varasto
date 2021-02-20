@@ -1,6 +1,6 @@
 {
-  "name": "varasto-storage",
-  "version": "1.0.0",
+  "name": "@varasto/storage",
+  "version": "2.0.0",
   "description": "Persistent JSON key-value store",
   "main": "./dist/index.js",
   "main:src": "./src/index.ts",
