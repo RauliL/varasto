@@ -22,9 +22,11 @@ export const createServer = (
     server.use((req, res, next) => {
       const credentials = basicAuth(req);
 
-      if (!credentials ||
-          credentials.name !== username ||
-          credentials.pass !== password) {
+      if (
+        !credentials ||
+        credentials.name !== username ||
+        credentials.pass !== password
+      ) {
         res.statusCode = 401;
         res.setHeader('WWW-Authenticate', 'Basic realm="varasto"');
         res.end('Unauthorized');
@@ -35,10 +37,34 @@ export const createServer = (
     });
   }
 
+  server.get('/:namespace', (req, res) => {
+    storage
+      .entries(req.params.namespace)
+      .then((entries) => {
+        res.status(200).json(
+          entries.reduce(
+            (mapping, entry) => ({
+              ...mapping,
+              [entry[0]]: entry[1],
+            }),
+            {}
+          )
+        );
+      })
+      .catch((err) => {
+        if (err instanceof InvalidSlugError) {
+          res.status(400).json({ error: err.message });
+        } else {
+          res.status(500).json({ error: 'Unable to retrieve items.' });
+        }
+      });
+  });
+
   server.get('/:namespace/:key', (req, res) => {
     const { namespace, key } = req.params;
 
-    storage.get(namespace, key)
+    storage
+      .get(namespace, key)
       .then((value) => {
         if (value === undefined) {
           res.status(404).json({ error: 'Item does not exist.' });
@@ -58,7 +84,8 @@ export const createServer = (
   server.post('/:namespace/:key', (req, res) => {
     const { namespace, key } = req.params;
 
-    storage.set(namespace, key, req.body)
+    storage
+      .set(namespace, key, req.body)
       .then(() => res.status(201).json(req.body))
       .catch((err) => {
         if (err instanceof InvalidSlugError) {
@@ -72,7 +99,8 @@ export const createServer = (
   server.patch('/:namespace/:key', (req, res) => {
     const { namespace, key } = req.params;
 
-    storage.get(namespace, key)
+    storage
+      .get(namespace, key)
       .then((value) => {
         if (value === undefined) {
           res.status(404).json({ error: 'Item does not exist.' });
@@ -81,11 +109,14 @@ export const createServer = (
 
         const result = { ...value, ...req.body };
 
-        storage.set(namespace, key, result)
+        storage
+          .set(namespace, key, result)
           .then(() => res.status(201).json(result))
-          .catch(() => res.status(500).json({
-            error: 'Unable to store item.',
-          }));
+          .catch(() =>
+            res.status(500).json({
+              error: 'Unable to store item.',
+            })
+          );
       })
       .catch((err) => {
         if (err instanceof InvalidSlugError) {
@@ -99,18 +130,22 @@ export const createServer = (
   server.delete('/:namespace/:key', (req, res) => {
     const { namespace, key } = req.params;
 
-    storage.get(namespace, key)
+    storage
+      .get(namespace, key)
       .then((value) => {
         if (value === undefined) {
           res.status(404).json({ error: 'Item does not exist.' });
           return;
         }
 
-        storage.delete(namespace, key)
+        storage
+          .delete(namespace, key)
           .then(() => res.status(201).json(value))
-          .catch(() => res.status(500).json({
-            error: 'Unable to remove item.',
-          }));
+          .catch(() =>
+            res.status(500).json({
+              error: 'Unable to remove item.',
+            })
+          );
       })
       .catch((err) => {
         if (err instanceof InvalidSlugError) {

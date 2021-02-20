@@ -74,6 +74,19 @@ To which the HTTP server will respond with the JSON object previously stored
 with namespace `foo` and key `bar`. If an item with given key under the given
 namespace does not exist, HTTP error 404 will be returned instead.
 
+## Listing items
+
+To list all items stored under an namespace, you make an `GET` request with
+name of the namespace as the request path.
+
+```http
+GET /foo HTTP/1.0
+```
+
+To which the HTTP server will respond with an JSON object which contains
+each item stored under namespace `foo` mapped with the key that they were
+stored with.
+
 ## Removing items
 
 To remove an previously stored item, you make a `DELETE` request, with the
