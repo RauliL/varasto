@@ -1,1 +1,1 @@
-./packages/varasto-server/README.md
+./packages/server/README.md

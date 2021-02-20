@@ -1,5 +1,5 @@
 {
-  "name": "varasto",
+  "name": "@varasto/server",
   "version": "0.4.0",
   "description": "JSON key-value store with HTTP server interface",
   "author": "Rauli Laine <rauli.laine@iki.fi> (https://rauli.dev/)",
@@ -25,9 +25,9 @@
   "bin": {
     "varasto": "./bin/varasto"
   },
-  "main": "./index.js",
-  "main:src": "./index.ts",
-  "typings": "./index.d.ts",
+  "main": "./dist/index.js",
+  "main:src": "./src/index.ts",
+  "typings": "./dist/index.d.ts",
   "devDependencies": {
     "@types/basic-auth": "^1.1.2",
     "@types/express": "^4.17.0",
