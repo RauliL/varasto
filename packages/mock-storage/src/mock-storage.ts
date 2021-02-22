@@ -1,3 +1,4 @@
+import { InvalidSlugError, isValidSlug } from '@varasto/storage';
 import { JsonObject } from 'type-fest';
 
 import { MockStorage } from './types';
@@ -8,6 +9,20 @@ import { MockStorage } from './types';
  */
 export const createMockStorage = (): MockStorage => {
   const data = new Map<string, Map<string, JsonObject>>();
+  const getNamespace = (namespace: string): Promise<Map<string, JsonObject>> =>
+    new Promise<Map<string, JsonObject>>((resolve, reject) => {
+      if (isValidSlug(namespace)) {
+        let mapping = data.get(namespace);
+
+        if (!mapping) {
+          mapping = new Map<string, JsonObject>();
+          data.set(namespace, mapping);
+        }
+        resolve(mapping);
+      } else {
+        reject(new InvalidSlugError('Given namespace is not valid slug'));
+      }
+    });
 
   return {
     clear() {
@@ -21,53 +36,48 @@ export const createMockStorage = (): MockStorage => {
     },
 
     keys(namespace: string): Promise<string[]> {
-      const mapping = data.get(namespace);
-
-      return Promise.resolve(mapping != null ? [...mapping.keys()] : []);
+      return getNamespace(namespace)
+        .then((mapping) => [...mapping.keys()]);
     },
 
     values(namespace: string): Promise<JsonObject[]> {
-      const mapping = data.get(namespace);
-
-      return Promise.resolve(mapping != null ? [...mapping.values()] : []);
+      return getNamespace(namespace)
+        .then((mapping) => [...mapping.values()]);
     },
 
     entries(namespace: string): Promise<[string, JsonObject][]> {
-      const mapping = data.get(namespace);
-
-      return Promise.resolve(mapping != null ? [...mapping.entries()] : []);
+      return getNamespace(namespace)
+        .then((mapping) => [...mapping.entries()]);
     },
 
     get(namespace: string, key: string): Promise<JsonObject | undefined> {
-      const mapping = data.get(namespace);
-
-      return Promise.resolve(mapping ? mapping.get(key) : undefined);
+      return getNamespace(namespace)
+        .then((mapping) =>
+          isValidSlug(key)
+            ? mapping.get(key)
+            : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
+        );
     },
 
     set(namespace: string, key: string, value: JsonObject): Promise<void> {
-      let mapping = data.get(namespace);
+      return getNamespace(namespace)
+        .then((mapping) => {
+          if (!isValidSlug(key)) {
+            return Promise.reject(new InvalidSlugError('Given key is not valid slug'));
+          }
+          mapping.set(key, value);
 
-      if (!mapping) {
-        mapping = new Map<string, JsonObject>();
-        data.set(namespace, mapping);
-      }
-      mapping.set(key, { ...value });
-
-      return Promise.resolve();
+          return Promise.resolve();
+        });
     },
 
     delete(namespace: string, key: string): Promise<boolean> {
-      const mapping = data.get(namespace);
-
-      if (mapping) {
-        const has = mapping.has(key);
-
-        mapping.delete(key);
-
-        return Promise.resolve(has);
-      }
-
-      return Promise.resolve(false);
+      return getNamespace(namespace)
+        .then((mapping) =>
+          isValidSlug(key)
+            ? mapping.delete(key)
+            : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
+        );
     },
   }
 };
