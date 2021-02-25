@@ -1,7 +1,6 @@
 import basicAuth from 'basic-auth';
 import express from 'express';
 import { Express } from 'express-serve-static-core';
-import morgan from 'morgan';
 
 import { InvalidSlugError, Storage } from '@varasto/storage';
 
@@ -14,7 +13,6 @@ export const createServer = (
   const server = express();
 
   server.use(express.json());
-  server.use(morgan('combined'));
 
   if (options?.auth) {
     const { username, password } = options.auth;
