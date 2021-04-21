@@ -1,6 +1,0 @@
-/.dockerignore
-/index.ts
-/node_modules
-/tsconfig.json
-*.log
-*.tgz

@@ -10,9 +10,14 @@
   "scripts": {
     "build": "lerna run build",
     "watch": "lerna run watch",
-    "lint": "lerna run lint"
+    "lint": "lerna run lint",
+    "test": "lerna run test"
   },
   "devDependencies": {
     "lerna": "^3.22.1"
+  },
+  "resolutions": {
+    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
+    "**/@typescript-eslint/parser": "^4.1.1"
   }
 }
