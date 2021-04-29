@@ -1,18 +1,20 @@
-FROM node:12
+FROM node:14
 
-# Create volume
+# Create volume for storing the data.
 RUN mkdir /data
 VOLUME ["/data"]
 
 # Create app directory
 WORKDIR /usr/src/app
 
-# Bundle app source
-COPY . .
-
-# Install dependencies.
-WORKDIR /usr/src/app/packages/varasto-server
+# Install application dependencies.
+COPY ./packages/server/package.json ./packages/server/yarn.lock ./
 RUN yarn install
 
+# Bundle application source and transpile sources.
+COPY ./packages/server ./
+RUN yarn build
+
 EXPOSE 3000
+
 CMD ["yarn", "start", "/data"]
