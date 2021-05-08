@@ -70,9 +70,9 @@ describe('createClient()', () => {
     it('should handle successful response from the server', () => {
       mock.onPost('https://example.com/foo/bar').reply(201, MOCK_DATA_JOHN);
 
-      return expect(client.set('foo', 'bar', MOCK_DATA_JOHN))
-        .resolves
-        .toEqual(MOCK_DATA_JOHN);
+      return expect(client.set('foo', 'bar', MOCK_DATA_JOHN)).resolves.toEqual(
+        MOCK_DATA_JOHN
+      );
     });
 
     it('should handle erroneous response from the server', () => {
@@ -80,9 +80,9 @@ describe('createClient()', () => {
         error: 'Unable to store item.',
       });
 
-      return expect(client.set('foo', 'bar', MOCK_DATA_JOHN))
-        .rejects
-        .toBeInstanceOf(Error);
+      return expect(
+        client.set('foo', 'bar', MOCK_DATA_JOHN)
+      ).rejects.toBeInstanceOf(Error);
     });
   });
 
@@ -93,12 +93,12 @@ describe('createClient()', () => {
         counter: 1,
       });
 
-      return expect(client.patch('foo', 'bar', { counter: 1 }))
-        .resolves
-        .toEqual({
-          ...MOCK_DATA_JOHN,
-          counter: 1,
-        });
+      return expect(
+        client.patch('foo', 'bar', { counter: 1 })
+      ).resolves.toEqual({
+        ...MOCK_DATA_JOHN,
+        counter: 1,
+      });
     });
 
     it('should return undefined if the item does not exist', () => {
@@ -106,9 +106,9 @@ describe('createClient()', () => {
         error: 'Item does not exist.',
       });
 
-      return expect(client.patch('foo', 'bar', { counter: 1 }))
-        .resolves
-        .toBeUndefined();
+      return expect(
+        client.patch('foo', 'bar', { counter: 1 })
+      ).resolves.toBeUndefined();
     });
 
     it('should handle erroneous response from the server', () => {
@@ -116,9 +116,9 @@ describe('createClient()', () => {
         error: 'Unable to store item.',
       });
 
-      return expect(client.patch('foo', 'bar', MOCK_DATA_JOHN))
-        .rejects
-        .toBeInstanceOf(Error);
+      return expect(
+        client.patch('foo', 'bar', MOCK_DATA_JOHN)
+      ).rejects.toBeInstanceOf(Error);
     });
   });
 
@@ -126,9 +126,9 @@ describe('createClient()', () => {
     it('should handle successful response from the server', () => {
       mock.onDelete('https://example.com/foo/bar').reply(201, MOCK_DATA_JOHN);
 
-      return expect(client.delete('foo', 'bar'))
-        .resolves
-        .toEqual(MOCK_DATA_JOHN);
+      return expect(client.delete('foo', 'bar')).resolves.toEqual(
+        MOCK_DATA_JOHN
+      );
     });
 
     it('should return undefined if the item does not exist', () => {
