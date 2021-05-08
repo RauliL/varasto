@@ -1,6 +1,5 @@
+/.vscode
 /node_modules
 /packages/*/node_modules
-/packages/varasto-client/index.d.ts
-/packages/varasto-client/index.js
 *.log
 *.tgz

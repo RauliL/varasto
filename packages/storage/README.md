@@ -16,8 +16,6 @@ is identified by _namespace_ and _key_, that must be [valid URL slugs].
 
 [valid url slugs]: https://ihateregex.io/expr/url-slug/
 
-The package also provides slug validation function called `isValidSlug`.
-
 Basic usage of storage looks like this:
 
 ```TypeScript

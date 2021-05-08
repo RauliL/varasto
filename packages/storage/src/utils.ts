@@ -1,10 +1,10 @@
 import fs from 'fs';
 import glob from 'glob';
+import { isValidSlug } from 'is-valid-slug';
 import mkdirp from 'mkdirp';
 import path from 'path';
 import { JsonObject } from 'type-fest';
 
-import { isValidSlug } from './slug';
 import { InvalidSlugError } from './types';
 
 export const createNamespace = (

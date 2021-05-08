@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "glob": "^7.1.6",
+    "is-valid-slug": "^1.0.0",
     "mkdirp": "^1.0.4",
     "type-fest": "^0.20.2"
   },
