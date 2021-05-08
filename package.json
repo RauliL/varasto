@@ -11,13 +11,16 @@
     "build": "lerna run build",
     "watch": "lerna run watch",
     "lint": "lerna run lint",
+    "format": "lerna run format",
+    "format:check": "lerna run format:check",
     "test": "lerna run test"
   },
   "devDependencies": {
     "lerna": "^3.22.1"
   },
   "resolutions": {
-    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
-    "**/@typescript-eslint/parser": "^4.1.1"
+    "**/@typescript-eslint/eslint-plugin": "^4.22.1",
+    "**/@typescript-eslint/parser": "^4.22.1",
+    "**/eslint-config-prettier": "^8.3.0"
   }
 }

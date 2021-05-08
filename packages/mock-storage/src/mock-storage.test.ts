@@ -28,16 +28,14 @@ describe('mock storage', () => {
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.get('f;o;o', 'bar'))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(storage.get('f;o;o', 'bar')).rejects.toBeInstanceOf(
+        InvalidSlugError
+      ));
 
     it('should fail if key is not valid slug', () =>
-      expect(storage.get('foo', 'b;a;r'))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(storage.get('foo', 'b;a;r')).rejects.toBeInstanceOf(
+        InvalidSlugError
+      ));
   });
 
   describe('set()', () => {
@@ -48,16 +46,14 @@ describe('mock storage', () => {
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.set('f;o;o', 'bar', { foo: 'bar' }))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(
+        storage.set('f;o;o', 'bar', { foo: 'bar' })
+      ).rejects.toBeInstanceOf(InvalidSlugError));
 
     it('should fail if key is not valid slug', () =>
-      expect(storage.set('foo', 'b;a;r', { foo: 'bar' }))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(
+        storage.set('foo', 'b;a;r', { foo: 'bar' })
+      ).rejects.toBeInstanceOf(InvalidSlugError));
   });
 
   describe('delete()', () => {
@@ -69,16 +65,14 @@ describe('mock storage', () => {
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.delete('f;o;o', 'bar'))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(storage.delete('f;o;o', 'bar')).rejects.toBeInstanceOf(
+        InvalidSlugError
+      ));
 
     it('should fail if key is not valid slug', () =>
-      expect(storage.delete('foo', 'b;a;r'))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(storage.delete('foo', 'b;a;r')).rejects.toBeInstanceOf(
+        InvalidSlugError
+      ));
   });
 
   describe('clear()', () => {
@@ -106,10 +100,7 @@ describe('mock storage', () => {
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.keys('f;o;o'))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(storage.keys('f;o;o')).rejects.toBeInstanceOf(InvalidSlugError));
   });
 
   describe('values()', () => {
@@ -127,10 +118,9 @@ describe('mock storage', () => {
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.values('f;o;o'))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(storage.values('f;o;o')).rejects.toBeInstanceOf(
+        InvalidSlugError
+      ));
   });
 
   describe('entries()', () => {
@@ -148,9 +138,8 @@ describe('mock storage', () => {
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.entries('f;o;o'))
-        .rejects
-        .toBeInstanceOf(InvalidSlugError)
-    );
+      expect(storage.entries('f;o;o')).rejects.toBeInstanceOf(
+        InvalidSlugError
+      ));
   });
 });

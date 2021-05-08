@@ -37,48 +37,44 @@ export const createMockStorage = (): MockStorage => {
     },
 
     keys(namespace: string): Promise<string[]> {
-      return getNamespace(namespace)
-        .then((mapping) => [...mapping.keys()]);
+      return getNamespace(namespace).then((mapping) => [...mapping.keys()]);
     },
 
     values(namespace: string): Promise<JsonObject[]> {
-      return getNamespace(namespace)
-        .then((mapping) => [...mapping.values()]);
+      return getNamespace(namespace).then((mapping) => [...mapping.values()]);
     },
 
     entries(namespace: string): Promise<[string, JsonObject][]> {
-      return getNamespace(namespace)
-        .then((mapping) => [...mapping.entries()]);
+      return getNamespace(namespace).then((mapping) => [...mapping.entries()]);
     },
 
     get(namespace: string, key: string): Promise<JsonObject | undefined> {
-      return getNamespace(namespace)
-        .then((mapping) =>
-          isValidSlug(key)
-            ? mapping.get(key)
-            : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
-        );
+      return getNamespace(namespace).then((mapping) =>
+        isValidSlug(key)
+          ? mapping.get(key)
+          : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
+      );
     },
 
     set(namespace: string, key: string, value: JsonObject): Promise<void> {
-      return getNamespace(namespace)
-        .then((mapping) => {
-          if (!isValidSlug(key)) {
-            return Promise.reject(new InvalidSlugError('Given key is not valid slug'));
-          }
-          mapping.set(key, value);
+      return getNamespace(namespace).then((mapping) => {
+        if (!isValidSlug(key)) {
+          return Promise.reject(
+            new InvalidSlugError('Given key is not valid slug')
+          );
+        }
+        mapping.set(key, value);
 
-          return Promise.resolve();
-        });
+        return Promise.resolve();
+      });
     },
 
     delete(namespace: string, key: string): Promise<boolean> {
-      return getNamespace(namespace)
-        .then((mapping) =>
-          isValidSlug(key)
-            ? mapping.delete(key)
-            : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
-        );
+      return getNamespace(namespace).then((mapping) =>
+        isValidSlug(key)
+          ? mapping.delete(key)
+          : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
+      );
     },
-  }
+  };
 };

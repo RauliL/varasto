@@ -111,7 +111,7 @@ describe('createRouter()', () => {
             errors: ['age must be a positive number'],
           });
           done();
-        })
+        });
     });
 
     it('should return 400 if key is not valid slug', (done) => {

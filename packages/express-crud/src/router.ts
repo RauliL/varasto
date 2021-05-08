@@ -18,12 +18,12 @@ import { AnySchema, ValidationError } from 'yup';
 export const createRouter = (
   storage: Storage,
   namespace: string,
-  schema: AnySchema,
+  schema: AnySchema
 ): Router => {
   const router = express();
 
   const retrieve = (
-    callback: (req: Request, res: Response, value: JsonObject) => void,
+    callback: (req: Request, res: Response, value: JsonObject) => void
   ) => (req: Request, res: Response) => {
     storage
       .get(namespace, req.params.key)
@@ -83,8 +83,8 @@ export const createRouter = (
               ...mapping,
               [entry[0]]: entry[1],
             }),
-            {},
-          ),
+            {}
+          )
         );
       })
       .catch((err) => {
@@ -96,28 +96,37 @@ export const createRouter = (
       });
   });
 
-  router.get('/:key', retrieve((req, res, value) => {
-    res.status(200).json(value);
-  }));
+  router.get(
+    '/:key',
+    retrieve((req, res, value) => {
+      res.status(200).json(value);
+    })
+  );
 
   router.post('/:key', (req, res) => {
     store(req, res, req.body);
   });
 
-  router.patch('/:key', retrieve((req, res, value) => {
-    store(req, res, { ...value, ...req.body });
-  }));
+  router.patch(
+    '/:key',
+    retrieve((req, res, value) => {
+      store(req, res, { ...value, ...req.body });
+    })
+  );
 
-  router.delete('/:key', retrieve((req, res, value) => {
-    storage
-      .delete(namespace, req.params.key)
-      .then(() => {
-        res.status(201).json(value);
-      })
-      .catch(() => {
-        res.status(500).json({ error: 'Unable to remove item.' });
-      });
-  }));
+  router.delete(
+    '/:key',
+    retrieve((req, res, value) => {
+      storage
+        .delete(namespace, req.params.key)
+        .then(() => {
+          res.status(201).json(value);
+        })
+        .catch(() => {
+          res.status(500).json({ error: 'Unable to remove item.' });
+        });
+    })
+  );
 
   return router;
 };

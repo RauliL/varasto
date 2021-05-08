@@ -30,7 +30,7 @@ export type Client = {
    *         to value of the item.
    */
   list: <T extends JsonObject = JsonObject>(
-    namespace: string,
+    namespace: string
   ) => Promise<Record<string, T>>;
 
   /**
@@ -44,8 +44,8 @@ export type Client = {
    */
   get: <T extends JsonObject = JsonObject>(
     namespace: string,
-    key: string,
-  ) => Promise<T|undefined>;
+    key: string
+  ) => Promise<T | undefined>;
 
   /**
    * Connects to the server and attempts to create an item identified by given
@@ -61,7 +61,7 @@ export type Client = {
   set: <T extends JsonObject = JsonObject>(
     namespace: string,
     key: string,
-    value: T,
+    value: T
   ) => Promise<JsonObject>;
 
   /**
@@ -77,8 +77,8 @@ export type Client = {
   patch: <T extends JsonObject = JsonObject>(
     namespace: string,
     key: string,
-    value: Partial<T>,
-  ) => Promise<T|undefined>;
+    value: Partial<T>
+  ) => Promise<T | undefined>;
 
   /**
    * Connects to the server and attempts to remove an item identified by given
@@ -91,6 +91,6 @@ export type Client = {
    */
   delete: <T extends JsonObject = JsonObject>(
     namespace: string,
-    key: string,
-  ) => Promise<T|undefined>;
+    key: string
+  ) => Promise<T | undefined>;
 };

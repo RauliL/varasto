@@ -7,7 +7,7 @@ import {
   createNamespace,
   globNamespace,
   readItem,
- } from './utils';
+} from './utils';
 import { Storage, StorageOptions } from './types';
 
 /**
@@ -31,27 +31,41 @@ export const createStorage = (options?: Partial<StorageOptions>): Storage => {
     },
 
     keys: (namespace: string): Promise<string[]> =>
-      globNamespace(dir, namespace)
-        .then((matches) => matches.map((match) => path.basename(match, '.json'))),
+      globNamespace(dir, namespace).then((matches) =>
+        matches.map((match) => path.basename(match, '.json'))
+      ),
 
     values: (namespace: string): Promise<JsonObject[]> =>
       globNamespace(dir, namespace)
-        .then((filenames) => Promise.all(
-          filenames.map((filename) => readItem(filename, encoding))
-        ))
-        .then((values) => (
-          values.filter((value) => value !== undefined) as JsonObject[]
-        )),
+        .then((filenames) =>
+          Promise.all(
+            filenames.map((filename) => readItem(filename, encoding))
+          )
+        )
+        .then(
+          (values) =>
+            values.filter((value) => value !== undefined) as JsonObject[]
+        ),
 
     entries: (namespace: string): Promise<[string, JsonObject][]> =>
       globNamespace(dir, namespace)
-        .then((filenames) => Promise.all(
-          filenames.map((filename) => (
-            readItem(filename, encoding)
-              .then((value) => [path.basename(filename, '.json'), value]))
+        .then((filenames) =>
+          Promise.all(
+            filenames.map((filename) =>
+              readItem(filename, encoding).then((value) => [
+                path.basename(filename, '.json'),
+                value,
+              ])
+            )
           )
-        ))
-        .then((entries) => entries.filter((entry) => entry[1] !== undefined) as [string, JsonObject][]),
+        )
+        .then(
+          (entries) =>
+            entries.filter((entry) => entry[1] !== undefined) as [
+              string,
+              JsonObject
+            ][]
+        ),
 
     get: (namespace: string, key: string): Promise<JsonObject | undefined> => {
       let filename: string;
@@ -66,30 +80,27 @@ export const createStorage = (options?: Partial<StorageOptions>): Storage => {
     },
 
     set: (namespace: string, key: string, value: JsonObject): Promise<void> =>
-      createNamespace(dir, namespace)
-        .then(() => new Promise<void>((resolve, reject) => {
-          let filename: string;
+      createNamespace(dir, namespace).then(
+        () =>
+          new Promise<void>((resolve, reject) => {
+            let filename: string;
 
-          try {
-            filename = buildFilename(dir, namespace, key);
-          } catch (err) {
-            reject(err);
-            return;
-          }
+            try {
+              filename = buildFilename(dir, namespace, key);
+            } catch (err) {
+              reject(err);
+              return;
+            }
 
-          fs.writeFile(
-            filename,
-            JSON.stringify(value),
-            encoding,
-            (err) => {
+            fs.writeFile(filename, JSON.stringify(value), encoding, (err) => {
               if (err) {
                 reject(err);
               } else {
                 resolve();
               }
-            },
-          )
-        })),
+            });
+          })
+      ),
 
     delete: (namespace: string, key: string): Promise<boolean> =>
       new Promise<boolean>((resolve, reject) => {
@@ -121,5 +132,5 @@ export const createStorage = (options?: Partial<StorageOptions>): Storage => {
           });
         });
       }),
-  }
+  };
 };
