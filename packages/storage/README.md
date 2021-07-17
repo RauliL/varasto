@@ -1,39 +1,32 @@
 # @varasto/storage
 
-Low level API for the Varasto JSON key-value store.
+Type definitions for Varasto JSON key-value store.
 
 ## Installation
 
-```bash
+```sh
 $ npm install --save @varasto/storage
 ```
 
 ## Usage
 
-The package provides an function called `createStorage`, which returns an
-object that is capable of storing JSON objects into disk, where each object
-is identified by _namespace_ and _key_, that must be [valid URL slugs].
+This package only provides TypeScript type definitions for Varasto storage
+implementation and an custom JavaScript error class used to indicate that
+an item identifier (either namespace or key) does not pass the slug validation.
 
-[valid url slugs]: https://ihateregex.io/expr/url-slug/
+Usually you don't need to use or install this package directly, but use an
+storage implementation package instead. Below is an list of storage
+implementations for different use cases.
 
-Basic usage of storage looks like this:
+| Name             | Description                            |
+| ---------------- | -------------------------------------- |
+| [fs-storage]     | Stores data persistently to hard disk. |
+| [memory-storage] | Stores data to memory.                 |
+| [remote-storage] | Stores data to remote server.          |
 
-```TypeScript
-import { createStorage } from '@varasto/storage';
-
-const storage = createStorage({ dir: './data' });
-```
-
-The function takes an optional configuration object, which supports these
-settings:
-
-| Property   | Default value | Description                                                    |
-| ---------- | ------------- | -------------------------------------------------------------- |
-| `dir`      | `./data`      | Directory where the items will be persisted into.              |
-| `encoding` | `utf-8`       | Character encoding to use when items are stored onto the disk. |
-
-If `dir` does not exist, it will be created when an item is stored into the
-storage.
+[fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
+[memory-storage]: https://www.npmjs.com/package/@varasto/memory-storage
+[remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
 
 ### Storing items
 
@@ -65,6 +58,26 @@ Attempts to remove an item identified by `namespace` and `key`. Returned
 promise will resolve into a boolean value which tells whether an value with
 the given identifier existed or not. The promise will fail if an I/O error
 occurs while removing the item.
+
+### Updating already existing item
+
+```TypeScript
+update(namespace: string, key: string, value: JsonObject): Promise<JsonObject>
+```
+
+Attempts to update an already existing item identified by `namespace` and `key`
+by shallowly merging with the given new data. Returned promise will resolve
+into the new value, or will fail if no such item exists.
+
+### Testing whether an item exists or not
+
+```TypeScript
+has(namespace: string, key: string): Promise<boolean>
+```
+
+Returns `true` if an item identified by `namespace` and `key` exists in the
+storage, or `false` if it doesn't. The promise will fail if an I/O error
+occurs while testing whether item exists or not.
 
 ### Listing keys stored in a namespace
 
