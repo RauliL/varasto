@@ -1,0 +1,56 @@
+{
+  "name": "@varasto/remote-storage",
+  "version": "1.0.0",
+  "description": "Varasto HTTP client that connects to remote storage",
+  "license": "MIT",
+  "keywords": [
+    "varasto"
+  ],
+  "author": "Rauli Laine <rauli.laine@iki.fi>",
+  "main": "./dist/index.js",
+  "main:src": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=12.0"
+  },
+  "homepage": "https://github.com/RauliL/varasto",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RauliL/varasto"
+  },
+  "bugs": {
+    "url": "https://github.com/RauliL/varasto/issues"
+  },
+  "eslintConfig": {
+    "extends": "../../eslintrc.js"
+  },
+  "scripts": {
+    "clean": "rimraf './dist'",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint './src/*.ts'",
+    "format": "prettier --write './src'",
+    "format:check": "prettier --check './src'",
+    "test": "jest",
+    "prepack": "yarn run build"
+  },
+  "dependencies": {
+    "@varasto/storage": "^3.0.0",
+    "axios": "^0.21.1",
+    "type-fest": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.3",
+    "axios-mock-adapter": "^1.19.0",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "jest": "^27.0.6",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.5",
+    "yarn": "^1.22.10"
+  }
+}
