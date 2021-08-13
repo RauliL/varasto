@@ -123,7 +123,7 @@ describe('memory storage', () => {
       storage.clear('ns1');
 
       expect(await storage.has('ns1', 'key')).toBe(false);
-      expect(await storage.has('ns2', 'key')).toBe(false);
+      expect(await storage.has('ns2', 'key')).toBe(true);
     });
   });
 

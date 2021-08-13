@@ -26,8 +26,12 @@ export const createMemoryStorage = (): MemoryStorage => {
     });
 
   return {
-    clear() {
-      data.clear();
+    clear(namespace?: string) {
+      if (namespace != null) {
+        data.delete(namespace);
+      } else {
+        data.clear();
+      }
     },
 
     has(namespace: string, key: string): Promise<boolean> {
