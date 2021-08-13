@@ -1,6 +1,6 @@
 {
   "name": "@varasto/memory-storage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Varasto storage implementation that stores data in memory",
   "license": "MIT",
   "keywords": [
