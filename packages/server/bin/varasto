@@ -61,6 +61,12 @@ const createServerOptions = () => {
   if (argv.auth) {
     const [username, password] = argv.auth.split(':');
 
+    if (!username || !password) {
+      process.stderr.write(
+        'Enter credentials in format of "username:password".\n'
+      );
+      process.exit(1);
+    }
     options.auth = { username, password };
   }
 
