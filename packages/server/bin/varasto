@@ -2,6 +2,7 @@
 
 const { createFileSystemStorage } = require('@varasto/fs-storage');
 const express = require('express');
+const http = require('http');
 const morgan = require('morgan');
 const yargs = require('yargs');
 
@@ -53,11 +54,12 @@ const createServerOptions = () => {
 };
 
 const storage = createFileSystemStorage({ dir: argv.directory });
-const server = express();
+const app = express();
 const { host, port } = argv;
+const server = http.createServer(app);
 
-server.use(morgan('combined'));
-server.use(createServer(storage, createServerOptions()));
+app.use(morgan('combined'));
+app.use(createServer(storage, createServerOptions()));
 
 server.on('error', (err) => {
   const bind = typeof port === 'string' ? `Pipe ${port}` : `Port ${port}`;
