@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { createStorage } = require('@varasto/storage');
+const { createFileSystemStorage } = require('@varasto/fs-storage');
 const express = require('express');
 const morgan = require('morgan');
 const yargs = require('yargs');
@@ -16,7 +16,7 @@ const argv = yargs.usage(
         a: {
           alias: 'auth',
           nargs: 1,
-          describe: 'Username and password to require, separated with \':\'.',
+          describe: "Username and password to require, separated with ':'.",
           type: 'string',
         },
         h: {
@@ -54,7 +54,7 @@ const createServerOptions = () => {
   return options;
 };
 
-const storage = createStorage({ dir: argv.directory });
+const storage = createFileSystemStorage({ dir: argv.directory });
 const server = express();
 const { host, port } = argv;
 
@@ -85,6 +85,6 @@ server.on('error', (err) => {
   }
 });
 
-server.listen(port, host, () =>
-  process.stdout.write(`Varasto is listening on http://${host}:${port}\n`)
-);
+server.listen(port, host, () => {
+  process.stdout.write(`Varasto is listening on http://${host}:${port}\n`);
+});

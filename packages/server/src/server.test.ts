@@ -1,10 +1,10 @@
-import { createMockStorage } from '@varasto/mock-storage';
+import { createMemoryStorage } from '@varasto/memory-storage';
 import request from 'supertest';
 
 import { createServer } from './server';
 
 describe('HTTP interface', () => {
-  const storage = createMockStorage();
+  const storage = createMemoryStorage();
   const app = createServer(storage);
 
   beforeEach(() => {
@@ -12,11 +12,11 @@ describe('HTTP interface', () => {
   });
 
   describe('listing', () => {
-    it('should return items stored under the namespace', async (done) => {
+    it('should return items stored under the namespace', async () => {
       await storage.set('foo', 'bar', { a: 1 });
       await storage.set('foo', 'baz', { b: 2 });
 
-      request(app)
+      return request(app)
         .get('/foo')
         .then((response) => {
           expect(response.status).toBe(200);
@@ -24,21 +24,18 @@ describe('HTTP interface', () => {
             bar: { a: 1 },
             baz: { b: 2 },
           });
-          done();
         });
     });
 
-    it('should return empty object if the namespace does not exist', (done) => {
+    it('should return empty object if the namespace does not exist', () =>
       request(app)
         .get('/foo')
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.body).toEqual({});
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if namespace is not valid slug', (done) => {
+    it('should return 400 if namespace is not valid slug', () =>
       request(app)
         .get('/f;o;o')
         .then((response) => {
@@ -47,34 +44,29 @@ describe('HTTP interface', () => {
             'error',
             'Given namespace is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 
   describe('retrieval', () => {
-    it('should return the item if it exists', async (done) => {
+    it('should return the item if it exists', async () => {
       await storage.set('foo', 'bar', { foo: 'bar' });
 
-      request(app)
+      return request(app)
         .get('/foo/bar')
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.body).toEqual({ foo: 'bar' });
-          done();
         });
     });
 
-    it('should return 404 if the item does not exist', (done) => {
+    it('should return 404 if the item does not exist', () =>
       request(app)
         .get('/foo/bar')
         .then((response) => {
           expect(response.status).toBe(404);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if namespace is not valid slug', (done) => {
+    it('should return 400 if namespace is not valid slug', () =>
       request(app)
         .get('/f;o;o/bar')
         .then((response) => {
@@ -83,11 +75,9 @@ describe('HTTP interface', () => {
             'error',
             'Given namespace is not valid slug'
           );
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .get('/foo/b;a;r')
         .then((response) => {
@@ -96,23 +86,36 @@ describe('HTTP interface', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
+        }));
+
+    it('should respond to HEAD request if item exists', async () => {
+      await storage.set('foo', 'bar', { foo: 'bar' });
+
+      return request(app)
+        .head('/foo/bar')
+        .then((response) => {
+          expect(response.status).toBe(200);
         });
     });
+
+    it('should respond to HEAD request if item does not exist', () =>
+      request(app)
+        .head('/foo/bar')
+        .then((response) => {
+          expect(response.status).toBe(404);
+        }));
   });
 
   describe('storage', () => {
-    it('should return 201 after successful store', (done) => {
+    it('should return 201 after successful store', () =>
       request(app)
         .post('/foo/bar')
         .send({ foo: 'bar' })
         .then((response) => {
           expect(response.status).toBe(201);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if namespace is not valid slug', (done) => {
+    it('should return 400 if namespace is not valid slug', () =>
       request(app)
         .post('/f;o;o/bar')
         .send({ foo: 'bar' })
@@ -122,11 +125,9 @@ describe('HTTP interface', () => {
             'error',
             'Given namespace is not valid slug'
           );
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .post('/foo/b;a;r')
         .send({ foo: 'bar' })
@@ -136,16 +137,14 @@ describe('HTTP interface', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 
   describe('patching', () => {
-    it('should return the resulting patched object', async (done) => {
+    it('should return the resulting patched object', async () => {
       await storage.set('foo', 'bar', { a: 1 });
 
-      request(app)
+      return request(app)
         .patch('/foo/bar')
         .send({ b: 2 })
         .then((response) => {
@@ -154,21 +153,18 @@ describe('HTTP interface', () => {
             a: 1,
             b: 2,
           });
-          done();
         });
     });
 
-    it('should return 404 if the item does not exist', (done) => {
+    it('should return 404 if the item does not exist', () =>
       request(app)
         .patch('/foo/bar')
         .send({ b: 2 })
         .then((response) => {
           expect(response.status).toBe(404);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if namespace is not valid slug', (done) => {
+    it('should return 400 if namespace is not valid slug', () =>
       request(app)
         .patch('/f;o;o/bar')
         .send({ b: 2 })
@@ -178,11 +174,9 @@ describe('HTTP interface', () => {
             'error',
             'Given namespace is not valid slug'
           );
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .patch('/foo/b;a;r')
         .send({ b: 2 })
@@ -192,34 +186,29 @@ describe('HTTP interface', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 
   describe('removal', () => {
-    it('should return the removed item if it existed', async (done) => {
+    it('should return the removed item if it existed', async () => {
       await storage.set('foo', 'bar', { foo: 'bar' });
 
-      request(app)
+      return request(app)
         .delete('/foo/bar')
         .then((response) => {
           expect(response.status).toBe(201);
           expect(response.body).toEqual({ foo: 'bar' });
-          done();
         });
     });
 
-    it('should return 404 if the item does not exist', (done) => {
+    it('should return 404 if the item does not exist', () =>
       request(app)
         .delete('/foo/bar')
         .then((response) => {
           expect(response.status).toBe(404);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if namespace is not valid slug', (done) => {
+    it('should return 400 if namespace is not valid slug', () =>
       request(app)
         .delete('/f;o;o/bar')
         .then((response) => {
@@ -228,11 +217,9 @@ describe('HTTP interface', () => {
             'error',
             'Given namespace is not valid slug'
           );
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .delete('/foo/b;a;r')
         .then((response) => {
@@ -241,8 +228,6 @@ describe('HTTP interface', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 });

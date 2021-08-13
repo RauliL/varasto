@@ -1,4 +1,4 @@
-import { createMockStorage } from '@varasto/mock-storage';
+import { createMemoryStorage } from '@varasto/memory-storage';
 import express from 'express';
 import request from 'supertest';
 import * as yup from 'yup';
@@ -17,7 +17,7 @@ describe('createRouter()', () => {
     age: yup.number().required().positive().integer(),
     email: yup.string().email(),
   });
-  const storage = createMockStorage();
+  const storage = createMemoryStorage();
   const app = express();
 
   app.use('/people', createRouter(storage, 'people', schema));
@@ -27,52 +27,46 @@ describe('createRouter()', () => {
   });
 
   describe('listing', () => {
-    it('should return items stored under the namespace', async (done) => {
+    it('should return items stored under the namespace', async () => {
       await storage.set('people', 'john-doe', VALID_MOCK_DATA);
 
-      request(app)
+      return request(app)
         .get('/people')
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.body).toEqual({ 'john-doe': VALID_MOCK_DATA });
-          done();
         });
     });
 
-    it('should return empty object if the namespace does not exist', (done) => {
+    it('should return empty object if the namespace does not exist', () =>
       request(app)
         .get('/people')
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.body).toEqual({});
-          done();
-        });
-    });
+        }));
   });
 
   describe('retrieval', () => {
-    it('should return the item if it exists', async (done) => {
+    it('should return the item if it exists', async () => {
       await storage.set('people', 'john-doe', VALID_MOCK_DATA);
 
-      request(app)
+      return request(app)
         .get('/people/john-doe')
         .then((response) => {
           expect(response.status).toBe(200);
           expect(response.body).toEqual(VALID_MOCK_DATA);
-          done();
         });
     });
 
-    it('should return 404 if the item does not exist', (done) => {
+    it('should return 404 if the item does not exist', () =>
       request(app)
         .get('/people/john-doe')
         .then((response) => {
           expect(response.status).toBe(404);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .get('/people/f;oo')
         .then((response) => {
@@ -81,23 +75,19 @@ describe('createRouter()', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 
   describe('storage', () => {
-    it('should return 201 after successful store', (done) => {
+    it('should return 201 after successful store', () =>
       request(app)
         .post('/people/john-doe')
         .send(VALID_MOCK_DATA)
         .then((response) => {
           expect(response.status).toBe(201);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if given data does not pass validation', (done) => {
+    it('should return 400 if given data does not pass validation', () =>
       request(app)
         .post('/people/john-doe')
         .send({
@@ -110,11 +100,9 @@ describe('createRouter()', () => {
             error: 'Data did not pass validation.',
             errors: ['age must be a positive number'],
           });
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .post('/people/f;o;o')
         .send(VALID_MOCK_DATA)
@@ -124,16 +112,14 @@ describe('createRouter()', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 
   describe('patching', () => {
-    it('should return the resulting patched object', async (done) => {
+    it('should return the resulting patched object', async () => {
       await storage.set('people', 'john-doe', VALID_MOCK_DATA);
 
-      request(app)
+      return request(app)
         .patch('/people/john-doe')
         .send({ age: 26 })
         .then((response) => {
@@ -142,14 +128,13 @@ describe('createRouter()', () => {
             ...VALID_MOCK_DATA,
             age: 26,
           });
-          done();
         });
     });
 
-    it('should return 400 if given data does not pass validation', async (done) => {
+    it('should return 400 if given data does not pass validation', async () => {
       await storage.set('people', 'john-doe', VALID_MOCK_DATA);
 
-      request(app)
+      return request(app)
         .patch('/people/john-doe')
         .send({ email: 15 })
         .then((response) => {
@@ -158,21 +143,18 @@ describe('createRouter()', () => {
             error: 'Data did not pass validation.',
             errors: ['email must be a valid email'],
           });
-          done();
         });
     });
 
-    it('should return 404 if the item does not exist', (done) => {
+    it('should return 404 if the item does not exist', () =>
       request(app)
         .patch('/people/john-doe')
         .send({ age: 26 })
         .then((response) => {
           expect(response.status).toBe(404);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .patch('/people/f;o;o')
         .send({ age: 26 })
@@ -182,34 +164,29 @@ describe('createRouter()', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 
   describe('removal', () => {
-    it('should return the removed item if it existed', async (done) => {
+    it('should return the removed item if it existed', async () => {
       await storage.set('people', 'john-doe', VALID_MOCK_DATA);
 
-      request(app)
+      return request(app)
         .delete('/people/john-doe')
         .then((response) => {
           expect(response.status).toBe(201);
           expect(response.body).toEqual(VALID_MOCK_DATA);
-          done();
         });
     });
 
-    it('should return 404 if the item does not exist', (done) => {
+    it('should return 404 if the item does not exist', () =>
       request(app)
         .delete('/people/john-doe')
         .then((response) => {
           expect(response.status).toBe(404);
-          done();
-        });
-    });
+        }));
 
-    it('should return 400 if key is not valid slug', (done) => {
+    it('should return 400 if key is not valid slug', () =>
       request(app)
         .delete('/people/f;oo')
         .then((response) => {
@@ -218,8 +195,6 @@ describe('createRouter()', () => {
             'error',
             'Given key is not valid slug'
           );
-          done();
-        });
-    });
+        }));
   });
 });

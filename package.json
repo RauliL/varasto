@@ -1,26 +1,20 @@
 {
-  "name": "varasto-core",
+  "name": "@varasto/root",
   "private": true,
-  "workspaces": [
-    "./packages/*"
-  ],
   "engines": {
     "node": ">=12.0"
   },
+  "workspaces": ["packages/*"],
   "scripts": {
+    "clean": "lerna run clean",
     "build": "lerna run build",
     "watch": "lerna run watch",
     "lint": "lerna run lint",
+    "test": "lerna run test",
     "format": "lerna run format",
-    "format:check": "lerna run format:check",
-    "test": "lerna run test"
+    "format:check": "lerna run format:check"
   },
   "devDependencies": {
-    "lerna": "^3.22.1"
-  },
-  "resolutions": {
-    "**/@typescript-eslint/eslint-plugin": "^4.22.1",
-    "**/@typescript-eslint/parser": "^4.22.1",
-    "**/eslint-config-prettier": "^8.3.0"
+    "lerna": "^4.0.0"
   }
 }

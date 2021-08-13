@@ -22,11 +22,11 @@ in Varasto storage, with validation provided by [Yup].
 
 ```TypeScript
 import { createRouter } from '@varasto/express-crud';
-import { createStorage } from '@varasto/storage';
+import { createFileSystemStorage } from '@varasto/fs-storage';
 import express from 'express';
 import * as yup from 'yup';
 
-const storage = createStorage({ dir: './data' });
+const storage = createFileSystemStorage({ dir: './data' });
 
 const peopleSchema = yup.object().shape({
   name: yup.string().required(),

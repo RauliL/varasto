@@ -1,4 +1,5 @@
 import { InvalidSlugError, Storage } from '@varasto/storage';
+
 import express, { Request, Response, Router } from 'express';
 import { JsonObject } from 'type-fest';
 import { AnySchema, ValidationError } from 'yup';
@@ -22,26 +23,26 @@ export const createRouter = (
 ): Router => {
   const router = express();
 
-  const retrieve = (
-    callback: (req: Request, res: Response, value: JsonObject) => void
-  ) => (req: Request, res: Response) => {
-    storage
-      .get(namespace, req.params.key)
-      .then((value) => {
-        if (value === undefined) {
-          res.status(404).json({ error: 'Item does not exist.' });
-        } else {
-          callback(req, res, value as JsonObject);
-        }
-      })
-      .catch((err) => {
-        if (err instanceof InvalidSlugError) {
-          res.status(400).json({ error: err.message });
-        } else {
-          res.status(500).json({ error: 'Unable to retrieve item.' });
-        }
-      });
-  };
+  const retrieve =
+    (callback: (req: Request, res: Response, value: JsonObject) => void) =>
+    (req: Request, res: Response) => {
+      storage
+        .get(namespace, req.params.key)
+        .then((value) => {
+          if (value === undefined) {
+            res.status(404).json({ error: 'Item does not exist.' });
+          } else {
+            callback(req, res, value as JsonObject);
+          }
+        })
+        .catch((err) => {
+          if (err instanceof InvalidSlugError) {
+            res.status(400).json({ error: err.message });
+          } else {
+            res.status(500).json({ error: 'Unable to retrieve item.' });
+          }
+        });
+    };
 
   const store = (req: Request, res: Response, value: JsonObject) => {
     schema

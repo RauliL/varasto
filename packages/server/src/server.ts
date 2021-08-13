@@ -1,8 +1,11 @@
+import {
+  InvalidSlugError,
+  ItemDoesNotExistError,
+  Storage,
+} from '@varasto/storage';
 import basicAuth from 'basic-auth';
 import express from 'express';
 import { Express } from 'express-serve-static-core';
-
-import { InvalidSlugError, Storage } from '@varasto/storage';
 
 import { ServerOptions } from './types';
 
@@ -98,29 +101,15 @@ export const createServer = (
     const { namespace, key } = req.params;
 
     storage
-      .get(namespace, key)
-      .then((value) => {
-        if (value === undefined) {
-          res.status(404).json({ error: 'Item does not exist.' });
-          return;
-        }
-
-        const result = { ...value, ...req.body };
-
-        storage
-          .set(namespace, key, result)
-          .then(() => res.status(201).json(result))
-          .catch(() =>
-            res.status(500).json({
-              error: 'Unable to store item.',
-            })
-          );
-      })
+      .update(namespace, key, req.body)
+      .then((result) => res.status(201).json(result))
       .catch((err) => {
         if (err instanceof InvalidSlugError) {
           res.status(400).json({ error: err.message });
+        } else if (err instanceof ItemDoesNotExistError) {
+          res.status(404).json({ error: 'Item does not exist.' });
         } else {
-          res.status(500).json({ error: 'Unable to retrieve item.' });
+          res.status(500).json({ error: 'Unable to store item.' });
         }
       });
   });
