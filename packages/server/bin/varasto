@@ -2,7 +2,9 @@
 
 const { createFileSystemStorage } = require('@varasto/fs-storage');
 const express = require('express');
+const fs = require('fs');
 const http = require('http');
+const https = require('https');
 const morgan = require('morgan');
 const yargs = require('yargs');
 
@@ -33,6 +35,18 @@ const argv = yargs.usage(
         describe: 'Port which to listen to.',
         type: 'number',
       })
+      .option('private-key', {
+        alias: 'k',
+        nargs: 1,
+        describe: 'Location of HTTPS private key',
+        type: 'string',
+      })
+      .option('certificate', {
+        alias: 'c',
+        nargs: 1,
+        describe: 'Location of HTTPS certificate',
+        type: 'string',
+      })
       .positional('directory', {
         describe: 'Directory where the items will be persisted into.',
         type: 'string',
@@ -55,8 +69,19 @@ const createServerOptions = () => {
 
 const storage = createFileSystemStorage({ dir: argv.directory });
 const app = express();
-const { host, port } = argv;
-const server = http.createServer(app);
+const { certificate, host, port, privateKey } = argv;
+let credentials;
+
+if (certificate && privateKey) {
+  credentials = {
+    key: fs.readFileSync(privateKey, 'utf8'),
+    cert: fs.readFileSync(certificate, 'utf8'),
+  };
+}
+
+const server = credentials
+  ? https.createServer(credentials, app)
+  : http.createServer(app);
 
 app.use(morgan('combined'));
 app.use(createServer(storage, createServerOptions()));
@@ -86,5 +111,7 @@ server.on('error', (err) => {
 });
 
 server.listen(port, host, () => {
-  process.stdout.write(`Varasto is listening on http://${host}:${port}\n`);
+  process.stdout.write(
+    `Varasto is listening on http${credentials ? 's' : ''}://${host}:${port}\n`
+  );
 });
