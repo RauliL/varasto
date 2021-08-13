@@ -69,12 +69,12 @@ server.on('error', (err) => {
   // Handle specific listen errors with user friendly messages.
   switch (err.code) {
     case 'EACCES':
-      process.stderr.write(`${bind} requires elevated privileges`);
+      process.stderr.write(`${bind} requires elevated privileges\n`);
       process.exit(1);
       break;
 
     case 'EADDRINUSE':
-      process.stderr.write(`${bind} is already in use`);
+      process.stderr.write(`${bind} is already in use\n`);
       process.exit(1);
       break;
 
