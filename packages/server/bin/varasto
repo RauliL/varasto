@@ -12,27 +12,25 @@ const argv = yargs.usage(
   'Start the HTTP server.',
   (yargs) =>
     yargs
-      .options({
-        a: {
-          alias: 'auth',
-          nargs: 1,
-          describe: "Username and password to require, separated with ':'.",
-          type: 'string',
-        },
-        h: {
-          alias: 'host',
-          nargs: 1,
-          default: '0.0.0.0',
-          describe: 'Hostname which to bind to.',
-          type: 'string',
-        },
-        p: {
-          alias: 'port',
-          nargs: 1,
-          default: 3000,
-          describe: 'Port which to listen to.',
-          type: 'number',
-        },
+      .option('auth', {
+        alias: 'a',
+        nargs: 1,
+        describe: "Username and password to require, separated with ':'.",
+        type: 'string',
+      })
+      .option('host', {
+        alias: 'h',
+        nargs: 1,
+        default: '0.0.0.0',
+        describe: 'Hostname which to bind to.',
+        type: 'string',
+      })
+      .option('port', {
+        alias: 'p',
+        nargs: 1,
+        default: 3000,
+        describe: 'Port which to listen to.',
+        type: 'number',
       })
       .positional('directory', {
         describe: 'Directory where the items will be persisted into.',
