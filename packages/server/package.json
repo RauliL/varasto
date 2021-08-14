@@ -1,6 +1,6 @@
 {
   "name": "@varasto/server",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "JSON key-value store with HTTP server interface",
   "license": "MIT",
   "keywords": [

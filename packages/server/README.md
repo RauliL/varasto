@@ -42,13 +42,23 @@ are being stored.
 Once the HTTP server is up and running, you can use HTTP methods `GET`, `POST`
 and `DELETE` to retrieve, store and remove items from the store.
 
-#### Security notes
+#### HTTPS suppport
 
-The server does not currently support [HTTPS] and the only authentication
-(which is not enabled by default) is [basic access authentication] so you
-might not want to expose it to public network.
+[HTTPS] support can be enabled with `--certificate` and `--private-key` command
+line arguments.
+
+```sh
+$ varasto --certificate /path/to/cert.crt --private-key /path/to/key.key
+```
 
 [https]: https://en.wikipedia.org/wiki/HTTPS
+
+#### Security notes
+
+The server does not currently support any other type of authentication than
+[basic access authentication] (which is not enabled by default), so you might
+not want to expose it to public network.
+
 [basic access authentication]: https://en.wikipedia.org/wiki/Basic_access_authentication
 
 ### Embedded
