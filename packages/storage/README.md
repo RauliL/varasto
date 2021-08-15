@@ -23,10 +23,13 @@ implementations for different use cases.
 | [fs-storage]     | Stores data persistently to hard disk. |
 | [memory-storage] | Stores data to memory.                 |
 | [remote-storage] | Stores data to remote server.          |
+| [redis-storage]  | Stores data to [Redis].                |
 
 [fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
 [memory-storage]: https://www.npmjs.com/package/@varasto/memory-storage
 [remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
+[redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
+[redis]: https://redis.io
 
 ### Storing items
 
