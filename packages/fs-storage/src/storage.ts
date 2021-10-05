@@ -38,7 +38,7 @@ export const createFileSystemStorage = (
         matches.map((match) => path.basename(match, '.json'))
       ),
 
-    values: (namespace: string): Promise<JsonObject[]> =>
+    values: <T extends JsonObject>(namespace: string): Promise<T[]> =>
       globNamespace(dir, namespace)
         .then((filenames) =>
           Promise.all(
@@ -46,11 +46,12 @@ export const createFileSystemStorage = (
           )
         )
         .then(
-          (values) =>
-            values.filter((value) => value !== undefined) as JsonObject[]
+          (values) => values.filter((value) => value !== undefined) as T[]
         ),
 
-    entries: (namespace: string): Promise<[string, JsonObject][]> =>
+    entries: <T extends JsonObject>(
+      namespace: string
+    ): Promise<[string, T][]> =>
       globNamespace(dir, namespace)
         .then((filenames) =>
           Promise.all(
@@ -64,13 +65,13 @@ export const createFileSystemStorage = (
         )
         .then(
           (entries) =>
-            entries.filter((entry) => entry[1] !== undefined) as [
-              string,
-              JsonObject
-            ][]
+            entries.filter((entry) => entry[1] !== undefined) as [string, T][]
         ),
 
-    get: (namespace: string, key: string): Promise<JsonObject | undefined> => {
+    get: <T extends JsonObject>(
+      namespace: string,
+      key: string
+    ): Promise<T | undefined> => {
       let filename: string;
 
       try {
@@ -79,10 +80,14 @@ export const createFileSystemStorage = (
         return Promise.reject(err);
       }
 
-      return readItem(filename, encoding);
+      return readItem<T>(filename, encoding);
     },
 
-    set: (namespace: string, key: string, value: JsonObject): Promise<void> =>
+    set: <T extends JsonObject>(
+      namespace: string,
+      key: string,
+      value: T
+    ): Promise<void> =>
       createNamespace(dir, namespace).then(
         () =>
           new Promise<void>((resolve, reject) => {
@@ -105,11 +110,11 @@ export const createFileSystemStorage = (
           })
       ),
 
-    update: (
+    update: <T extends JsonObject>(
       namespace: string,
       key: string,
-      value: JsonObject
-    ): Promise<JsonObject> => {
+      value: Partial<T>
+    ): Promise<T> => {
       let filename: string;
 
       try {
@@ -120,9 +125,9 @@ export const createFileSystemStorage = (
 
       return readItem(filename, encoding).then((oldValue) => {
         if (oldValue !== undefined) {
-          const newValue = { ...oldValue, ...value };
+          const newValue = { ...oldValue, ...value } as T;
 
-          return new Promise<JsonObject>((resolve, reject) => {
+          return new Promise<T>((resolve, reject) => {
             fs.writeFile(
               filename,
               JSON.stringify(newValue),

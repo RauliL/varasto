@@ -1,6 +1,6 @@
 {
   "name": "@varasto/storage",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Type definitions for Varasto key-value storage",
   "license": "MIT",
   "author": "Rauli Laine <rauli.laine@iki.fi>",
