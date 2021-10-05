@@ -1,6 +1,6 @@
 {
   "name": "@varasto/redis-storage",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Varasto storage that uses Redis as it's backend",
   "license": "MIT",
   "keywords": [
