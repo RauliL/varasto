@@ -20,6 +20,7 @@ embedded to another [Express.js] application.
 | [@varasto/remote-storage] | Data is stored to remote server.          |
 | [@varasto/redis-storage]  | Data is stored to [Redis].                |
 
+[@varasto/cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
 [@varasto/fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
 [@varasto/memory-storage]: https://www.npmjs.com/package/@varasto/memory-storage
 [@varasto/remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
