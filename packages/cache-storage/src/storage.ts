@@ -34,28 +34,28 @@ export const createCacheStorage = (
       });
     },
 
-    values(namespace: string) {
+    values<T extends JsonObject>(namespace: string) {
       const values = valueCache.get(namespace);
 
       if (values != null) {
-        return Promise.resolve(values);
+        return Promise.resolve(values as T[]);
       }
 
-      return storage.values(namespace).then((values) => {
+      return storage.values<T>(namespace).then((values) => {
         valueCache.set(namespace, values);
 
         return Promise.resolve(values);
       });
     },
 
-    entries(namespace: string) {
+    entries<T extends JsonObject>(namespace: string) {
       const entries = entryCache.get(namespace);
 
       if (entries != null) {
-        return Promise.resolve(entries);
+        return Promise.resolve(entries as [string, T][]);
       }
 
-      return storage.entries(namespace).then((entries) => {
+      return storage.entries<T>(namespace).then((entries) => {
         entryCache.set(namespace, entries);
 
         return Promise.resolve(entries);
@@ -72,14 +72,17 @@ export const createCacheStorage = (
       return storage.has(namespace, key);
     },
 
-    get(namespace: string, key: string) {
+    get<T extends JsonObject>(
+      namespace: string,
+      key: string
+    ): Promise<T | undefined> {
       const cachedValue = namespaceCache.get(namespace, key);
 
       if (cachedValue != null) {
-        return Promise.resolve(cachedValue);
+        return Promise.resolve(cachedValue as T);
       }
 
-      return storage.get(namespace, key).then((value) => {
+      return storage.get<T>(namespace, key).then((value) => {
         if (value != null) {
           namespaceCache.set(namespace, key, value);
         }
@@ -88,16 +91,20 @@ export const createCacheStorage = (
       });
     },
 
-    set(namespace: string, key: string, value: JsonObject) {
-      return storage.set(namespace, key, value).then(() => {
+    set<T extends JsonObject>(namespace: string, key: string, value: T) {
+      return storage.set<T>(namespace, key, value).then(() => {
         namespaceCache.set(namespace, key, value);
 
         return Promise.resolve();
       });
     },
 
-    update(namespace: string, key: string, value: JsonObject) {
-      return storage.update(namespace, key, value).then((result) => {
+    update<T extends JsonObject>(
+      namespace: string,
+      key: string,
+      value: Partial<T>
+    ) {
+      return storage.update<T>(namespace, key, value).then((result) => {
         namespaceCache.set(namespace, key, result);
 
         return Promise.resolve(result);

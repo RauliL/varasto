@@ -27,7 +27,7 @@ export type Storage = {
    * The promise will fail if an I/O error occurs, or if given namespace or
    * key are invalid.
    */
-  values: (namespace: string) => Promise<JsonObject[]>;
+  values: <T extends JsonObject>(namespace: string) => Promise<T[]>;
 
   /**
    * Lists all items stored under given namespace, alongside their keys.
@@ -37,7 +37,7 @@ export type Storage = {
    * The promise will fail if an I/O error occurs, or if given namespace or
    * key are invalid.
    */
-  entries: (namespace: string) => Promise<[string, JsonObject][]>;
+  entries: <T extends JsonObject>(namespace: string) => Promise<[string, T][]>;
 
   /**
    * Attempts to retrieve an item identified by given key and namespace.
@@ -47,7 +47,10 @@ export type Storage = {
    * The promise will fail if an I/O error occurs, or if given namespace or
    * key are invalid.
    */
-  get: (namespace: string, key: string) => Promise<JsonObject | undefined>;
+  get: <T extends JsonObject>(
+    namespace: string,
+    key: string
+  ) => Promise<T | undefined>;
 
   /**
    * Attempts to store an item identified by given key and namespace.
@@ -55,7 +58,11 @@ export type Storage = {
    * The promise will fail if an I/O error occurs, or if given namespace or
    * key are invalid.
    */
-  set: (namespace: string, key: string, value: JsonObject) => Promise<void>;
+  set: <T extends JsonObject>(
+    namespace: string,
+    key: string,
+    value: T
+  ) => Promise<void>;
 
   /**
    * Attempts to update an item identified by given key and namespace with
@@ -64,11 +71,11 @@ export type Storage = {
    * The promise will fail if an I/O error occurs, or if given namespace or
    * key are invalid or if no item identified by given namespace key exist.
    */
-  update: (
+  update: <T extends JsonObject>(
     namespace: string,
     key: string,
-    value: JsonObject
-  ) => Promise<JsonObject>;
+    value: Partial<T>
+  ) => Promise<T>;
 
   /**
    * Attempts to remove an item identified by given key and namespace. Returned

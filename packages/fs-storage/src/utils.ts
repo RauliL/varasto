@@ -64,11 +64,11 @@ export const globNamespace = (
     });
   });
 
-export const readItem = (
+export const readItem = <T extends JsonObject>(
   filename: string,
   encoding: string
-): Promise<JsonObject | undefined> =>
-  new Promise<JsonObject | undefined>((resolve, reject) => {
+): Promise<T | undefined> =>
+  new Promise<T | undefined>((resolve, reject) => {
     fs.readFile(filename, encoding, (err, text) => {
       if (err) {
         if (err.code === 'ENOENT') {

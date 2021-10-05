@@ -42,16 +42,16 @@ export const createRedisStorage = (
       });
     },
 
-    values(namespace: string): Promise<JsonObject[]> {
+    values<T extends JsonObject>(namespace: string): Promise<T[]> {
       if (!isValidSlug(namespace)) {
         return Promise.reject(
           new InvalidSlugError('Given namespace is not valid slug')
         );
       }
 
-      return new Promise<JsonObject[]>((resolve, reject) => {
+      return new Promise<T[]>((resolve, reject) => {
         client.hvals(namespace, (err, reply) => {
-          const result: JsonObject[] = [];
+          const result: T[] = [];
           let error: Error | undefined;
 
           if (err) {
@@ -74,16 +74,16 @@ export const createRedisStorage = (
       });
     },
 
-    entries(namespace: string): Promise<[string, JsonObject][]> {
+    entries<T extends JsonObject>(namespace: string): Promise<[string, T][]> {
       if (!isValidSlug(namespace)) {
         return Promise.reject(
           new InvalidSlugError('Given namespace is not valid slug')
         );
       }
 
-      return new Promise<[string, JsonObject][]>((resolve, reject) => {
+      return new Promise<[string, T][]>((resolve, reject) => {
         client.hgetall(namespace, (err, reply) => {
-          const result: [string, JsonObject][] = [];
+          const result: [string, T][] = [];
           let error: Error | undefined;
 
           if (err) {
@@ -130,7 +130,10 @@ export const createRedisStorage = (
       });
     },
 
-    get(namespace: string, key: string): Promise<JsonObject | undefined> {
+    get<T extends JsonObject>(
+      namespace: string,
+      key: string
+    ): Promise<T | undefined> {
       if (!isValidSlug(namespace)) {
         return Promise.reject(
           new InvalidSlugError('Given namespace is not valid slug')
@@ -141,7 +144,7 @@ export const createRedisStorage = (
         );
       }
 
-      return new Promise<JsonObject | undefined>((resolve, reject) => {
+      return new Promise<T | undefined>((resolve, reject) => {
         client.hmget(namespace, key, (err, reply) => {
           if (err) {
             reject(err);
@@ -158,7 +161,11 @@ export const createRedisStorage = (
       });
     },
 
-    set(namespace: string, key: string, value: JsonObject): Promise<void> {
+    set<T extends JsonObject>(
+      namespace: string,
+      key: string,
+      value: T
+    ): Promise<void> {
       if (!isValidSlug(namespace)) {
         return Promise.reject(
           new InvalidSlugError('Given namespace is not valid slug')
@@ -189,12 +196,12 @@ export const createRedisStorage = (
       });
     },
 
-    update(
+    update<T extends JsonObject>(
       namespace: string,
       key: string,
-      value: JsonObject
-    ): Promise<JsonObject> {
-      return this.get(namespace, key).then((oldValue) => {
+      value: Partial<T>
+    ): Promise<T> {
+      return this.get<T>(namespace, key).then((oldValue) => {
         if (oldValue != null) {
           const result = { ...oldValue, ...value };
 

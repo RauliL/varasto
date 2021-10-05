@@ -42,17 +42,17 @@ export const createRemoteStorage = (
         .then((response) => Object.keys(response.data));
     },
 
-    values(namespace: string): Promise<JsonObject[]> {
+    values<T extends JsonObject>(namespace: string): Promise<T[]> {
       return client
-        .get<Record<string, JsonObject>>(`/${namespace}`)
+        .get<Record<string, T>>(`/${namespace}`)
         .then((response) => Object.values(response.data));
     },
 
-    entries(namespace: string): Promise<[string, JsonObject][]> {
+    entries<T extends JsonObject>(namespace: string): Promise<[string, T][]> {
       return client
-        .get<Record<string, JsonObject>>(`/${namespace}`)
+        .get<Record<string, T>>(`/${namespace}`)
         .then((response) => {
-          const result: Array<[string, JsonObject]> = [];
+          const result: Array<[string, T]> = [];
 
           Object.keys(response.data).forEach((key) => {
             result.push([key, response.data[key]]);
@@ -62,27 +62,34 @@ export const createRemoteStorage = (
         });
     },
 
-    get(namespace: string, key: string): Promise<JsonObject | undefined> {
+    get<T extends JsonObject>(
+      namespace: string,
+      key: string
+    ): Promise<T | undefined> {
       return client
-        .get<JsonObject>(`/${namespace}/${key}`)
+        .get<T>(`/${namespace}/${key}`)
         .then((response) => response.data)
         .catch(errorHandler);
     },
 
-    set(namespace: string, key: string, value: JsonObject): Promise<void> {
+    set<T extends JsonObject>(
+      namespace: string,
+      key: string,
+      value: T
+    ): Promise<void> {
       return client
         .post(`/${namespace}/${key}`, value)
         .then(() => undefined)
         .catch(errorHandler);
     },
 
-    update(
+    update<T extends JsonObject>(
       namespace: string,
       key: string,
-      value: JsonObject
-    ): Promise<JsonObject> {
+      value: Partial<T>
+    ): Promise<T> {
       return client
-        .patch<JsonObject>(`${namespace}/${key}`, value)
+        .patch<T>(`${namespace}/${key}`, value)
         .then((response) => response.data)
         .catch((err) =>
           Promise.reject(
