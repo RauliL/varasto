@@ -1,0 +1,59 @@
+{
+  "name": "@varasto/query",
+  "version": "1.0.0",
+  "description": "Query utilities for Varasto storage",
+  "license": "MIT",
+  "keywords": [
+    "varasto",
+    "query",
+    "util"
+  ],
+  "author": "Rauli Laine <rauli.laine@iki.fi>",
+  "main": "./dist/index.js",
+  "main:src": "./src/index.ts",
+  "types": "./dist/index.d.ts",
+  "engines": {
+    "node": ">=12.0"
+  },
+  "homepage": "https://github.com/RauliL/varasto",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RauliL/varasto"
+  },
+  "bugs": {
+    "url": "https://github.com/RauliL/varasto/issues"
+  },
+  "eslintConfig": {
+    "extends": "../../eslintrc.js"
+  },
+  "scripts": {
+    "clean": "rimraf './dist'",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint './src/*.ts'",
+    "format": "prettier --write './src'",
+    "format:check": "prettier --check './src'",
+    "test": "jest",
+    "prepack": "yarn run build"
+  },
+  "dependencies": {
+    "@varasto/memory-storage": "^1.1.0",
+    "@varasto/storage": "^3.1.0",
+    "lodash.partition": "^4.6.0",
+    "simple-json-match": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/lodash.partition": "^4.6.6",
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.3",
+    "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "jest": "^27.0.6",
+    "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.3",
+    "typescript": "^4.3.5",
+    "yarn": "^1.22.10"
+  }
+}
