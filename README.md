@@ -14,6 +14,7 @@ embedded to another [Express.js] application.
 
 | Package                   | Description                               |
 | ------------------------- | ----------------------------------------- |
+| [@varasto/cache-storage]  | Acts as an cache for another storage.     |
 | [@varasto/fs-storage]     | Persists data to hard disk.               |
 | [@varasto/memory-storage] | Data is stored in memory. No persistence. |
 | [@varasto/remote-storage] | Data is stored to remote server.          |
