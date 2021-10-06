@@ -1,6 +1,6 @@
 {
   "name": "@varasto/query",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Query utilities for Varasto storage",
   "license": "MIT",
   "keywords": [

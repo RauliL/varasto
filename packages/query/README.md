@@ -1,4 +1,4 @@
-# @varasto/match
+# @varasto/query
 
 Collection of useful query utilities for [Varasto storages] that use
 [simple-json-match] schemas for finding entries.
@@ -9,7 +9,7 @@ Collection of useful query utilities for [Varasto storages] that use
 ## Installation
 
 ```sh
-$ npm install --save @varasto/match
+$ npm install --save @varasto/query
 ```
 
 ## Usage
