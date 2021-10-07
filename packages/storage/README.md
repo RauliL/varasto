@@ -18,15 +18,19 @@ Usually you don't need to use or install this package directly, but use an
 storage implementation package instead. Below is an list of storage
 implementations for different use cases.
 
-| Name             | Description                            |
-| ---------------- | -------------------------------------- |
-| [fs-storage]     | Stores data persistently to hard disk. |
-| [memory-storage] | Stores data to memory.                 |
-| [remote-storage] | Stores data to remote server.          |
-| [redis-storage]  | Stores data to [Redis].                |
+| Name             | Description                             |
+| ---------------- | --------------------------------------- |
+| [cache-storage]  | Acts as an cache for another storage.   |
+| [fs-storage]     | Stores data persistently to hard disk.  |
+| [memory-storage] | Stores data to memory.                  |
+| [multi-storage]  | Stores data to multiple other storages. |
+| [remote-storage] | Stores data to remote server.           |
+| [redis-storage]  | Stores data to [Redis].                 |
 
+[cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
 [fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
 [memory-storage]: https://www.npmjs.com/package/@varasto/memory-storage
+[multi-storage]: https://www.npmjs.com/package/@varasto/multi-storage
 [remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
 [redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
 [redis]: https://redis.io
