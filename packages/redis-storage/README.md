@@ -7,7 +7,7 @@ Implementation of [storage] that uses [Redis] as backend for storing data.
 
 ## Installation
 
-```sh
+```shell
 $ npm install --save @varasto/redis-storage
 ```
 

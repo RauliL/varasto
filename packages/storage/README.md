@@ -4,7 +4,7 @@ Type definitions for Varasto JSON key-value store.
 
 ## Installation
 
-```sh
+```shell
 $ npm install --save @varasto/storage
 ```
 
@@ -26,6 +26,7 @@ implementations for different use cases.
 | [multi-storage]  | Stores data to multiple other storages. |
 | [remote-storage] | Stores data to remote server.           |
 | [redis-storage]  | Stores data to [Redis].                 |
+| [web-storage]    | Stores data to browser storage.         |
 
 [cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
 [fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
@@ -33,6 +34,7 @@ implementations for different use cases.
 [multi-storage]: https://www.npmjs.com/package/@varasto/multi-storage
 [remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
 [redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
+[web-storage]: https://www.npmjs.com/package/@varasto/web-storage
 [redis]: https://redis.io
 
 ### Storing items
