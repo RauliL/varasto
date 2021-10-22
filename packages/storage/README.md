@@ -109,7 +109,7 @@ error occurs.
 ### Listing entries stored in a namespace
 
 ```TypeScript
-values(namespace: string): Promise<[string, JsonObject][]>
+entries(namespace: string): Promise<[string, JsonObject][]>
 ```
 
 Returns all items stored under an namespace, with the keys they are identified
