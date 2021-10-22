@@ -1515,6 +1515,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/isarray@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/isarray/-/isarray-2.0.0.tgz#933f829fc3d62743c2767280fe42fe9419a5af40"
+  integrity sha512-NHg6zbZBs+BHKCFr9iQec3k6DFqNIBdAZRPdeChYG7zFn02mJ2mLjo0rBpEoBuKa64hAy8y24RJ7q0RAUujYCQ==
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.1":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.3.tgz#4ba8ddb720221f432e443bd5f9117fd22cfd4762"
@@ -4017,6 +4022,11 @@ is-valid-slug@^1.0.0:
   resolved "https://registry.yarnpkg.com/is-valid-slug/-/is-valid-slug-1.0.0.tgz#26dc6344b8007741b46923b38bf3ef7ce356025f"
   integrity sha512-TJgtec9lWGUzu+woEh93FvaQeWomb3wmUojCjMjkNPvbSbU0uta1kNpr8thC2TXdMToey1n/UsEmSlmJu3eeoQ==
 
+isarray@^2.0.5:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/isarray/-/isarray-2.0.5.tgz#8af1e4c1221244cc62459faf38940d4e644a5723"
+  integrity sha512-xHjhDr3cNBK0BzdUJSPXZntQUx/mwMS5Rw4A7lPJ90XGAO6ISP/ePDNuo0vhqOZU+UD5JoodwCAAoZQd3FeAKw==
+
 isarray@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
@@ -5108,6 +5118,11 @@ mkdirp@^0.5.1, mkdirp@^0.5.5:
   integrity sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==
   dependencies:
     minimist "^1.2.5"
+
+mock-storage@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/mock-storage/-/mock-storage-1.1.0.tgz#cfb5161b732dfe29af8b195fb491ecbd2309eeca"
+  integrity sha512-1usJehHN7M+7Eonho8Ff7Ph5i8XvuY5m5yCu3oJpF3mgnkE9lpVxRdeaEBErLY1d/dkMPdEZHhbO5sUdNyzqBw==
 
 mockdate@^3.0.5:
   version "3.0.5"
