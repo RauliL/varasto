@@ -66,7 +66,8 @@ export const globNamespace = (
 
 export const readItem = <T extends JsonObject>(
   filename: string,
-  encoding: string
+  encoding: string,
+  deserialize: (data: string) => JsonObject
 ): Promise<T | undefined> =>
   new Promise<T | undefined>((resolve, reject) => {
     fs.readFile(filename, encoding, (err, text) => {
@@ -80,10 +81,10 @@ export const readItem = <T extends JsonObject>(
       }
 
       try {
-        const value = JSON.parse(text);
+        const value = deserialize(text);
 
         if (typeof value === 'object') {
-          resolve(value);
+          resolve(value as T);
         } else {
           resolve(undefined); // XXX: Perhaps this should be an error?
         }

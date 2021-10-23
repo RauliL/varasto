@@ -15,10 +15,12 @@ import {
  * Creates new file system storage with given options.
  */
 export const createFileSystemStorage = (
-  options?: Partial<FileSystemStorageOptions>
+  options: Partial<FileSystemStorageOptions> = {}
 ): Storage => {
-  const dir = options?.dir ?? './data';
-  const encoding = options?.encoding ?? 'utf-8';
+  const dir = options.dir ?? './data';
+  const encoding = options.encoding ?? 'utf-8';
+  const serialize = options.serialize ?? JSON.stringify;
+  const deserialize = options.deserialize ?? JSON.parse;
 
   return {
     has: (namespace: string, key: string): Promise<boolean> => {
@@ -42,7 +44,9 @@ export const createFileSystemStorage = (
       globNamespace(dir, namespace)
         .then((filenames) =>
           Promise.all(
-            filenames.map((filename) => readItem(filename, encoding))
+            filenames.map((filename) =>
+              readItem(filename, encoding, deserialize)
+            )
           )
         )
         .then(
@@ -56,7 +60,7 @@ export const createFileSystemStorage = (
         .then((filenames) =>
           Promise.all(
             filenames.map((filename) =>
-              readItem(filename, encoding).then((value) => [
+              readItem(filename, encoding, deserialize).then((value) => [
                 path.basename(filename, '.json'),
                 value,
               ])
@@ -80,7 +84,7 @@ export const createFileSystemStorage = (
         return Promise.reject(err);
       }
 
-      return readItem<T>(filename, encoding);
+      return readItem<T>(filename, encoding, deserialize);
     },
 
     set: <T extends JsonObject>(
@@ -100,7 +104,7 @@ export const createFileSystemStorage = (
               return;
             }
 
-            fs.writeFile(filename, JSON.stringify(value), encoding, (err) => {
+            fs.writeFile(filename, serialize(value), encoding, (err) => {
               if (err) {
                 reject(err);
               } else {
@@ -123,23 +127,18 @@ export const createFileSystemStorage = (
         return Promise.reject(err);
       }
 
-      return readItem(filename, encoding).then((oldValue) => {
+      return readItem(filename, encoding, deserialize).then((oldValue) => {
         if (oldValue !== undefined) {
           const newValue = { ...oldValue, ...value } as T;
 
           return new Promise<T>((resolve, reject) => {
-            fs.writeFile(
-              filename,
-              JSON.stringify(newValue),
-              encoding,
-              (err) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(newValue);
-                }
+            fs.writeFile(filename, serialize(newValue), encoding, (err) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(newValue);
               }
-            );
+            });
           });
         }
 

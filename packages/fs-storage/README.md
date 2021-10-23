@@ -6,7 +6,7 @@ Implementation of [storage] which stores data to hard disk.
 
 ## Installation
 
-```sh
+```shell
 $ npm install --save @varasto/fs-storage
 ```
 
@@ -36,3 +36,23 @@ settings:
 | `encoding` | `utf-8`       | Character encoding to use when items are stored into disk. |
 
 If `dir` does not exist, it will be created when an item is placed into the storage.
+
+### Custom serializers
+
+By default, [JSON.stringify] is used for serializing data written to file
+system and [JSON.parse] is used for deserializing data retrieved from file
+system. However, you can also use your own custom serialization functions
+by passing them as options to the `createFileSystemStorage` function.
+
+[json.stringify]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify
+[json.parse]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
+
+```TypeScript
+import { createFileSystemStorage } from '@varasto/fs-storage';
+import { JsonObject } from 'type-fest';
+
+const storage = createFileSystemStorage({
+  serialize: (data: string): JsonObject => ({}),
+  deserialize: (data: JsonObject): string => "",
+});
+```
