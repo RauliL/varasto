@@ -1,6 +1,6 @@
 {
   "name": "@varasto/multi-storage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Combines multiple Varasto storages into one",
   "license": "MIT",
   "keywords": [

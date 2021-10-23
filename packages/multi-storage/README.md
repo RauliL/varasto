@@ -7,7 +7,7 @@ storage instances.
 
 ## Installation
 
-```sh
+```shell
 $ npm install --save @varasto/multi-storage
 ```
 
