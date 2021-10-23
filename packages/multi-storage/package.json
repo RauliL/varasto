@@ -36,10 +36,10 @@
     "prepack": "yarn run build"
   },
   "dependencies": {
-    "@varasto/memory-storage": "^1.1.0",
     "@varasto/storage": "^3.1.0"
   },
   "devDependencies": {
+    "@varasto/memory-storage": "^1.1.0",
     "@types/jest": "^26.0.24",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
