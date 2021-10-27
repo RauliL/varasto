@@ -41,7 +41,6 @@
     "prepack": "yarn run build"
   },
   "dependencies": {
-    "@varasto/memory-storage": "^1.1.0",
     "@varasto/storage": "^3.1.0",
     "lodash.partition": "^4.6.0",
     "simple-json-match": "^1.0.7"
@@ -51,6 +50,7 @@
     "@types/lodash.partition": "^4.6.6",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
+    "@varasto/memory-storage": "^1.1.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "jest": "^27.0.6",
