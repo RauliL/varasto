@@ -1,8 +1,0 @@
-/.prettierrc.js
-/jest.config.js
-/jest.setup.redis-mock.js
-/node_modules
-/src
-/tsconfig.json
-*.log
-*.tgz

@@ -13,6 +13,10 @@
   "main": "./dist/index.js",
   "main:src": "./src/index.ts",
   "types": "./dist/index.d.ts",
+  "files": [
+    "./bin",
+    "./dist"
+  ],
   "engines": {
     "node": ">=12.0"
   },
