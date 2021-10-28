@@ -1,6 +1,6 @@
 {
   "name": "@varasto/fs-storage",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Varasto storage implementation that stores data to hard disk",
   "license": "MIT",
   "keywords": [
