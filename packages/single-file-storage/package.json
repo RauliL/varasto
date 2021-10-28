@@ -39,7 +39,8 @@
     "prepack": "yarn run build"
   },
   "dependencies": {
-    "@varasto/storage": "^3.1.0"
+    "@varasto/storage": "^3.1.0",
+    "is-valid-slug": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",

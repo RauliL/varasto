@@ -41,6 +41,7 @@
   "dependencies": {
     "@varasto/storage": "^3.1.0",
     "glob": "^7.1.7",
+    "is-valid-slug": "^1.0.0",
     "mkdirp": "^1.0.4"
   },
   "devDependencies": {
