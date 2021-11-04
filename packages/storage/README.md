@@ -45,8 +45,8 @@ implementations for different use cases.
 set<T extends JsonObject>(
   namespace: string,
   key: string,
-  value: T):
-Promise<void>
+  value: T
+): Promise<void>
 ```
 
 Attempts to store an item identified by `namespace` and `key`. Returned
@@ -69,7 +69,10 @@ occurs while retrieving the item.
 ### Removing items
 
 ```TypeScript
-delete(namespace: string, key: string): Promise<boolean>
+delete(
+  namespace: string,
+  key: string
+): Promise<boolean>
 ```
 
 Attempts to remove an item identified by `namespace` and `key`. Returned
