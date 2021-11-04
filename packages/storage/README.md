@@ -42,7 +42,11 @@ implementations for different use cases.
 ### Storing items
 
 ```TypeScript
-set(namespace: string, key: string, value: JsonObject): Promise<void>
+set<T extends JsonObject>(
+  namespace: string,
+  key: string,
+  value: T):
+Promise<void>
 ```
 
 Attempts to store an item identified by `namespace` and `key`. Returned
@@ -51,7 +55,10 @@ promise will fail if an I/O error occurs while storing the item.
 ### Retrieving items
 
 ```TypeScript
-get(namespace: string, key: string): Promise<JsonObject|undefined>
+get<T extends JsonObject>(
+  namespace: string,
+  key: string
+): Promise<T | undefined>
 ```
 
 Attempts to retrieve an item identified by `namespace` and `key`. Returned
@@ -73,7 +80,11 @@ occurs while removing the item.
 ### Updating already existing item
 
 ```TypeScript
-update(namespace: string, key: string, value: JsonObject): Promise<JsonObject>
+update<T extends JsonObject>(
+  namespace: string,
+  key: string,
+  value: Partial<T>
+): Promise<T>
 ```
 
 Attempts to update an already existing item identified by `namespace` and `key`
@@ -83,7 +94,10 @@ into the new value, or will fail if no such item exists.
 ### Testing whether an item exists or not
 
 ```TypeScript
-has(namespace: string, key: string): Promise<boolean>
+has(
+  namespace: string,
+  key: string
+): Promise<boolean>
 ```
 
 Returns `true` if an item identified by `namespace` and `key` exists in the
@@ -93,7 +107,9 @@ occurs while testing whether item exists or not.
 ### Listing keys stored in a namespace
 
 ```TypeScript
-keys(namespace: string): Promise<string[]>
+keys(
+  namespace: string
+): Promise<string[]>
 ```
 
 Returns keys of all items stored under an namespace. The promise will fail if
@@ -102,7 +118,9 @@ an I/O error occurs while listing the keys.
 ### Listing values stored in a namespace
 
 ```TypeScript
-values(namespace: string): Promise<JsonObject[]>
+values<T extends JsonObject>(
+  namespace: string
+): Promise<T[]>
 ```
 
 Returns all items stored under an namespace. The promise will fail if an I/O
@@ -111,7 +129,9 @@ error occurs.
 ### Listing entries stored in a namespace
 
 ```TypeScript
-entries(namespace: string): Promise<[string, JsonObject][]>
+entries<T extends JsonObject>(
+  namespace: string
+): Promise<[string, T][]>
 ```
 
 Returns all items stored under an namespace, with the keys they are identified
