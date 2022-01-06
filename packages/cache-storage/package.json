@@ -1,6 +1,6 @@
 {
   "name": "@varasto/cache-storage",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Varasto storage implementation that acts as cache for another storage",
   "license": "MIT",
   "keywords": [
