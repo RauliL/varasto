@@ -93,6 +93,9 @@ export const createCacheStorage = (
 
     set<T extends JsonObject>(namespace: string, key: string, value: T) {
       return storage.set<T>(namespace, key, value).then(() => {
+        keyCache.delete(namespace);
+        valueCache.delete(namespace);
+        entryCache.delete(namespace);
         namespaceCache.set(namespace, key, value);
 
         return Promise.resolve();
@@ -105,6 +108,8 @@ export const createCacheStorage = (
       value: Partial<T>
     ) {
       return storage.update<T>(namespace, key, value).then((result) => {
+        valueCache.delete(namespace);
+        entryCache.delete(namespace);
         namespaceCache.set(namespace, key, result);
 
         return Promise.resolve(result);
@@ -112,6 +117,9 @@ export const createCacheStorage = (
     },
 
     delete(namespace: string, key: string) {
+      keyCache.delete(namespace);
+      valueCache.delete(namespace);
+      entryCache.delete(namespace);
       namespaceCache.delete(namespace, key);
 
       return storage.delete(namespace, key);
