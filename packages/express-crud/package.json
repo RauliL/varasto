@@ -1,6 +1,6 @@
 {
   "name": "@varasto/express-crud",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Express.js CRUD generator that uses Varasto storage",
   "keywords": [
     "varasto",
@@ -44,13 +44,17 @@
   "dependencies": {
     "@varasto/storage": "^3.0.0",
     "express": "^4.17.1",
+    "uuid": "^8.3.2",
     "yup": "^0.32.9"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",
+    "@types/is-uuid": "^1.0.0",
+    "@types/uuid": "^8.3.4",
     "@varasto/memory-storage": "^1.0.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
+    "is-uuid": "^1.0.2",
     "jest": "^27.0.6",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
