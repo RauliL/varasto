@@ -30,4 +30,10 @@ jobs:
       - name: Build
         run: yarn run build
       - name: Run tests
-        run: yarn run test
+        run: yarn run test:coverage
+      - name: Aggregate code coverages
+        run: yarn run coverage:aggregate
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
