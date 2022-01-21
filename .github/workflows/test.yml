@@ -32,7 +32,7 @@ jobs:
       - name: Run tests
         run: yarn run test:coverage
       - name: Aggregate code coverages
-        run: yarn run coverage:aggregate
+        uses: RauliL/lerna-lcov-aggregate-action@v1.0.0
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
