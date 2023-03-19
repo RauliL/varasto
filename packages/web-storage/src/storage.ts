@@ -50,7 +50,7 @@ export const createWebStorage = (
       }
 
       try {
-        parsedData = JSON.parse(data);
+        parsedData = deserialize(data);
       } catch (err) {
         reject(err);
         return;
@@ -130,7 +130,7 @@ export const createWebStorage = (
           if (!keys.includes(key)) {
             storage.setItem(
               `${namespace}:[[keys]]`,
-              JSON.stringify([...keys, key])
+              serialize([...keys, key])
             );
           }
         });
@@ -164,7 +164,7 @@ export const createWebStorage = (
         return getAllKeys(namespace).then((keys) => {
           storage.setItem(
             `${namespace}:[[keys]]`,
-            JSON.stringify(keys.filter((k) => k !== key))
+            serialize(keys.filter((k) => k !== key))
           );
 
           return exists;
