@@ -1,6 +1,6 @@
 {
   "name": "@varasto/web-storage",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Varasto storage that uses browser storage as it's backend",
   "license": "MIT",
   "keywords": [
