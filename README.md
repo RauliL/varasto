@@ -34,3 +34,4 @@ embedded to another [Express.js] application.
 [@varasto/sqlite-storage]: https://www.npmjs.com/package/@varasto/sqlite-storage
 [@varasto/web-storage]: https://www.npmjs.com/package/@varasto/web-storage
 [redis]: https://redis.io
+[sqlite]: https://www.sqlite.org
