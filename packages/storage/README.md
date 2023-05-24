@@ -27,6 +27,7 @@ implementations for different use cases.
 | [remote-storage]      | Stores data to remote server.           |
 | [redis-storage]       | Stores data to [Redis].                 |
 | [single-file-storage] | Stores data to a single file.           |
+| [sqlite-storage]      | Stores data to [SQLite] database.       |
 | [web-storage]         | Stores data to browser storage.         |
 
 [cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
@@ -36,8 +37,10 @@ implementations for different use cases.
 [remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
 [redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
 [single-file-storage]: https://www.npmjs.com/package/@varasto/single-file-storage
+[sqlite-storage]: https://www.npmjs.com/package/@varasto/sqlite-storage
 [web-storage]: https://www.npmjs.com/package/@varasto/web-storage
 [redis]: https://redis.io
+[sqlite]: https://www.sqlite.org/
 
 ### Storing items
 
