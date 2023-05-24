@@ -21,6 +21,7 @@ embedded to another [Express.js] application.
 | [@varasto/remote-storage]      | Data is stored to remote server.          |
 | [@varasto/redis-storage]       | Data is stored to [Redis].                |
 | [@varasto/single-file-storage] | Data is stored to single file.            |
+| [@varasto/single-sqlite]       | Data is stored to [SQLite] database.      |
 | [@varasto/web-storage]         | Data is stored to browser storage.        |
 
 [@varasto/cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
@@ -30,5 +31,6 @@ embedded to another [Express.js] application.
 [@varasto/remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
 [@varasto/redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
 [@varasto/single-file-storage]: https://www.npmjs.com/package/@varasto/single-file-storage
+[@varasto/sqlite-storage]: https://www.npmjs.com/package/@varasto/sqlite-storage
 [@varasto/web-storage]: https://www.npmjs.com/package/@varasto/web-storage
 [redis]: https://redis.io
