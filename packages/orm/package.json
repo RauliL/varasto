@@ -1,6 +1,6 @@
 {
   "name": "@varasto/orm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple ORM which uses Varasto as it's backend",
   "license": "MIT",
   "keywords": [
