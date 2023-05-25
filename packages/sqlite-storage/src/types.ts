@@ -5,6 +5,13 @@ import { JsonObject } from 'type-fest';
  */
 export type SqliteStorageOptions = {
   /**
+   * If set as `true`, tables associated to namespaces will be automatically
+   * dropped once they are detected to be empty, i.e. no longer contain any
+   * entries.
+   */
+  dropEmptyTables: boolean;
+
+  /**
    * Custom serialization function used for converting JSON into text that is
    * stored to file system.
    *

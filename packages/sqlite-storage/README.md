@@ -26,9 +26,9 @@ $ npm install --save @varasto/sqlite-storage
 
 The package provides an function called `createSqliteStorage`, which takes an
 SQLite database instance provided by [SQLite](node-sqlite) library as argument.
-The asynchronous function then returns an storage implementation that is
-capable of storing JSON objects into the database, where each value is
-identified by _namespace_ and _key_, that must be [valid URL slugs].
+The function then returns an storage implementation that is capable of storing
+JSON objects into the database, where each value is identified by _namespace_
+and _key_, that must be [valid URL slugs].
 
 [node-sqlite]: https://github.com/kriasoft/node-sqlite
 [valid url slugs]: https://ihateregex.io/expr/url-slug/
@@ -45,8 +45,15 @@ const database = await open({
   filename: './data.db',
   driver: sqlite3.Database,
 });
-const storage = await createSqliteStorage(database);
+const storage = createSqliteStorage(database);
 ```
+
+The function also takes an optional configuration object, which supports these
+settings:
+
+| Property          | Default value | Description                                                                                           |
+| ----------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
+| `dropEmptyTables` | `false`       | If `true`, once an namespace is detected to be empty, it's associated table is automatically dropped. |
 
 ### Custom serializers
 
@@ -59,16 +66,7 @@ by passing them as options to the `createSqliteStorage` function.
 [json.parse]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
 
 ```TypeScript
-import { createSqliteStorage } from '@varasto/sqlite-storage';
-import { open } from 'sqlite';
-import sqlite3 from 'sqlite3';
-import { JsonObject } from 'type-fest';
-
-const database = await open({
-  filename: './data.db',
-  driver: sqlite3.Database,
-});
-const storage = await createSqliteStorage(
+const storage = createSqliteStorage(
   database,
   {
     serialize: (data: string): JsonObject => ({}),
