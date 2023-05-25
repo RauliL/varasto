@@ -2,7 +2,7 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 
 import { Field, Key, Model } from './decorator';
 import { ModelDoesNotExistError } from './error';
-import { count, exists, find, findAll, get, keys } from './query';
+import { count, exists, find, findAll, get, keys, list } from './query';
 
 describe('query utilities', () => {
   const storage = createMemoryStorage();
@@ -59,6 +59,19 @@ describe('query utilities', () => {
       await storage.set('users', '2', { username: 'bar' });
 
       return expect(count(storage, User)).resolves.toEqual(2);
+    });
+  });
+
+  describe('list()', () => {
+    it('should return all entries in the namespace', async () => {
+      await storage.set('users', '1', { username: 'foo' });
+      await storage.set('users', '2', { username: 'bar' });
+
+      return list(storage, User).then((result) => {
+        expect(result).toHaveLength(2);
+        expect(result[0]).toBeInstanceOf(User);
+        expect(result[1]).toBeInstanceOf(User);
+      });
     });
   });
 

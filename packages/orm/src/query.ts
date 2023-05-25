@@ -64,6 +64,19 @@ export const keys = <T extends Function>(
   );
 
 /**
+ * Returns all model instances stored in given storage.
+ */
+export const list = <T extends Function>(
+  storage: Storage,
+  modelClass: T
+): Promise<T[]> =>
+  ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
+    storage
+      .entries(metadata.namespace ?? '')
+      .then((data) => data.map(([key, data]) => metadata.load(key, data)))
+  );
+
+/**
  * Searches for the first model instance from given storage that matches the
  * given schema. If no model instance that matches the schema is found,
  * undefined is returned instead.

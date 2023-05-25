@@ -44,27 +44,27 @@ lines to your `tsconfig.json`:
 ## Usage
 
 Define an model class by adding `Model` decorator to an class. Then decorate
-all the properties of that class that you wish to be persisted with `Column`
+all the properties of that class that you wish to be persisted with `Field`
 decorator. Model class also needs an identifier / key property that is type
 of string and decorator with `Key` decorator.
 
-Currently only boolean, number and string values are supported for columns.
+Currently only boolean, number and string values are supported for fields.
 
 ```TypeScript
-import { Column, Key, Model } from '@varasto/orm';
+import { Field, Key, Model } from '@varasto/orm';
 
 @Model()
 class User {
   @Key()
   id?: string;
 
-  @Column()
+  @Field()
   firstName: string;
 
-  @Column()
+  @Field()
   lastName: string;
 
-  @Column()
+  @Field()
   isActive: boolean;
 
   constructor(firstName: string, lastName: string, isActive: boolean = true) {
@@ -78,11 +78,14 @@ class User {
 ### Retrieval
 
 ```TypeScript
-import { get } from '@varasto/orm';
+import { get, list } from '@varasto/orm';
 
 // Retrieves an user instance from the storage, identified by given key. If an
 // user with the given key does not exist, the promise will fail.
 const user = await get(storage, User, 'c8d676f8-fb38-11ed-8fac-4fd6a4acc103');
+
+// Retrieves all users from the storage.
+const allUsers = await list(storage, User);
 ```
 
 ### Insertion
@@ -155,20 +158,20 @@ This method can be used to perform validation or modify values of the fields
 before they are inserted into the storage.
 
 ```TypeScript
-import { Column, Key, Model } from '@varasto/orm';
+import { Field, Key, Model } from '@varasto/orm';
 
 @Model()
 class User {
   @Key()
   id?: string;
 
-  @Column()
+  @Field()
   firstName: string;
 
-  @Column()
+  @Field()
   lastName: string;
 
-  @Column()
+  @Field()
   isActive: boolean;
 
   constructor(firstName: string, lastName: string, isActive: boolean = true) {
