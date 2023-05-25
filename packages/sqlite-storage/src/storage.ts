@@ -1,6 +1,5 @@
 import { ItemDoesNotExistError, Storage } from '@varasto/storage';
-import { Database, open } from 'sqlite';
-import sqlite3 from 'sqlite3';
+import { Database } from 'sqlite';
 import { JsonObject } from 'type-fest';
 
 import { SqliteStorageOptions } from './types';
@@ -16,10 +15,10 @@ import {
  * Construct and returns storage implementation that stores values into given
  * SQLite database.
  */
-export const createSqliteStorage = async (
-  database?: Database,
+export const createSqliteStorage = (
+  database: Database,
   options: Partial<SqliteStorageOptions> = {}
-): Promise<Storage> => {
+): Storage => {
   const serialize = options.serialize ?? JSON.stringify;
   const deserialize = <T extends JsonObject>(input: string): T | undefined => {
     try {
@@ -32,19 +31,13 @@ export const createSqliteStorage = async (
 
     return undefined;
   };
-  const db =
-    database ??
-    (await open({
-      filename: ':memory:',
-      driver: sqlite3.Database,
-    }));
 
   return {
     has: async (namespace: string, key: string): Promise<boolean> => {
       validateNamespaceAndKey(namespace, key);
 
-      if (await doesNamespaceExist(db, namespace)) {
-        const result = await db.get(
+      if (await doesNamespaceExist(database, namespace)) {
+        const result = await database.get(
           `SELECT COUNT(*) FROM "${namespace}" WHERE key = ?`,
           [key]
         );
@@ -58,8 +51,8 @@ export const createSqliteStorage = async (
     keys: async (namespace: string): Promise<string[]> => {
       validateNamespace(namespace);
 
-      if (await doesNamespaceExist(db, namespace)) {
-        const results = await db.all(`SELECT key FROM "${namespace}"`);
+      if (await doesNamespaceExist(database, namespace)) {
+        const results = await database.all(`SELECT key FROM "${namespace}"`);
 
         return results.map((row) => row.key);
       }
@@ -70,8 +63,8 @@ export const createSqliteStorage = async (
     values: async <T extends JsonObject>(namespace: string): Promise<T[]> => {
       validateNamespace(namespace);
 
-      if (await doesNamespaceExist(db, namespace)) {
-        const results = await db.all(`SELECT value FROM "${namespace}"`);
+      if (await doesNamespaceExist(database, namespace)) {
+        const results = await database.all(`SELECT value FROM "${namespace}"`);
 
         return results
           .map((row) => deserialize<T>(row.value))
@@ -86,8 +79,10 @@ export const createSqliteStorage = async (
     ): Promise<[string, T][]> => {
       validateNamespace(namespace);
 
-      if (await doesNamespaceExist(db, namespace)) {
-        const results = await db.all(`SELECT key, value FROM "${namespace}"`);
+      if (await doesNamespaceExist(database, namespace)) {
+        const results = await database.all(
+          `SELECT key, value FROM "${namespace}"`
+        );
 
         return results
           .map((row) => [row.key, deserialize<T>(row.value)])
@@ -101,7 +96,7 @@ export const createSqliteStorage = async (
       namespace: string,
       key: string
     ): Promise<T | undefined> => {
-      return getItem<T>(db, namespace, key, deserialize);
+      return getItem<T>(database, namespace, key, deserialize);
     },
 
     set: async <T extends JsonObject>(
@@ -110,12 +105,12 @@ export const createSqliteStorage = async (
       value: T
     ): Promise<void> => {
       validateNamespaceAndKey(namespace, key);
-      await createNamespace(db, namespace);
+      await createNamespace(database, namespace);
 
-      await db.run(`INSERT INTO "${namespace}" (key, value) VALUES (?, ?)`, [
-        key,
-        serialize(value),
-      ]);
+      await database.run(
+        `INSERT INTO "${namespace}" (key, value) VALUES (?, ?)`,
+        [key, serialize(value)]
+      );
 
       return undefined;
     },
@@ -125,15 +120,15 @@ export const createSqliteStorage = async (
       key: string,
       value: Partial<T>
     ): Promise<T> => {
-      const oldValue = await getItem<T>(db, namespace, key, deserialize);
+      const oldValue = await getItem<T>(database, namespace, key, deserialize);
 
       if (oldValue != null) {
         const newValue = { ...oldValue, ...value } as T;
 
-        await db.run(`UPDATE "${namespace}" SET value = ? WHERE key = ?`, [
-          serialize(newValue),
-          key,
-        ]);
+        await database.run(
+          `UPDATE "${namespace}" SET value = ? WHERE key = ?`,
+          [serialize(newValue), key]
+        );
 
         return newValue;
       }
@@ -144,13 +139,25 @@ export const createSqliteStorage = async (
     delete: async (namespace: string, key: string): Promise<boolean> => {
       validateNamespaceAndKey(namespace, key);
 
-      if (await doesNamespaceExist(db, namespace)) {
-        const result = await db.run(
+      if (await doesNamespaceExist(database, namespace)) {
+        const result = await database.run(
           `DELETE FROM "${namespace}" WHERE key = ?`,
           [key]
         );
 
-        return result.changes != null && result.changes > 0;
+        if (result.changes != null && result.changes > 0) {
+          if (options.dropEmptyTables) {
+            const emptyTableResult = await database.get(
+              `SELECT COUNT(*) FROM "${namespace}"`
+            );
+
+            if (emptyTableResult['COUNT(*)'] == 0) {
+              await database.exec(`DROP TABLE "${namespace}"`);
+            }
+          }
+
+          return true;
+        }
       }
 
       return false;
