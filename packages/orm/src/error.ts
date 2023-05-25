@@ -1,3 +1,5 @@
+import { Class } from 'type-fest';
+
 export class ConfigurationError extends Error {
   name = 'ConfigurationError';
 
@@ -7,10 +9,10 @@ export class ConfigurationError extends Error {
   }
 }
 
-export class ModelMissingMetadataError<T extends Function> extends Error {
+export class ModelMissingMetadataError<T extends Object> extends Error {
   name = 'ModelMissingMetadataError';
 
-  public constructor(target: T) {
+  public constructor(target: Class<T> | Function) {
     super();
     Object.setPrototypeOf(this, ModelMissingMetadataError.prototype);
     this.message = `Model class ${target.constructor.name} is missing it\'s metadata.`;

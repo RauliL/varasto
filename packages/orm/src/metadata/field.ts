@@ -3,14 +3,14 @@ import { JsonObject } from 'type-fest';
 import { FieldType } from '../types';
 import { ModelMetadata } from './model';
 
-export class FieldMetadata<T extends Function> {
-  public readonly model: ModelMetadata<T>;
+export class FieldMetadata {
+  public readonly model: ModelMetadata;
   public readonly propertyName: string | symbol;
   public readonly type: FieldType;
   public readonly defaultValue?: boolean | number | string | null;
 
   public constructor(
-    model: ModelMetadata<T>,
+    model: ModelMetadata,
     propertyName: string | symbol,
     type: FieldType,
     defaultValue?: boolean | number | string | null
@@ -21,7 +21,7 @@ export class FieldMetadata<T extends Function> {
     this.defaultValue = defaultValue;
   }
 
-  public load(instance: T, data: JsonObject) {
+  public load<T extends Object>(instance: T, data: JsonObject) {
     Reflect.set(
       instance,
       this.propertyName,

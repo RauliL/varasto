@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 
-import { JsonObject } from 'type-fest';
+import { Class, JsonObject } from 'type-fest';
 
 import { ModelMissingMetadataError } from '../error';
 import { FieldMetadata } from './field';
 
-export class ModelMetadata<T extends Function> {
+export class ModelMetadata {
   public readonly target: Function;
-  public readonly fields: FieldMetadata<T>[];
+  public readonly fields: FieldMetadata[];
   public namespace: string | undefined;
   public keyPropertyName: string | symbol | undefined;
   public keyGenerator: (() => string) | undefined;
@@ -17,23 +17,23 @@ export class ModelMetadata<T extends Function> {
     this.fields = [];
   }
 
-  public static getFor<T extends Function>(target: T): ModelMetadata<T> {
+  public static getFor<T extends Function>(target: T): ModelMetadata {
     let metadata;
 
     if (Reflect.hasOwnMetadata('varasto:metadata', target)) {
       metadata = Reflect.getMetadata('varasto:metadata', target);
     } else {
-      metadata = new ModelMetadata<T>(target);
+      metadata = new ModelMetadata(target);
       Reflect.defineMetadata('varasto:metadata', metadata, target);
     }
 
     return metadata;
   }
 
-  public static requireFor<T extends Function>(
-    target: T
-  ): Promise<ModelMetadata<T>> {
-    return new Promise<ModelMetadata<T>>((resolve, reject) => {
+  public static requireFor<T extends Object>(
+    target: Class<T> | Function
+  ): Promise<ModelMetadata> {
+    return new Promise<ModelMetadata>((resolve, reject) => {
       const metadata = Reflect.getMetadata('varasto:metadata', target);
 
       if (metadata) {
@@ -44,7 +44,7 @@ export class ModelMetadata<T extends Function> {
     });
   }
 
-  public load(key: string, data: JsonObject): T {
+  public load<T extends Object>(key: string, data: JsonObject): T {
     const instance = Object.create(this.target.prototype);
 
     if (this.keyPropertyName) {

@@ -1,6 +1,7 @@
 import { findAllEntries, findEntry } from '@varasto/query';
 import { Storage } from '@varasto/storage';
 import { Schema } from 'simple-json-match';
+import { Class } from 'type-fest';
 
 import { ModelDoesNotExistError } from './error';
 import { ModelMetadata } from './metadata';
@@ -8,9 +9,9 @@ import { ModelMetadata } from './metadata';
 /**
  * Tests whether an model instance with given key exists in the given storage.
  */
-export const exists = <T extends Function>(
+export const exists = <T extends Object>(
   storage: Storage,
-  modelClass: T,
+  modelClass: Class<T>,
   key: string
 ): Promise<boolean> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
@@ -22,15 +23,15 @@ export const exists = <T extends Function>(
  * instance with the given key does not exist, the promise will fail with
  * `ModelDoesNotExistError`.
  */
-export const get = <T extends Function>(
+export const get = <T extends Object>(
   storage: Storage,
-  modelClass: T,
+  modelClass: Class<T>,
   key: string
 ): Promise<T> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
     storage.get(metadata.namespace ?? '', key).then((data) => {
       if (data) {
-        return metadata.load(key, data);
+        return metadata.load<T>(key, data);
       }
 
       return Promise.reject(
@@ -44,9 +45,9 @@ export const get = <T extends Function>(
 /**
  * Returns the total number of model instances stored in given storage.
  */
-export const count = <T extends Function>(
+export const count = <T extends Object>(
   storage: Storage,
-  modelClass: T
+  modelClass: Class<T>
 ): Promise<number> =>
   ModelMetadata.requireFor<T>(modelClass)
     .then((metadata) => storage.keys(metadata.namespace ?? ''))
@@ -55,9 +56,9 @@ export const count = <T extends Function>(
 /**
  * Returns keys of model instances stored in given storage.
  */
-export const keys = <T extends Function>(
+export const keys = <T extends Object>(
   storage: Storage,
-  modelClass: T
+  modelClass: Class<T>
 ): Promise<string[]> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
     storage.keys(metadata.namespace ?? '')
@@ -66,9 +67,9 @@ export const keys = <T extends Function>(
 /**
  * Returns all model instances stored in given storage.
  */
-export const list = <T extends Function>(
+export const list = <T extends Object>(
   storage: Storage,
-  modelClass: T
+  modelClass: Class<T>
 ): Promise<T[]> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
     storage
@@ -81,26 +82,24 @@ export const list = <T extends Function>(
  * given schema. If no model instance that matches the schema is found,
  * undefined is returned instead.
  */
-export const find = <T extends Function>(
+export const find = <T extends Object>(
   storage: Storage,
-  modelClass: T,
+  modelClass: Class<T>,
   schema: Schema
 ): Promise<T | undefined> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    findEntry(storage, metadata.namespace ?? '', schema).then((entry) => {
-      if (entry) {
-        return metadata.load(entry[0], entry[1]);
-      }
-    })
+    findEntry(storage, metadata.namespace ?? '', schema).then((entry) =>
+      entry ? metadata.load<T>(entry[0], entry[1]) : undefined
+    )
   );
 
 /**
  * Searches for all model instances from given storages that match the given
  * schema.
  */
-export const findAll = <T extends Function>(
+export const findAll = <T extends Object>(
   storage: Storage,
-  modelClass: T,
+  modelClass: Class<T>,
   schema: Schema
 ): Promise<T[]> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
