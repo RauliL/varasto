@@ -15,7 +15,7 @@ export const save = <T extends Object>(
   storage: Storage,
   instance: T
 ): Promise<void> =>
-  ModelMetadata.requireFor(instance.constructor).then((metadata) => {
+  ModelMetadata.requireFor<T>(instance.constructor).then((metadata) => {
     const data: JsonObject = {};
     let key: string;
 
@@ -43,7 +43,7 @@ export const remove = <T extends Object>(
   storage: Storage,
   instance: T
 ): Promise<void> =>
-  ModelMetadata.requireFor(instance.constructor).then((metadata) => {
+  ModelMetadata.requireFor<T>(instance.constructor).then((metadata) => {
     let key: string;
 
     if (!metadata.keyPropertyName) {
