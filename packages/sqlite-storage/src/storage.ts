@@ -1,15 +1,16 @@
-import {
-  InvalidSlugError,
-  ItemDoesNotExistError,
-  Storage,
-} from '@varasto/storage';
-import { isValidSlug } from 'is-valid-slug';
+import { ItemDoesNotExistError, Storage } from '@varasto/storage';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { JsonObject } from 'type-fest';
 
 import { SqliteStorageOptions } from './types';
-import { createNamespace, doesNamespaceExist, getItem } from './utils';
+import {
+  createNamespace,
+  doesNamespaceExist,
+  getItem,
+  validateNamespace,
+  validateNamespaceAndKey,
+} from './utils';
 
 /**
  * Construct and returns storage implementation that stores values into given
@@ -40,11 +41,7 @@ export const createSqliteStorage = async (
 
   return {
     has: async (namespace: string, key: string): Promise<boolean> => {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      } else if (!isValidSlug(key)) {
-        throw new InvalidSlugError('Given key is not valid slug');
-      }
+      validateNamespaceAndKey(namespace, key);
 
       if (await doesNamespaceExist(db, namespace)) {
         const result = await db.get(
@@ -59,9 +56,7 @@ export const createSqliteStorage = async (
     },
 
     keys: async (namespace: string): Promise<string[]> => {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      }
+      validateNamespace(namespace);
 
       if (await doesNamespaceExist(db, namespace)) {
         const results = await db.all(`SELECT key FROM "${namespace}"`);
@@ -73,9 +68,7 @@ export const createSqliteStorage = async (
     },
 
     values: async <T extends JsonObject>(namespace: string): Promise<T[]> => {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      }
+      validateNamespace(namespace);
 
       if (await doesNamespaceExist(db, namespace)) {
         const results = await db.all(`SELECT value FROM "${namespace}"`);
@@ -91,9 +84,7 @@ export const createSqliteStorage = async (
     entries: async <T extends JsonObject>(
       namespace: string
     ): Promise<[string, T][]> => {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      }
+      validateNamespace(namespace);
 
       if (await doesNamespaceExist(db, namespace)) {
         const results = await db.all(`SELECT key, value FROM "${namespace}"`);
@@ -118,12 +109,7 @@ export const createSqliteStorage = async (
       key: string,
       value: T
     ): Promise<void> => {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      } else if (!isValidSlug(key)) {
-        throw new InvalidSlugError('Given key is not valid slug');
-      }
-
+      validateNamespaceAndKey(namespace, key);
       await createNamespace(db, namespace);
 
       await db.run(`INSERT INTO "${namespace}" (key, value) VALUES (?, ?)`, [
@@ -156,11 +142,7 @@ export const createSqliteStorage = async (
     },
 
     delete: async (namespace: string, key: string): Promise<boolean> => {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      } else if (!isValidSlug(key)) {
-        throw new InvalidSlugError('Given key is not valid slug');
-      }
+      validateNamespaceAndKey(namespace, key);
 
       if (await doesNamespaceExist(db, namespace)) {
         const result = await db.run(
