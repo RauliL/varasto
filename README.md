@@ -18,6 +18,7 @@ embedded to another [Express.js] application.
 | [@varasto/fs-storage]          | Persists data to hard disk.               |
 | [@varasto/memory-storage]      | Data is stored in memory. No persistence. |
 | [@varasto/multi-storage]       | Data is stored to multiple storages.      |
+| [@varasto/postgres-storage]    | Data is stored to [PostgreSQL] database.  |
 | [@varasto/remote-storage]      | Data is stored to remote server.          |
 | [@varasto/redis-storage]       | Data is stored to [Redis].                |
 | [@varasto/single-file-storage] | Data is stored to single file.            |
@@ -28,10 +29,12 @@ embedded to another [Express.js] application.
 [@varasto/fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
 [@varasto/memory-storage]: https://www.npmjs.com/package/@varasto/memory-storage
 [@varasto/multi-storage]: https://www.npmjs.com/package/@varasto/multi-storage
+[@varasto/postgres-storage]: https://www.npmjs.com/package/@varasto/postgres-storage
 [@varasto/remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
 [@varasto/redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
 [@varasto/single-file-storage]: https://www.npmjs.com/package/@varasto/single-file-storage
 [@varasto/sqlite-storage]: https://www.npmjs.com/package/@varasto/sqlite-storage
 [@varasto/web-storage]: https://www.npmjs.com/package/@varasto/web-storage
+[postgresql]: https://www.postgresql.org/
 [redis]: https://redis.io
 [sqlite]: https://www.sqlite.org

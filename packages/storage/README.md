@@ -24,6 +24,7 @@ implementations for different use cases.
 | [fs-storage]          | Stores data persistently to hard disk.  |
 | [memory-storage]      | Stores data to memory.                  |
 | [multi-storage]       | Stores data to multiple other storages. |
+| [postgres-storage]    | Stores data to [PostgreSQL] database.   |
 | [remote-storage]      | Stores data to remote server.           |
 | [redis-storage]       | Stores data to [Redis].                 |
 | [single-file-storage] | Stores data to a single file.           |
@@ -34,11 +35,13 @@ implementations for different use cases.
 [fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
 [memory-storage]: https://www.npmjs.com/package/@varasto/memory-storage
 [multi-storage]: https://www.npmjs.com/package/@varasto/multi-storage
+[postgres-storage]: https://www.npmjs.com/package/@varasto/postgres-storage
 [remote-storage]: https://www.npmjs.com/package/@varasto/remote-storage
 [redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
 [single-file-storage]: https://www.npmjs.com/package/@varasto/single-file-storage
 [sqlite-storage]: https://www.npmjs.com/package/@varasto/sqlite-storage
 [web-storage]: https://www.npmjs.com/package/@varasto/web-storage
+[postgresql]: https://www.postgresql.org
 [redis]: https://redis.io
 [sqlite]: https://www.sqlite.org/
 
