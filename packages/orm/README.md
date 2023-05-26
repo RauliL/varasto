@@ -104,7 +104,7 @@ await save(storage, user);
 ### Update
 
 ```TypeScript
-import { get, save } from '@varasto/orm';
+import { get, save, updateAll } from '@varasto/orm';
 
 // Retrieve an user from the storage that we know already exists there.
 const user = await get(storage, User, 'c8d676f8-fb38-11ed-8fac-4fd6a4acc103');
@@ -115,12 +115,21 @@ user.isActive = false;
 // And store it into the storage. Because the user instance already has an key,
 // an update will be performed instead of insertion.
 await save(storage, user);
+
+// Perform an bulk update that deactives all users whose first name is not
+// "John".
+const deactivatedUsers = await updateAll(
+  storage,
+  User,
+  { firstName: { $neq: 'John' } },
+  { isActive: false }
+);
 ```
 
 ### Removal
 
 ```TypeScript
-import { get, remove } from '@varasto/orm';
+import { get, remove, removeAll } from '@varasto/orm';
 
 // Again let's retrieve an user from the storage.
 const user = await get(storage, User, 'c8d676f8-fb38-11ed-8fac-4fd6a4acc103');
@@ -128,6 +137,9 @@ const user = await get(storage, User, 'c8d676f8-fb38-11ed-8fac-4fd6a4acc103');
 // And immediately remove it from the storage afterwards. After this operation
 // the user instance will no longer have a key.
 await remove(storage, user);
+
+// Perform an bulk removal which deletes all users whose last name is "Doe".
+const removedUserCount = await removeAll(storage, User, { lastName: 'Doe' });
 ```
 
 ### Querying
@@ -148,6 +160,12 @@ const john = await find(storage, User, { firstName: 'John' });
 // Retrieve all inactive users.
 const allInactiveUsers = await findAll(storage, User, { isActive: false });
 ```
+
+See [simple-json-match] for documentation on how the query schemas work. Notice
+that model keys cannot be included in the queries, as they are stored
+separately from the other model data.
+
+[simple-json-match]: https://www.npmjs.com/package/simple-json-match
 
 ### Validation
 

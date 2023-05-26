@@ -1,8 +1,10 @@
 import 'reflect-metadata';
 
+import { Storage } from '@varasto/storage';
 import { Class, JsonObject } from 'type-fest';
+import { v4 as uuid } from 'uuid';
 
-import { ModelMissingMetadataError } from '../error';
+import { ConfigurationError, ModelMissingMetadataError } from '../error';
 import { FieldMetadata } from './field';
 
 export class ModelMetadata {
@@ -55,9 +57,24 @@ export class ModelMetadata {
     return instance;
   }
 
-  public save<T extends Object>(instance: T, data: JsonObject) {
+  public save<T extends Object>(storage: Storage, instance: T): Promise<T> {
+    const data: JsonObject = {};
+    let key: string;
+
+    if (!this.keyPropertyName) {
+      return Promise.reject(
+        new ConfigurationError(`Model ${this.target} has no key property.`)
+      );
+    }
     this.clean(instance);
     this.fields.forEach((field) => field.save(instance, data));
+    key = Reflect.get(instance, this.keyPropertyName);
+    if (!key) {
+      key = (this.keyGenerator ?? uuid)();
+      Reflect.set(instance, this.keyPropertyName, key);
+    }
+
+    return storage.set(this.namespace ?? '', key, data).then(() => instance);
   }
 
   private clean<T extends Object>(instance: T) {

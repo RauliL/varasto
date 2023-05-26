@@ -1,6 +1,7 @@
+import { findAllEntries, findAllKeys } from '@varasto/query';
 import { Storage } from '@varasto/storage';
-import { JsonObject } from 'type-fest';
-import { v4 as uuid } from 'uuid';
+import { Schema } from 'simple-json-match';
+import { Class } from 'type-fest';
 
 import { ConfigurationError, ModelDoesNotExistError } from './error';
 import { ModelMetadata } from './metadata';
@@ -14,25 +15,34 @@ import { ModelMetadata } from './metadata';
 export const save = <T extends Object>(
   storage: Storage,
   instance: T
-): Promise<void> =>
-  ModelMetadata.requireFor<T>(instance.constructor).then((metadata) => {
-    const data: JsonObject = {};
-    let key: string;
+): Promise<T> =>
+  ModelMetadata.requireFor<T>(instance.constructor).then((metadata) =>
+    metadata.save(storage, instance)
+  );
 
-    if (!metadata.keyPropertyName) {
-      return Promise.reject(
-        new ConfigurationError(`Model ${metadata.target} has no key property.`)
-      );
-    }
-    key = Reflect.get(instance, metadata.keyPropertyName);
-    if (!key) {
-      key = (metadata.keyGenerator ?? uuid)();
-      Reflect.set(instance, metadata.keyPropertyName, key);
-    }
-    metadata.save(instance, data);
+/**
+ * Performs an bulk update an all model instances that match the given schema,
+ * returning the updated instances.
+ */
+export const updateAll = <T extends Object>(
+  storage: Storage,
+  modelClass: Class<T>,
+  schema: Schema,
+  data: Partial<T>
+): Promise<T[]> =>
+  ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
+    findAllEntries(storage, metadata.namespace ?? '', schema).then((entries) =>
+      Promise.all(
+        entries.map((entry) => {
+          const instance = metadata.load<T>(entry[0], entry[1]);
 
-    return storage.set(metadata.namespace ?? '', key, data);
-  });
+          Object.assign(instance, data);
+
+          return metadata.save(storage, instance);
+        })
+      )
+    )
+  );
 
 /**
  * Removes given model instance from the given storage. If the given model
@@ -66,4 +76,23 @@ export const remove = <T extends Object>(
       }
       Reflect.set(instance, metadata.keyPropertyName!, undefined);
     });
+  });
+
+/**
+ * Performs an bulk removal on all model instances that match the given schema,
+ * returning the number of removed instances.
+ */
+export const removeAll = <T extends Object>(
+  storage: Storage,
+  modelClass: Class<T>,
+  schema: Schema
+): Promise<number> =>
+  ModelMetadata.requireFor<T>(modelClass).then((metadata) => {
+    const namespace = metadata.namespace ?? '';
+
+    return findAllKeys(storage, namespace, schema).then((keys) =>
+      Promise.all(keys.map((key) => storage.delete(namespace, key))).then(
+        () => keys.length
+      )
+    );
   });

@@ -2,7 +2,7 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 
 import { Field, Key, Model } from './decorator';
 import { ModelDoesNotExistError } from './error';
-import { remove, save } from './storage';
+import { remove, removeAll, save, updateAll } from './storage';
 
 describe('storage utilities', () => {
   const storage = createMemoryStorage();
@@ -88,6 +88,41 @@ describe('storage utilities', () => {
     });
   });
 
+  describe('updateAll()', () => {
+    it('should perform an bulk update on all matching model instances', async () => {
+      await storage.set('users', 'mike', { username: 'mike', isActive: true });
+      await storage.set('users', 'rick', { username: 'rick', isActive: true });
+      await storage.set('users', 'john', { username: 'john', isActive: true });
+
+      return updateAll(
+        storage,
+        User,
+        { username: { $neq: 'mike' } },
+        { isActive: false }
+      ).then(async (result) => {
+        expect(result).toHaveLength(2);
+        expect(result[0]).toBeInstanceOf(User);
+        expect(result[1]).toBeInstanceOf(User);
+        expect(result).toMatchObject({
+          0: { isActive: false },
+          1: { isActive: false },
+        });
+        expect(await storage.get('users', 'mike')).toHaveProperty(
+          'isActive',
+          true
+        );
+        expect(await storage.get('users', 'rick')).toHaveProperty(
+          'isActive',
+          false
+        );
+        expect(await storage.get('users', 'john')).toHaveProperty(
+          'isActive',
+          false
+        );
+      });
+    });
+  });
+
   describe('remove()', () => {
     it("should throw `ModelDoesNotExistError` error if the model instance doesn't have a key", async () => {
       const user = new User();
@@ -116,6 +151,23 @@ describe('storage utilities', () => {
       await remove(storage, user);
 
       return expect(storage.has('users', 'mike')).resolves.toBe(false);
+    });
+  });
+
+  describe('removeAll()', () => {
+    it('should remove all model instances that match the given schema', async () => {
+      await storage.set('users', 'mike', { username: 'mike', isActive: true });
+      await storage.set('users', 'rick', { username: 'rick', isActive: true });
+      await storage.set('users', 'john', { username: 'john', isActive: true });
+
+      return removeAll(storage, User, { username: { $neq: 'mike' } }).then(
+        async (result) => {
+          expect(result).toEqual(2);
+          expect(await storage.has('users', 'mike')).toBe(true);
+          expect(await storage.has('users', 'rick')).toBe(false);
+          expect(await storage.has('users', 'john')).toBe(false);
+        }
+      );
     });
   });
 });
