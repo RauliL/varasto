@@ -1,5 +1,13 @@
 # Varasto
 
+[![github][github-image]][github-url]
+[![coveralls][coveralls-image]][coveralls-url]
+
+[github-image]: https://github.com/RauliL/varasto/actions/workflows/test.yml/badge.svg
+[github-url]: https://github.com/RauliL/varasto/actions/workflows/test.yml
+[coveralls-image]: https://coveralls.io/repos/github/RauliL/varasto/badge.svg
+[coveralls-url]: https://coveralls.io/github/RauliL/varasto
+
 Varasto is minimalistic namespaced key-value store that can store JSON objects
 identified by namespace and key. Objects can be persisted on disk or remote
 server.
