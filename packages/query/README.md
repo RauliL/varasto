@@ -1,7 +1,7 @@
 # @varasto/query
 
-Collection of useful query utilities for [Varasto storages] that use
-[simple-json-match] schemas for finding entries.
+Collection of useful query and bulk operation utilities for [Varasto storages]
+that use [simple-json-match] schemas for finding entries.
 
 [varasto storages]: https://www.npmjs.com/package/@varasto/storage
 [simple-json-match]: https://www.npmjs.com/package/simple-json-match
@@ -65,11 +65,11 @@ namespace matches the schema, `undefined` is returned instead.
 #### findAll()
 
 ```TypeScript
-findAll(
+findAll<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<JsonObject[]>
+): Promise<T[]>
 ```
 
 Searches for entries from given namespace that match given schema and returns
@@ -93,11 +93,11 @@ instead.
 #### findAllEntries()
 
 ```TypeScript
-findAllEntries(
+findAllEntries<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<[string, JsonObject][]>
+): Promise<[string, T][]>
 ```
 
 Searches for entries from given namespace that match given schema and returns
@@ -109,11 +109,11 @@ instead.
 #### partition()
 
 ```TypeScript
-partition(
+partition<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<[JsonObject[], JsonObject[]]>
+): Promise<[T[], T[]]>
 ```
 
 Splits values of entries from given namespace into two arrays depending on
@@ -139,13 +139,59 @@ be second.
 #### partitionEntries()
 
 ```TypeScript
-partitionEntries(
+partitionEntries<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<[[string, JsonObject][], [string, JsonObject][]]>
+): Promise<[[string, T][], [string, T][]]>
 ```
 
 Splits entries from given namespace into two arrays depending on whether they
 match the given schema. Entries that match the schema will be returned first
 element of returned array, while the remaining entries will be second.
+
+### Bulk operations
+
+#### updateAll()
+
+```TypeScript
+updateAll<T extends JsonObject>(
+  storage: Storage,
+  namespace: string,
+  schema: Schema,
+  value: Partial<T>
+): Promise<T[]>
+```
+
+Performs an bulk update where all entries from given namespace that match the
+given schema are partially updated with given value. Returns updated values or
+empty array if no entry matched the given schema.
+
+#### updateAllEntries()
+
+```TypeScript
+updateAllEntries<T extends JsonObject>(
+  storage: Storage,
+  namespace: string,
+  schema: Schema,
+  value: Partial<T>
+): Promise<[string, T][]>
+```
+
+Performs an bulk update where all entries from given namespace that match the
+given schema are partially updated with given value. Returns updated entries
+(key and value) or empty array if no entry matched the given schema.
+
+#### deleteAll()
+
+```TypeScript
+deleteAll(
+  storage: Storage,
+  namespace: string,
+  schema: Schema
+): Promise<number>
+```
+
+Performs an bulk deletion where all entries from the given namespace that match
+the given schema are deleted. Returns total number of deleted entries or 0 if
+no entry matched the given schema.
