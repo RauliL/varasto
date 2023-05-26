@@ -31,6 +31,7 @@ embedded to another [Express.js] application.
 | [@varasto/redis-storage]       | Data is stored to [Redis].                |
 | [@varasto/single-file-storage] | Data is stored to single file.            |
 | [@varasto/sqlite-storage]      | Data is stored to [SQLite] database.      |
+| [@varasto/validator-storage]   | Acts as an validator for another storage. |
 | [@varasto/web-storage]         | Data is stored to browser storage.        |
 
 [@varasto/cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
@@ -42,6 +43,7 @@ embedded to another [Express.js] application.
 [@varasto/redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
 [@varasto/single-file-storage]: https://www.npmjs.com/package/@varasto/single-file-storage
 [@varasto/sqlite-storage]: https://www.npmjs.com/package/@varasto/sqlite-storage
+[@varasto/validator-storage]: https://www.npmjs.com/package/@varasto/validator-storage
 [@varasto/web-storage]: https://www.npmjs.com/package/@varasto/web-storage
 [postgresql]: https://www.postgresql.org/
 [redis]: https://redis.io
