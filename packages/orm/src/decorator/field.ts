@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import { ConfigurationError } from '../error';
 import { FieldMetadata, ModelMetadata } from '../metadata';
+import { FieldOptions } from '../options';
 import { FieldType } from '../types';
 
 const TYPE_MAPPING = new Map<Function, FieldType>([
@@ -10,25 +11,8 @@ const TYPE_MAPPING = new Map<Function, FieldType>([
   [String, 'string'],
 ]);
 
-/**
- * Various options that can be passed to an model field.
- */
-export type FieldOptions = {
-  /**
-   * Default value for the field that will be used when the model instance is
-   * stored and the field's value is `undefined`.
-   */
-  default: boolean | number | string | null;
-
-  /**
-   * Type of the field. If omitted, it will be determined from the property
-   * declaration.
-   */
-  type: FieldType;
-};
-
 export const Field =
-  (options: Partial<FieldOptions> = {}): PropertyDecorator =>
+  (options: FieldOptions = {}): PropertyDecorator =>
   (target: Object, propertyKey: string | symbol) => {
     const modelMetadata = ModelMetadata.getFor(target.constructor);
     let type: FieldType | undefined = options.type;
@@ -48,6 +32,6 @@ export const Field =
     }
 
     modelMetadata.fields.push(
-      new FieldMetadata(modelMetadata, propertyKey, type, options.default)
+      new FieldMetadata(modelMetadata, propertyKey, { ...options, type })
     );
   };

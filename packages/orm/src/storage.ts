@@ -31,7 +31,7 @@ export const updateAll = <T extends Object>(
   data: Partial<T>
 ): Promise<T[]> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    findAllEntries(storage, metadata.namespace ?? '', schema).then((entries) =>
+    findAllEntries(storage, metadata.namespace, schema).then((entries) =>
       Promise.all(
         entries.map((entry) => {
           const instance = metadata.load<T>(entry[0], entry[1]);
@@ -68,7 +68,7 @@ export const remove = <T extends Object>(
       );
     }
 
-    return storage.delete(metadata.namespace ?? '', key).then((result) => {
+    return storage.delete(metadata.namespace, key).then((result) => {
       if (!result) {
         return Promise.reject(
           new ModelDoesNotExistError('Model instance does not exist.')
@@ -88,7 +88,7 @@ export const removeAll = <T extends Object>(
   schema: Schema
 ): Promise<number> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) => {
-    const namespace = metadata.namespace ?? '';
+    const { namespace } = metadata;
 
     return findAllKeys(storage, namespace, schema).then((keys) =>
       Promise.all(keys.map((key) => storage.delete(namespace, key))).then(

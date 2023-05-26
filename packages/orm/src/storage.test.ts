@@ -1,7 +1,7 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 
 import { Field, Key, Model } from './decorator';
-import { ModelDoesNotExistError } from './error';
+import { ConfigurationError, ModelDoesNotExistError } from './error';
 import { remove, removeAll, save, updateAll } from './storage';
 
 describe('storage utilities', () => {
@@ -151,6 +151,22 @@ describe('storage utilities', () => {
       await remove(storage, user);
 
       return expect(storage.has('users', 'mike')).resolves.toBe(false);
+    });
+
+    it('should throw `ConfigurationError` if the model class has no key property set', () => {
+      @Model()
+      class ModelWithoutKey {
+        @Field()
+        id: string;
+
+        constructor(id: string = '') {
+          this.id = id;
+        }
+      }
+
+      return expect(
+        remove(storage, new ModelWithoutKey())
+      ).rejects.toBeInstanceOf(ConfigurationError);
     });
   });
 
