@@ -1,6 +1,6 @@
 {
   "name": "@varasto/orm",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Simple ORM which uses Varasto as it's backend",
   "license": "MIT",
   "keywords": [
@@ -32,7 +32,7 @@
     "clean": "rimraf './dist'",
     "build": "tsc",
     "watch": "tsc -w",
-    "lint": "eslint './src/*.ts'",
+    "lint": "eslint './src/**/*.ts'",
     "format": "prettier --write './src'",
     "format:check": "prettier --check './src'",
     "test": "jest",

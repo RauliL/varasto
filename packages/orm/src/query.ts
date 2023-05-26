@@ -15,7 +15,7 @@ export const exists = <T extends Object>(
   key: string
 ): Promise<boolean> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    storage.has(metadata.namespace ?? '', key)
+    storage.has(metadata.namespace, key)
   );
 
 /**
@@ -29,7 +29,7 @@ export const get = <T extends Object>(
   key: string
 ): Promise<T> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    storage.get(metadata.namespace ?? '', key).then((data) => {
+    storage.get(metadata.namespace, key).then((data) => {
       if (data) {
         return metadata.load<T>(key, data);
       }
@@ -53,7 +53,7 @@ export const count = <T extends Object>(
   modelClass: Class<T>
 ): Promise<number> =>
   ModelMetadata.requireFor<T>(modelClass)
-    .then((metadata) => storage.keys(metadata.namespace ?? ''))
+    .then((metadata) => storage.keys(metadata.namespace))
     .then((keys) => keys.length);
 
 /**
@@ -64,7 +64,7 @@ export const keys = <T extends Object>(
   modelClass: Class<T>
 ): Promise<string[]> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    storage.keys(metadata.namespace ?? '')
+    storage.keys(metadata.namespace)
   );
 
 /**
@@ -76,7 +76,7 @@ export const list = <T extends Object>(
 ): Promise<T[]> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
     storage
-      .entries(metadata.namespace ?? '')
+      .entries(metadata.namespace)
       .then((data) => data.map(([key, data]) => metadata.load(key, data)))
   );
 
@@ -91,7 +91,7 @@ export const find = <T extends Object>(
   schema: Schema
 ): Promise<T | undefined> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    findEntry(storage, metadata.namespace ?? '', schema).then((entry) =>
+    findEntry(storage, metadata.namespace, schema).then((entry) =>
       entry ? metadata.load<T>(entry[0], entry[1]) : undefined
     )
   );
@@ -106,7 +106,7 @@ export const findAll = <T extends Object>(
   schema: Schema
 ): Promise<T[]> =>
   ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    findAllEntries(storage, metadata.namespace ?? '', schema).then((entries) =>
+    findAllEntries(storage, metadata.namespace, schema).then((entries) =>
       entries.map((entry) => metadata.load(entry[0], entry[1]))
     )
   );

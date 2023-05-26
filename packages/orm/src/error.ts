@@ -27,3 +27,12 @@ export class ModelDoesNotExistError extends Error {
     Object.setPrototypeOf(this, ModelDoesNotExistError.prototype);
   }
 }
+
+export class ValidationError<T extends Object> extends Error {
+  name = 'ValidationError';
+
+  public constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, ValidationError.prototype);
+  }
+}

@@ -2,20 +2,10 @@ import 'reflect-metadata';
 
 import { ConfigurationError } from '../error';
 import { ModelMetadata } from '../metadata';
-
-/**
- * Various options that can be given to model key.
- */
-export type KeyOptions = {
-  /**
-   * Function which generates new keys. If omitted, UUID will be used as key
-   * for new model instances.
-   */
-  generator: () => string;
-};
+import { KeyOptions } from '../options';
 
 export const Key =
-  (options: Partial<KeyOptions> = {}): PropertyDecorator =>
+  (options: KeyOptions = {}): PropertyDecorator =>
   (target: Object, propertyKey: string | symbol) => {
     const type = Reflect.getMetadata('design:type', target, propertyKey);
     const modelMetadata = ModelMetadata.getFor(target.constructor);
