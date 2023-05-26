@@ -44,6 +44,9 @@ export const get = <T extends Object>(
 
 /**
  * Returns the total number of model instances stored in given storage.
+ *
+ * If an optional schema is given, only model instances that match that schema
+ * are counted.
  */
 export const count = <T extends Object>(
   storage: Storage,
