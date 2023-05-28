@@ -18,18 +18,19 @@ Usually you don't need to use or install this package directly, but use an
 storage implementation package instead. Below is an list of storage
 implementations for different use cases.
 
-| Name                  | Description                             |
-| --------------------- | --------------------------------------- |
-| [cache-storage]       | Acts as an cache for another storage.   |
-| [fs-storage]          | Stores data persistently to hard disk.  |
-| [memory-storage]      | Stores data to memory.                  |
-| [multi-storage]       | Stores data to multiple other storages. |
-| [postgres-storage]    | Stores data to [PostgreSQL] database.   |
-| [remote-storage]      | Stores data to remote server.           |
-| [redis-storage]       | Stores data to [Redis].                 |
-| [single-file-storage] | Stores data to a single file.           |
-| [sqlite-storage]      | Stores data to [SQLite] database.       |
-| [web-storage]         | Stores data to browser storage.         |
+| Name                  | Description                               |
+| --------------------- | ----------------------------------------- |
+| [cache-storage]       | Acts as an cache for another storage.     |
+| [fs-storage]          | Stores data persistently to hard disk.    |
+| [memory-storage]      | Stores data to memory.                    |
+| [multi-storage]       | Stores data to multiple other storages.   |
+| [postgres-storage]    | Stores data to [PostgreSQL] database.     |
+| [remote-storage]      | Stores data to remote server.             |
+| [redis-storage]       | Stores data to [Redis].                   |
+| [single-file-storage] | Stores data to a single file.             |
+| [sqlite-storage]      | Stores data to [SQLite] database.         |
+| [validator-storage]   | Acts as an validator for another storage. |
+| [web-storage]         | Stores data to browser storage.           |
 
 [cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
 [fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
@@ -40,6 +41,7 @@ implementations for different use cases.
 [redis-storage]: https://www.npmjs.com/package/@varasto/redis-storage
 [single-file-storage]: https://www.npmjs.com/package/@varasto/single-file-storage
 [sqlite-storage]: https://www.npmjs.com/package/@varasto/sqlite-storage
+[validator-storage]: https://www.npmjs.com/package/@varasto/validator-storage
 [web-storage]: https://www.npmjs.com/package/@varasto/web-storage
 [postgresql]: https://www.postgresql.org
 [redis]: https://redis.io
