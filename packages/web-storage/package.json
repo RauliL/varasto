@@ -19,7 +19,7 @@
   "engines": {
     "node": ">=16.0"
   },
-  "homepage": "https://github.com/RauliL/varasto",
+  "homepage": "https://rauli.dev/varasto",
   "repository": {
     "type": "git",
     "url": "https://github.com/RauliL/varasto"
