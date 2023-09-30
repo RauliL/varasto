@@ -1,5 +1,6 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import fs from 'fs';
+import all from 'it-all';
 import mock from 'mock-fs';
 
 import { createSingleFileStorage } from './storage';
@@ -68,17 +69,17 @@ describe('single file storage', () => {
         'data.json': JSON.stringify({ foo: { 1: { id: 1 }, 2: { id: 2 } } }),
       });
 
-      return expect(storage.keys('foo')).resolves.toEqual(['1', '2']);
+      return expect(all(storage.keys('foo'))).resolves.toEqual(['1', '2']);
     });
 
     it('should return empty array if the namespace does not exist', () => {
       mock({ 'data.json': JSON.stringify({}) });
 
-      return expect(storage.keys('foo')).resolves.toHaveLength(0);
+      return expect(all(storage.keys('foo'))).resolves.toHaveLength(0);
     });
 
     it('should return empty array if the file does not exist', () =>
-      expect(storage.keys('foo')).resolves.toHaveLength(0));
+      expect(all(storage.keys('foo'))).resolves.toHaveLength(0));
   });
 
   describe('values()', () => {
@@ -87,7 +88,7 @@ describe('single file storage', () => {
         'data.json': JSON.stringify({ foo: { 1: { id: 1 }, 2: { id: 2 } } }),
       });
 
-      return expect(storage.values('foo')).resolves.toEqual([
+      return expect(all(storage.values('foo'))).resolves.toEqual([
         { id: 1 },
         { id: 2 },
       ]);
@@ -96,11 +97,11 @@ describe('single file storage', () => {
     it('should return empty array if the namespace does not exist', () => {
       mock({ 'data.json': JSON.stringify({}) });
 
-      return expect(storage.values('foo')).resolves.toHaveLength(0);
+      return expect(all(storage.values('foo'))).resolves.toHaveLength(0);
     });
 
     it('should return empty array if the file does not exist', () =>
-      expect(storage.values('foo')).resolves.toHaveLength(0));
+      expect(all(storage.values('foo'))).resolves.toHaveLength(0));
   });
 
   describe('entries()', () => {
@@ -109,7 +110,7 @@ describe('single file storage', () => {
         'data.json': JSON.stringify({ foo: { 1: { id: 1 }, 2: { id: 2 } } }),
       });
 
-      return expect(storage.entries('foo')).resolves.toEqual([
+      return expect(all(storage.entries('foo'))).resolves.toEqual([
         ['1', { id: 1 }],
         ['2', { id: 2 }],
       ]);
@@ -118,11 +119,11 @@ describe('single file storage', () => {
     it('should return empty array if the namespace does not exist', () => {
       mock({ 'data.json': JSON.stringify({}) });
 
-      return expect(storage.entries('foo')).resolves.toHaveLength(0);
+      return expect(all(storage.entries('foo'))).resolves.toHaveLength(0);
     });
 
     it('should return empty array if the file does not exist', () =>
-      expect(storage.entries('foo')).resolves.toHaveLength(0));
+      expect(all(storage.entries('foo'))).resolves.toHaveLength(0));
   });
 
   describe('get()', () => {

@@ -1,4 +1,5 @@
 import {
+  Entry,
   InvalidSlugError,
   ItemDoesNotExistError,
   Storage,
@@ -93,41 +94,31 @@ export const createSingleFileStorage = (
       });
     });
 
-  return {
+  return new (class extends Storage {
     has(namespace: string, key: string): Promise<boolean> {
       return getNamespace(namespace).then((namespace) =>
         isValidSlug(key)
           ? namespace[key] != null
           : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
       );
-    },
+    }
 
-    keys(namespace: string): Promise<string[]> {
-      return getNamespace(namespace).then((namespace) =>
-        Object.keys(namespace)
-      );
-    },
-
-    values<T extends JsonObject>(namespace: string): Promise<T[]> {
-      return getNamespace(namespace).then(
-        (namespace) => Object.values(namespace) as T[]
-      );
-    },
-
-    entries<T extends JsonObject>(
+    async *entries<T extends JsonObject>(
       namespace: string
-    ): Promise<Array<[string, T]>> {
-      return getNamespace(namespace).then((namespace) =>
-        Object.keys(namespace).map((key) => [key, namespace[key] as T])
-      );
-    },
+    ): AsyncGenerator<Entry<T>> {
+      const ns = await getNamespace(namespace);
+
+      for (const key of Object.keys(ns)) {
+        yield [key, ns[key] as T];
+      }
+    }
 
     get<T extends JsonObject>(
       namespace: string,
       key: string
     ): Promise<T | undefined> {
       return getItem(namespace, key);
-    },
+    }
 
     set<T extends JsonObject>(
       namespace: string,
@@ -157,7 +148,7 @@ export const createSingleFileStorage = (
 
         return serializeContainer(container);
       });
-    },
+    }
 
     update<T extends JsonObject>(
       namespace: string,
@@ -195,7 +186,7 @@ export const createSingleFileStorage = (
           new ItemDoesNotExistError('Item does not exist')
         );
       });
-    },
+    }
 
     delete(namespace: string, key: string): Promise<boolean> {
       if (!isValidSlug(namespace)) {
@@ -225,6 +216,6 @@ export const createSingleFileStorage = (
 
         return false;
       });
-    },
-  };
+    }
+  })();
 };
