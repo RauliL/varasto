@@ -1,8 +1,12 @@
 # @varasto/server
 
+[![npm][npm-image]][npm-url]
+
 HTTP interface implementation to Varasto key-value store. Can be run standalone
 or embedded to other [Express.js] applications.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/server.svg
+[npm-url]: https://npmjs.org/package/@varasto/server
 [express.js]: https://expressjs.com
 
 ## Installation
