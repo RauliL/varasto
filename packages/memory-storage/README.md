@@ -1,8 +1,12 @@
 # @varasto/memory-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of an [storage] which stores values in memory instead of hard
 disk or remote server.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/memory-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/memory-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 
 Because it provides full storage implementation without persistence, it's
@@ -17,15 +21,15 @@ $ npm install --save @varasto/memory-storage
 
 ## Usage
 
-The package provides an function called `createMemoryStorage` which returns an
-object that is implementation of [Storage] type.
+The package provides a class called `MemoryStorage` which is an implementation
+of [Storage] type.
 
 Basic usage of the API looks like this:
 
 ```TypeScript
-import { createMemoryStorage } from '@varasto/memory-storage';
+import { MemoryStorage } from '@varasto/memory-storage';
 
-const storage = createMemoryStorage();
+const storage = new MemoryStorage();
 ```
 
 Memory storage instance also has an additional `clear()` method that will
