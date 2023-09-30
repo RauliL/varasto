@@ -1,5 +1,7 @@
 # @varasto/sqlite-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of [storage] which stores data into [SQLite] database.
 
 Each namespace in the storage is an table in the database, with following kind
@@ -13,6 +15,8 @@ CREATE TABLE IF NOT EXISTS "namespace" (
 )
 ```
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/sqlite-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/sqlite-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 [sqlite]: https://www.sqlite.org/
 
