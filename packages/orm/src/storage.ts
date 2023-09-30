@@ -24,25 +24,25 @@ export const save = <T extends Object>(
  * Performs an bulk update an all model instances that match the given schema,
  * returning the updated instances.
  */
-export const updateAll = <T extends Object>(
+export async function* updateAll<T extends Object>(
   storage: Storage,
   modelClass: Class<T>,
   schema: Schema,
   data: Partial<T>
-): Promise<T[]> =>
-  ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    findAllEntries(storage, metadata.namespace, schema).then((entries) =>
-      Promise.all(
-        entries.map((entry) => {
-          const instance = metadata.load<T>(entry[0], entry[1]);
+): AsyncGenerator<T> {
+  const metadata = await ModelMetadata.requireFor<T>(modelClass);
 
-          Object.assign(instance, data);
+  for await (const entry of findAllEntries(
+    storage,
+    metadata.namespace,
+    schema
+  )) {
+    const instance = metadata.load<T>(entry[0], entry[1]);
 
-          return metadata.save(storage, instance);
-        })
-      )
-    )
-  );
+    Object.assign(instance, data);
+    yield metadata.save<T>(storage, instance);
+  }
+}
 
 /**
  * Removes given model instance from the given storage. If the given model
@@ -82,17 +82,20 @@ export const remove = <T extends Object>(
  * Performs an bulk removal on all model instances that match the given schema,
  * returning the number of removed instances.
  */
-export const removeAll = <T extends Object>(
+export async function removeAll<T extends Object>(
   storage: Storage,
   modelClass: Class<T>,
   schema: Schema
-): Promise<number> =>
-  ModelMetadata.requireFor<T>(modelClass).then((metadata) => {
-    const { namespace } = metadata;
+): Promise<number> {
+  const metadata = await ModelMetadata.requireFor<T>(modelClass);
+  const { namespace } = metadata;
+  let result = 0;
 
-    return findAllKeys(storage, namespace, schema).then((keys) =>
-      Promise.all(keys.map((key) => storage.delete(namespace, key))).then(
-        () => keys.length
-      )
-    );
-  });
+  for await (const key of findAllKeys(storage, namespace, schema)) {
+    if (await storage.delete(namespace, key)) {
+      ++result;
+    }
+  }
+
+  return result;
+}

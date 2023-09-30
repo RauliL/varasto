@@ -1,4 +1,5 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
+import all from 'it-all';
 import { mockStorage } from 'mock-storage';
 
 import { createWebStorage } from './storage';
@@ -32,58 +33,70 @@ describe('web storage', () => {
   describe('keys()', () => {
     it('should return keys stored in the Web storage', () =>
       expect(
-        createMockWebStorage([['foo:[[keys]]', '["1","2","3"]']]).keys('foo')
+        all(
+          createMockWebStorage([['foo:[[keys]]', '["1","2","3"]']]).keys('foo')
+        )
       ).resolves.toEqual(['1', '2', '3']));
 
     it('should fail if namespace is not valid slug', () =>
-      expect(createMockWebStorage().keys('f;oo')).rejects.toBeInstanceOf(
+      expect(all(createMockWebStorage().keys('f;oo'))).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
 
     it('should fail if keys cannot be parsed as JSON', () =>
       expect(
-        createMockWebStorage([['foo:[[keys]]', '["1"']]).keys('foo')
+        all(createMockWebStorage([['foo:[[keys]]', '["1"']]).keys('foo'))
       ).rejects.toBeInstanceOf(SyntaxError));
 
     it("should return empty array if keys aren't stored as an array", () =>
       expect(
-        createMockWebStorage([['foo:[[keys]]', '{"foo":"bar"}']]).keys('foo')
+        all(
+          createMockWebStorage([['foo:[[keys]]', '{"foo":"bar"}']]).keys('foo')
+        )
       ).resolves.toHaveLength(0));
 
     it("should return empty array if keys haven't been stored into Web storage", () =>
-      expect(createMockWebStorage().keys('foo')).resolves.toHaveLength(0));
+      expect(all(createMockWebStorage().keys('foo'))).resolves.toHaveLength(
+        0
+      ));
   });
 
   describe('values()', () => {
     it('should return values stored in the Web storage', () =>
       expect(
-        createMockWebStorage([
-          ['foo:[[keys]]', '["1","2","3"]'],
-          ['foo:1', '{"id":1}'],
-          ['foo:2', '{"id":2}'],
-          ['foo:3', '{"id":3}'],
-        ]).values('foo')
+        all(
+          createMockWebStorage([
+            ['foo:[[keys]]', '["1","2","3"]'],
+            ['foo:1', '{"id":1}'],
+            ['foo:2', '{"id":2}'],
+            ['foo:3', '{"id":3}'],
+          ]).values('foo')
+        )
       ).resolves.toEqual([{ id: 1 }, { id: 2 }, { id: 3 }]));
 
     it('should ignore non-existing items', () =>
       expect(
-        createMockWebStorage([
-          ['foo:[[keys]]', '["1","2","3"]'],
-          ['foo:1', '{"id":1}'],
-          ['foo:3', '{"id":3}'],
-        ]).values('foo')
+        all(
+          createMockWebStorage([
+            ['foo:[[keys]]', '["1","2","3"]'],
+            ['foo:1', '{"id":1}'],
+            ['foo:3', '{"id":3}'],
+          ]).values('foo')
+        )
       ).resolves.toEqual([{ id: 1 }, { id: 3 }]));
   });
 
   describe('entries()', () => {
     it('should return entries stored in the Web storage', () =>
       expect(
-        createMockWebStorage([
-          ['foo:[[keys]]', '["1","2","3"]'],
-          ['foo:1', '{"id":1}'],
-          ['foo:2', '{"id":2}'],
-          ['foo:3', '{"id":3}'],
-        ]).entries('foo')
+        all(
+          createMockWebStorage([
+            ['foo:[[keys]]', '["1","2","3"]'],
+            ['foo:1', '{"id":1}'],
+            ['foo:2', '{"id":2}'],
+            ['foo:3', '{"id":3}'],
+          ]).entries('foo')
+        )
       ).resolves.toEqual([
         ['1', { id: 1 }],
         ['2', { id: 2 }],
@@ -92,11 +105,13 @@ describe('web storage', () => {
 
     it('should ignore non-existing items', () =>
       expect(
-        createMockWebStorage([
-          ['foo:[[keys]]', '["1","2","3"]'],
-          ['foo:1', '{"id":1}'],
-          ['foo:3', '{"id":3}'],
-        ]).entries('foo')
+        all(
+          createMockWebStorage([
+            ['foo:[[keys]]', '["1","2","3"]'],
+            ['foo:1', '{"id":1}'],
+            ['foo:3', '{"id":3}'],
+          ]).entries('foo')
+        )
       ).resolves.toEqual([
         ['1', { id: 1 }],
         ['3', { id: 3 }],

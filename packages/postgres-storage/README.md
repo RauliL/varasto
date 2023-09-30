@@ -1,5 +1,7 @@
 # @varasto/postgres-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of [storage] which stores data into [PostgreSQL] database. Still
 considered to be somewhat experimental.
 
@@ -8,6 +10,8 @@ entry in the database is a row in that table with a key and JSON value.
 
 Library called [pg] is used to communicate with the PostgreSQL server.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/postgres-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/postgres-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 [postgresql]: https://www.postgresql.org/
 [pg]: https://www.npmjs.com/package/pg

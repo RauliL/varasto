@@ -1,4 +1,5 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import all from 'it-all';
 
 import { Field, Key, Model } from './decorator';
 import { ModelDoesNotExistError } from './error';
@@ -67,7 +68,7 @@ describe('query utilities', () => {
       await storage.set('users', '1', { username: 'foo' });
       await storage.set('users', '2', { username: 'bar' });
 
-      return list(storage, User).then((result) => {
+      return all(list(storage, User)).then((result) => {
         expect(result).toHaveLength(2);
         expect(result[0]).toBeInstanceOf(User);
         expect(result[1]).toBeInstanceOf(User);
@@ -80,7 +81,7 @@ describe('query utilities', () => {
       await storage.set('users', '1', { username: 'foo' });
       await storage.set('users', '2', { username: 'bar' });
 
-      return keys(storage, User).then((result) => {
+      return all(keys(storage, User)).then((result) => {
         expect(result).toHaveLength(2);
         expect(result).toContainEqual('1');
         expect(result).toContainEqual('2');
@@ -112,13 +113,13 @@ describe('query utilities', () => {
       await storage.set('users', '2', { username: 'barfoo' });
       await storage.set('users', '3', { username: 'barbar' });
 
-      return findAll(storage, User, { username: { $endsWith: 'foo' } }).then(
-        (result) => {
-          expect(result).toHaveLength(2);
-          expect(result).toContainEqual({ id: '1', username: 'foofoo' });
-          expect(result).toContainEqual({ id: '2', username: 'barfoo' });
-        }
-      );
+      return all(
+        findAll(storage, User, { username: { $endsWith: 'foo' } })
+      ).then((result) => {
+        expect(result).toHaveLength(2);
+        expect(result).toContainEqual({ id: '1', username: 'foofoo' });
+        expect(result).toContainEqual({ id: '2', username: 'barfoo' });
+      });
     });
   });
 });

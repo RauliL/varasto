@@ -1,8 +1,12 @@
 # @varasto/orm
 
+[![npm][npm-image]][npm-url]
+
 An attempt to build an [ORM] that uses [Varasto] as it's backend. It's still
 very basic and can store only simple data.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/orm.svg
+[npm-url]: https://npmjs.org/package/@varasto/orm
 [orm]: https://en.wikipedia.org/wiki/Object%E2%80%93relational_mapping
 [varasto]: https://github.com/RauliL/varasto
 

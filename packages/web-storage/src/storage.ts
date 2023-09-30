@@ -1,6 +1,6 @@
 import {
+  Entry,
   InvalidSlugError,
-  ItemDoesNotExistError,
   Storage as VarastoStorage,
 } from '@varasto/storage';
 import isArray from 'isarray';
@@ -22,154 +22,126 @@ export const createWebStorage = (
   const serialize = options.serialize ?? JSON.stringify;
   const deserialize = options.deserialize ?? JSON.parse;
 
-  const buildKey = (namespace: string, key: string) =>
-    new Promise<string>((resolve, reject) => {
-      if (!isValidSlug(namespace)) {
-        reject(new InvalidSlugError('Given namespace is not valid slug'));
-      } else if (!isValidSlug(key)) {
-        reject(new InvalidSlugError('Given key is not valid slug'));
-      } else {
-        resolve(`${namespace}:${key}`);
+  const buildKey = async (namespace: string, key: string): Promise<string> => {
+    if (!isValidSlug(namespace)) {
+      throw new InvalidSlugError('Given namespace is not valid slug');
+    } else if (!isValidSlug(key)) {
+      throw new InvalidSlugError('Given key is not valid slug');
+    }
+
+    return `${namespace}:${key}`;
+  };
+
+  const getAllKeys = async (namespace: string): Promise<string[]> => {
+    let data: string | null;
+    let parsedData: string[];
+
+    if (!isValidSlug(namespace)) {
+      throw new InvalidSlugError('Given namespace is not valid slug');
+    }
+
+    data = storage.getItem(`${namespace}:[[keys]]`);
+    if (data == null) {
+      return [];
+    }
+
+    parsedData = JSON.parse(data);
+
+    return isArray(parsedData) ? parsedData : [];
+  };
+
+  return new (class extends VarastoStorage {
+    async *entries<T extends JsonObject>(
+      namespace: string
+    ): AsyncGenerator<Entry<T>> {
+      const keys = await getAllKeys(namespace);
+
+      for (const key of keys) {
+        const value = await this.get<T>(namespace, key);
+
+        if (value != null) {
+          yield [key, value];
+        }
       }
-    });
+    }
 
-  const getAllKeys = (namespace: string) =>
-    new Promise<string[]>((resolve, reject) => {
-      let data: string | null;
-      let parsedData;
+    async *keys(namespace: string): AsyncGenerator<string> {
+      const keys = await getAllKeys(namespace);
 
-      if (!isValidSlug(namespace)) {
-        reject(new InvalidSlugError('Given namespace is not valid slug'));
-        return;
+      for (const key of keys) {
+        yield key;
       }
+    }
 
-      data = storage.getItem(`${namespace}:[[keys]]`);
-      if (data == null) {
-        resolve([]);
-        return;
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
+      const keys = await getAllKeys(namespace);
+
+      for (const key of keys) {
+        const value = await this.get<T>(namespace, key);
+
+        if (value != null) {
+          yield value;
+        }
       }
+    }
 
-      try {
-        parsedData = deserialize(data);
-      } catch (err) {
-        reject(err);
-        return;
-      }
+    async has(namespace: string, key: string): Promise<boolean> {
+      const storageKey = await buildKey(namespace, key);
 
-      resolve(isArray(parsedData) ? parsedData : []);
-    });
+      return storage.getItem(storageKey) != null;
+    }
 
-  return {
-    has(namespace: string, key: string): Promise<boolean> {
-      return buildKey(namespace, key).then(
-        (key) => storage.getItem(key) != null
-      );
-    },
-
-    keys(namespace: string): Promise<string[]> {
-      return getAllKeys(namespace);
-    },
-
-    values<T extends JsonObject>(namespace: string): Promise<T[]> {
-      return getAllKeys(namespace).then((keys) =>
-        Promise.all(keys.map((key) => this.get<T>(namespace, key))).then(
-          (values) => values.filter((value) => value != null) as T[]
-        )
-      );
-    },
-
-    entries<T extends JsonObject>(namespace: string): Promise<[string, T][]> {
-      return getAllKeys(namespace).then((keys) =>
-        Promise.all(
-          keys.map((key) =>
-            this.get<T>(namespace, key).then((value) => [key, value])
-          )
-        ).then(
-          (entries) =>
-            entries.filter((entry) => entry[1] != null) as [string, T][]
-        )
-      );
-    },
-
-    get<T extends JsonObject>(
+    async get<T extends JsonObject>(
       namespace: string,
       key: string
     ): Promise<T | undefined> {
-      return buildKey(namespace, key).then((key) => {
-        const data = storage.getItem(key);
-        let parsedData;
+      const storageKey = await buildKey(namespace, key);
+      const data = storage.getItem(storageKey);
+      let parsedData: T;
 
-        if (data == null) {
-          return undefined;
-        }
-        try {
-          parsedData = deserialize(data);
-        } catch (err) {
-          return Promise.reject(err);
-        }
+      if (data == null) {
+        return undefined;
+      }
+      parsedData = deserialize(data) as T;
 
-        return parsedData != null && typeof parsedData === 'object'
-          ? parsedData
-          : undefined;
-      });
-    },
+      return parsedData != null && typeof parsedData === 'object'
+        ? parsedData
+        : undefined;
+    }
 
-    set<T extends JsonObject>(
+    async set<T extends JsonObject>(
       namespace: string,
       key: string,
       value: T
     ): Promise<void> {
-      return buildKey(namespace, key).then((fullKey) => {
-        try {
-          storage.setItem(fullKey, serialize(value));
-        } catch (err) {
-          return Promise.reject(err);
-        }
+      const storageKey = await buildKey(namespace, key);
 
-        return getAllKeys(namespace).then((keys) => {
-          if (!keys.includes(key)) {
-            storage.setItem(
-              `${namespace}:[[keys]]`,
-              serialize([...keys, key])
-            );
-          }
-        });
-      });
-    },
+      storage.setItem(storageKey, serialize(value));
 
-    update<T extends JsonObject>(
-      namespace: string,
-      key: string,
-      value: Partial<T>
-    ): Promise<T> {
-      return this.get<T>(namespace, key).then((currentValue) => {
-        if (currentValue != null) {
-          const newValue = { ...currentValue, ...value };
+      const keys = await getAllKeys(namespace);
 
-          return this.set(namespace, key, newValue).then(() => newValue);
-        }
-
-        return Promise.reject(
-          new ItemDoesNotExistError('Item does not exist')
+      if (!keys.includes(key)) {
+        storage.setItem(
+          `${namespace}:[[keys]]`,
+          JSON.stringify([...keys, key])
         );
-      });
-    },
+      }
+    }
 
-    delete(namespace: string, key: string): Promise<boolean> {
-      return buildKey(namespace, key).then((fullKey) => {
-        const exists = storage.getItem(fullKey) != null;
+    async delete(namespace: string, key: string): Promise<boolean> {
+      const storageKey = await buildKey(namespace, key);
+      const exists = storage.getItem(storageKey) != null;
 
-        storage.removeItem(fullKey);
+      storage.removeItem(storageKey);
 
-        return getAllKeys(namespace).then((keys) => {
-          storage.setItem(
-            `${namespace}:[[keys]]`,
-            serialize(keys.filter((k) => k !== key))
-          );
+      const keys = await getAllKeys(namespace);
 
-          return exists;
-        });
-      });
-    },
-  };
+      storage.setItem(
+        `${namespace}:[[keys]]`,
+        JSON.stringify(keys.filter((k) => k !== key))
+      );
+
+      return exists;
+    }
+  })();
 };

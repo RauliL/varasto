@@ -6,6 +6,7 @@ import {
 import basicAuth from 'basic-auth';
 import express from 'express';
 import { Express } from 'express-serve-static-core';
+import { JsonObject } from 'type-fest';
 
 import { ServerOptions } from './types';
 
@@ -38,27 +39,21 @@ export const createServer = (
     });
   }
 
-  server.get('/:namespace', (req, res) => {
-    storage
-      .entries(req.params.namespace)
-      .then((entries) => {
-        res.status(200).json(
-          entries.reduce(
-            (mapping, entry) => ({
-              ...mapping,
-              [entry[0]]: entry[1],
-            }),
-            {}
-          )
-        );
-      })
-      .catch((err) => {
-        if (err instanceof InvalidSlugError) {
-          res.status(400).json({ error: err.message });
-        } else {
-          res.status(500).json({ error: 'Unable to retrieve items.' });
-        }
-      });
+  server.get('/:namespace', async (req, res) => {
+    try {
+      const result: Record<string, JsonObject> = {};
+
+      for await (const entry of storage.entries(req.params.namespace)) {
+        result[entry[0]] = entry[1];
+      }
+      res.status(200).json(result);
+    } catch (err) {
+      if (err instanceof InvalidSlugError) {
+        res.status(400).json({ error: err.message });
+      } else {
+        res.status(500).json({ error: 'Unable to retrieve items.' });
+      }
+    }
   });
 
   server.get('/:namespace/:key', (req, res) => {

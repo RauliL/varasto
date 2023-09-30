@@ -1,8 +1,12 @@
 # @varasto/multi-storage
 
+[![npm][npm-image]][npm-url]
+
 [Storage] implementation which retrieves and stores data to multiple other
 storage instances.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/multi-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/multi-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 
 ## Installation

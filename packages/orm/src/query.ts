@@ -48,37 +48,47 @@ export const get = <T extends Object>(
  * If an optional schema is given, only model instances that match that schema
  * are counted.
  */
-export const count = <T extends Object>(
+export async function count<T extends Object>(
   storage: Storage,
   modelClass: Class<T>
-): Promise<number> =>
-  ModelMetadata.requireFor<T>(modelClass)
-    .then((metadata) => storage.keys(metadata.namespace))
-    .then((keys) => keys.length);
+): Promise<number> {
+  const metadata = await ModelMetadata.requireFor<T>(modelClass);
+  let result = 0;
+
+  for await (const key of storage.keys(metadata.namespace)) {
+    ++result;
+  }
+
+  return result;
+}
 
 /**
  * Returns keys of model instances stored in given storage.
  */
-export const keys = <T extends Object>(
+export async function* keys<T extends Object>(
   storage: Storage,
   modelClass: Class<T>
-): Promise<string[]> =>
-  ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    storage.keys(metadata.namespace)
-  );
+): AsyncGenerator<string> {
+  const metadata = await ModelMetadata.requireFor<T>(modelClass);
+
+  for await (const key of storage.keys(metadata.namespace)) {
+    yield key;
+  }
+}
 
 /**
  * Returns all model instances stored in given storage.
  */
-export const list = <T extends Object>(
+export async function* list<T extends Object>(
   storage: Storage,
   modelClass: Class<T>
-): Promise<T[]> =>
-  ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    storage
-      .entries(metadata.namespace)
-      .then((data) => data.map(([key, data]) => metadata.load(key, data)))
-  );
+): AsyncGenerator<T> {
+  const metadata = await ModelMetadata.requireFor<T>(modelClass);
+
+  for await (const [key, data] of storage.entries(metadata.namespace)) {
+    yield metadata.load<T>(key, data);
+  }
+}
 
 /**
  * Searches for the first model instance from given storage that matches the
@@ -100,13 +110,18 @@ export const find = <T extends Object>(
  * Searches for all model instances from given storages that match the given
  * schema.
  */
-export const findAll = <T extends Object>(
+export async function* findAll<T extends Object>(
   storage: Storage,
   modelClass: Class<T>,
   schema: Schema
-): Promise<T[]> =>
-  ModelMetadata.requireFor<T>(modelClass).then((metadata) =>
-    findAllEntries(storage, metadata.namespace, schema).then((entries) =>
-      entries.map((entry) => metadata.load(entry[0], entry[1]))
-    )
-  );
+): AsyncGenerator<T> {
+  const metadata = await ModelMetadata.requireFor<T>(modelClass);
+
+  for await (const [key, data] of findAllEntries(
+    storage,
+    metadata.namespace,
+    schema
+  )) {
+    yield metadata.load<T>(key, data);
+  }
+}

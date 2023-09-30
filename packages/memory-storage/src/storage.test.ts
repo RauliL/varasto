@@ -1,4 +1,5 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
+import all from 'it-all';
 
 import { createMemoryStorage } from './storage';
 
@@ -60,11 +61,12 @@ describe('memory storage', () => {
   describe('update()', () => {
     it('should be able to update items', async () => {
       await storage.set('foo', 'bar', { a: 1 });
-      expect(storage.update('foo', 'bar', { b: 2 })).resolves.toEqual({
+
+      expect(await storage.update('foo', 'bar', { b: 2 })).toEqual({
         a: 1,
         b: 2,
       });
-      expect(storage.get('foo', 'bar')).resolves.toEqual({ a: 1, b: 2 });
+      expect(await storage.get('foo', 'bar')).toEqual({ a: 1, b: 2 });
     });
 
     it('should fail if namespace is not valid slug', () => {
@@ -132,17 +134,19 @@ describe('memory storage', () => {
       await storage.set('foo', 'bar', { a: 1 });
       await storage.set('foo', 'baz', { b: 2 });
 
-      const result = await storage.keys('foo');
+      const result = await all(storage.keys('foo'));
 
       expect(result).toHaveLength(2);
       expect(result).toContain('bar');
       expect(result).toContain('baz');
 
-      expect(await storage.keys('bar')).toHaveLength(0);
+      expect(await all(storage.keys('bar'))).toHaveLength(0);
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.keys('f;o;o')).rejects.toBeInstanceOf(InvalidSlugError));
+      expect(all(storage.keys('f;o;o'))).rejects.toBeInstanceOf(
+        InvalidSlugError
+      ));
   });
 
   describe('values()', () => {
@@ -150,17 +154,17 @@ describe('memory storage', () => {
       await storage.set('foo', 'bar', { a: 1 });
       await storage.set('foo', 'baz', { b: 2 });
 
-      const result = await storage.values('foo');
+      const result = await all(storage.values('foo'));
 
       expect(result).toHaveLength(2);
       expect(result).toContainEqual({ a: 1 });
       expect(result).toContainEqual({ b: 2 });
 
-      expect(await storage.values('bar')).toHaveLength(0);
+      expect(await all(storage.values('bar'))).toHaveLength(0);
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.values('f;o;o')).rejects.toBeInstanceOf(
+      expect(all(storage.values('f;o;o'))).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
   });
@@ -170,17 +174,17 @@ describe('memory storage', () => {
       await storage.set('foo', 'bar', { a: 1 });
       await storage.set('foo', 'baz', { b: 2 });
 
-      const result = await storage.entries('foo');
+      const result = await all(storage.entries('foo'));
 
       expect(result).toHaveLength(2);
       expect(result).toContainEqual(['bar', { a: 1 }]);
       expect(result).toContainEqual(['baz', { b: 2 }]);
 
-      expect(await storage.entries('bar')).toHaveLength(0);
+      expect(await all(storage.entries('bar'))).toHaveLength(0);
     });
 
     it('should fail if namespace is not valid slug', () =>
-      expect(storage.entries('f;o;o')).rejects.toBeInstanceOf(
+      expect(all(storage.entries('f;o;o'))).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
   });

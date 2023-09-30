@@ -1,4 +1,4 @@
-import { Storage } from '@varasto/storage';
+import { Entry, Storage } from '@varasto/storage';
 import match, { Schema } from 'simple-json-match';
 import { JsonObject } from 'type-fest';
 
@@ -7,43 +7,48 @@ import { JsonObject } from 'type-fest';
  * returns their values. If no entries match the given schema, empty array
  * is returned instead.
  */
-export const findAll = <T extends JsonObject>(
+export async function* findAll<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<T[]> =>
-  storage
-    .values<T>(namespace)
-    .then((values) => values.filter((value) => match(value, schema)));
+): AsyncGenerator<T> {
+  for await (const value of storage.values<T>(namespace)) {
+    if (match(value, schema)) {
+      yield value;
+    }
+  }
+}
 
 /**
  * Searches for entries from given namespace that match given schema and
  * returns their keys. If no entries match the given schema, empty array is
  * returned instead.
  */
-export const findAllKeys = (
+export async function* findAllKeys(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<string[]> =>
-  storage
-    .entries(namespace)
-    .then((entries) =>
-      entries
-        .filter((entry) => match(entry[1], schema))
-        .map((entry) => entry[0])
-    );
+): AsyncGenerator<string> {
+  for await (const entry of storage.entries(namespace)) {
+    if (match(entry[1], schema)) {
+      yield entry[0];
+    }
+  }
+}
 
 /**
  * Searches for entries from given namespace that match given schema and
  * returns them in an array. If no entries match the given schema, empty
  * array is returned instead.
  */
-export const findAllEntries = <T extends JsonObject>(
+export async function* findAllEntries<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<[string, T][]> =>
-  storage
-    .entries<T>(namespace)
-    .then((entries) => entries.filter((entry) => match(entry[1], schema)));
+): AsyncGenerator<Entry<T>> {
+  for await (const entry of storage.entries<T>(namespace)) {
+    if (match(entry[1], schema)) {
+      yield entry;
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { ItemDoesNotExistError, Storage } from '@varasto/storage';
+import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
 import { Database } from 'sqlite';
 import { JsonObject } from 'type-fest';
 
@@ -32,8 +32,8 @@ export const createSqliteStorage = (
     return undefined;
   };
 
-  return {
-    has: async (namespace: string, key: string): Promise<boolean> => {
+  return new (class extends Storage {
+    async has(namespace: string, key: string): Promise<boolean> {
       validateNamespaceAndKey(namespace, key);
 
       if (await doesNamespaceExist(database, namespace)) {
@@ -46,37 +46,37 @@ export const createSqliteStorage = (
       }
 
       return false;
-    },
+    }
 
-    keys: async (namespace: string): Promise<string[]> => {
+    async *keys(namespace: string): AsyncGenerator<string> {
       validateNamespace(namespace);
 
       if (await doesNamespaceExist(database, namespace)) {
         const results = await database.all(`SELECT key FROM "${namespace}"`);
 
-        return results.map((row) => row.key);
+        for (const row of results) {
+          yield row.key;
+        }
       }
+    }
 
-      return [];
-    },
-
-    values: async <T extends JsonObject>(namespace: string): Promise<T[]> => {
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
       validateNamespace(namespace);
 
       if (await doesNamespaceExist(database, namespace)) {
         const results = await database.all(`SELECT value FROM "${namespace}"`);
 
-        return results
+        for (const value of results
           .map((row) => deserialize<T>(row.value))
-          .filter((value) => value != null) as T[];
+          .filter((value) => value != null) as T[]) {
+          yield value;
+        }
       }
+    }
 
-      return [];
-    },
-
-    entries: async <T extends JsonObject>(
+    async *entries<T extends JsonObject>(
       namespace: string
-    ): Promise<[string, T][]> => {
+    ): AsyncGenerator<Entry<T>> {
       validateNamespace(namespace);
 
       if (await doesNamespaceExist(database, namespace)) {
@@ -84,26 +84,26 @@ export const createSqliteStorage = (
           `SELECT key, value FROM "${namespace}"`
         );
 
-        return results
+        for (const entry of results
           .map((row) => [row.key, deserialize<T>(row.value)])
-          .filter((entry) => entry[1] != null) as [string, T][];
+          .filter((entry) => entry[1] != null) as [string, T][]) {
+          yield entry;
+        }
       }
+    }
 
-      return [];
-    },
-
-    get: async <T extends JsonObject>(
+    async get<T extends JsonObject>(
       namespace: string,
       key: string
-    ): Promise<T | undefined> => {
+    ): Promise<T | undefined> {
       return getItem<T>(database, namespace, key, deserialize);
-    },
+    }
 
-    set: async <T extends JsonObject>(
+    async set<T extends JsonObject>(
       namespace: string,
       key: string,
       value: T
-    ): Promise<void> => {
+    ): Promise<void> {
       validateNamespaceAndKey(namespace, key);
       await createNamespace(database, namespace);
 
@@ -111,15 +111,13 @@ export const createSqliteStorage = (
         `INSERT INTO "${namespace}" (key, value) VALUES (?, ?)`,
         [key, serialize(value)]
       );
+    }
 
-      return undefined;
-    },
-
-    update: async <T extends JsonObject>(
+    async update<T extends JsonObject>(
       namespace: string,
       key: string,
       value: Partial<T>
-    ): Promise<T> => {
+    ): Promise<T> {
       const oldValue = await getItem<T>(database, namespace, key, deserialize);
 
       if (oldValue != null) {
@@ -134,9 +132,9 @@ export const createSqliteStorage = (
       }
 
       throw new ItemDoesNotExistError('Item does not exist');
-    },
+    }
 
-    delete: async (namespace: string, key: string): Promise<boolean> => {
+    async delete(namespace: string, key: string): Promise<boolean> {
       validateNamespaceAndKey(namespace, key);
 
       if (await doesNamespaceExist(database, namespace)) {
@@ -161,6 +159,6 @@ export const createSqliteStorage = (
       }
 
       return false;
-    },
-  };
+    }
+  })();
 };

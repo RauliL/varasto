@@ -1,6 +1,7 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import fs from 'fs';
 import mock from 'mock-fs';
+import all from 'it-all';
 import path from 'path';
 
 import { createFileSystemStorage } from './storage';
@@ -32,34 +33,34 @@ describe('file system storage', () => {
 
   describe('keys()', () => {
     it('should return keys of all found items', () =>
-      expect(storage.keys('foo')).resolves.toEqual(['1', '2', '3']));
+      expect(all(storage.keys('foo'))).resolves.toEqual(['1', '2', '3']));
 
     it('should return empty array if the namespace does not contain items', () =>
-      expect(storage.keys('bar')).resolves.toEqual([]));
+      expect(all(storage.keys('bar'))).resolves.toEqual([]));
   });
 
   describe('values()', () => {
     it('should return values of all found items', () =>
-      expect(storage.values('foo')).resolves.toEqual([
+      expect(all(storage.values('foo'))).resolves.toEqual([
         { a: 1 },
         { a: 2 },
         { a: 3 },
       ]));
 
     it('should return empty array if the namespace does not contain items', () =>
-      expect(storage.values('bar')).resolves.toEqual([]));
+      expect(all(storage.values('bar'))).resolves.toEqual([]));
   });
 
   describe('entries', () => {
     it('should return keys and values of all found items', () =>
-      expect(storage.entries('foo')).resolves.toEqual([
+      expect(all(storage.entries('foo'))).resolves.toEqual([
         ['1', { a: 1 }],
         ['2', { a: 2 }],
         ['3', { a: 3 }],
       ]));
 
     it('should return empty array if the namespace does not contain items', () =>
-      expect(storage.entries('bar')).resolves.toEqual([]));
+      expect(all(storage.entries('bar'))).resolves.toEqual([]));
   });
 
   describe('get()', () => {

@@ -1,10 +1,14 @@
 # @varasto/single-file-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of [storage] which stores all data into a single file, in
 [flat-file database] kind of fashion. Because of it's design, it's quite
 inefficient way of storing data and [fs-storage] should be used instead
 whenever possible.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/single-file-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/single-file-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 [flat-file database]: https://en.wikipedia.org/wiki/Flat-file_database
 [fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage

@@ -1,7 +1,11 @@
 # @varasto/redis-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of [storage] that uses [Redis] as backend for storing data.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/redis-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/redis-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 [redis]: https://redis.io
 

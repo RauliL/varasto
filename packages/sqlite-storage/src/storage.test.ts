@@ -3,6 +3,7 @@ import {
   ItemDoesNotExistError,
   Storage,
 } from '@varasto/storage';
+import all from 'it-all';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 
@@ -215,7 +216,7 @@ describe('SQLite storage', () => {
       await storage.set('a', '2', {});
       await storage.set('a', '3', {});
 
-      return storage.keys('a').then((result) => {
+      return all(storage.keys('a')).then((result) => {
         expect(result).toHaveLength(3);
         expect(result).toContainEqual('1');
         expect(result).toContainEqual('2');
@@ -226,13 +227,13 @@ describe('SQLite storage', () => {
     it('should return empty array if the namespace does not contain items', async () => {
       const [storage] = await getStorage();
 
-      return expect(storage.keys('a')).resolves.toEqual([]);
+      return expect(all(storage.keys('a'))).resolves.toEqual([]);
     });
 
     it('should fail if given namespace is not valid slug', async () => {
       const [storage] = await getStorage();
 
-      return expect(storage.keys(';')).rejects.toBeInstanceOf(
+      return expect(all(storage.keys(';'))).rejects.toBeInstanceOf(
         InvalidSlugError
       );
     });
@@ -246,7 +247,7 @@ describe('SQLite storage', () => {
       await storage.set('a', '2', { value: 2 });
       await storage.set('a', '3', { value: 3 });
 
-      return storage.values('a').then((result) => {
+      return all(storage.values('a')).then((result) => {
         expect(result).toHaveLength(3);
         expect(result).toContainEqual({ value: 1 });
         expect(result).toContainEqual({ value: 2 });
@@ -257,13 +258,13 @@ describe('SQLite storage', () => {
     it('should return empty array if the namespace does not contain items', async () => {
       const [storage] = await getStorage();
 
-      return expect(storage.values('a')).resolves.toEqual([]);
+      return expect(all(storage.values('a'))).resolves.toEqual([]);
     });
 
     it('should fail if given namespace is not valid slug', async () => {
       const [storage] = await getStorage();
 
-      return expect(storage.values(';')).rejects.toBeInstanceOf(
+      return expect(all(storage.values(';'))).rejects.toBeInstanceOf(
         InvalidSlugError
       );
     });
@@ -277,7 +278,7 @@ describe('SQLite storage', () => {
       await storage.set('a', '2', { value: 2 });
       await storage.set('a', '3', { value: 3 });
 
-      return storage.entries('a').then((result) => {
+      return all(storage.entries('a')).then((result) => {
         expect(result).toHaveLength(3);
         expect(result).toContainEqual(['1', { value: 1 }]);
         expect(result).toContainEqual(['2', { value: 2 }]);
@@ -288,13 +289,13 @@ describe('SQLite storage', () => {
     it('should return empty array if the namespace does not contain items', async () => {
       const [storage] = await getStorage();
 
-      return expect(storage.entries('a')).resolves.toEqual([]);
+      return expect(all(storage.entries('a'))).resolves.toEqual([]);
     });
 
     it('should fail if given namespace is not valid slug', async () => {
       const [storage] = await getStorage();
 
-      return expect(storage.entries(';')).rejects.toBeInstanceOf(
+      return expect(all(storage.entries(';'))).rejects.toBeInstanceOf(
         InvalidSlugError
       );
     });

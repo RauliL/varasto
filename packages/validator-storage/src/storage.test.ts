@@ -1,4 +1,5 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import all from 'it-all';
 import * as Yup from 'yup';
 
 import { UnrecognizedNamespaceError } from './errors';
@@ -38,32 +39,54 @@ describe('createValidatorStorage()', () => {
 
   describe('keys()', () => {
     it('should throw `UnrecognizedNamespaceError` if attempting to access non-mapped namespace', () =>
-      expect(storage.keys('items')).rejects.toBeInstanceOf(
+      expect(all(storage.keys('items'))).rejects.toBeInstanceOf(
         UnrecognizedNamespaceError
       ));
 
+    it('should return keys from backend storage', async () => {
+      await backendStorage.set('people', 'john', { name: 'John', age: 24 });
+
+      expect(await all(storage.keys('people'))).toEqual(['john']);
+    });
+
     it('should ask from backend storage if the namespace is mapped', () =>
-      expect(storage.keys('people')).resolves.toEqual([]));
+      expect(all(storage.keys('people'))).resolves.toEqual([]));
   });
 
   describe('values()', () => {
     it('should throw `UnrecognizedNamespaceError` if attempting to access non-mapped namespace', () =>
-      expect(storage.values('items')).rejects.toBeInstanceOf(
+      expect(all(storage.values('items'))).rejects.toBeInstanceOf(
         UnrecognizedNamespaceError
       ));
 
+    it('should return values from backend storage', async () => {
+      await backendStorage.set('people', 'john', { name: 'John', age: 24 });
+
+      expect(await all(storage.values('people'))).toEqual([
+        { name: 'John', age: 24 },
+      ]);
+    });
+
     it('should ask from backend storage if the namespace is mapped', () =>
-      expect(storage.values('people')).resolves.toEqual([]));
+      expect(all(storage.values('people'))).resolves.toEqual([]));
   });
 
   describe('entries()', () => {
     it('should throw `UnrecognizedNamespaceError` if attempting to access non-mapped namespace', () =>
-      expect(storage.entries('items')).rejects.toBeInstanceOf(
+      expect(all(storage.entries('items'))).rejects.toBeInstanceOf(
         UnrecognizedNamespaceError
       ));
 
+    it('should return entries from backend storage', async () => {
+      await backendStorage.set('people', 'john', { name: 'John', age: 24 });
+
+      expect(await all(storage.entries('people'))).toEqual([
+        ['john', { name: 'John', age: 24 }],
+      ]);
+    });
+
     it('should ask from backend storage if the namespace is mapped', () =>
-      expect(storage.entries('people')).resolves.toEqual([]));
+      expect(all(storage.entries('people'))).resolves.toEqual([]));
   });
 
   describe('get()', () => {

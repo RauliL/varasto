@@ -1,5 +1,6 @@
-import { ItemDoesNotExistError, Storage } from '@varasto/storage';
+import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
 import { Client } from 'pg';
+import format from 'pg-format';
 import { JsonObject } from 'type-fest';
 
 import { PostgresStorageOptions } from './types';
@@ -18,122 +19,140 @@ import {
 export const createPostgresStorage = (
   client: Client,
   options: Partial<PostgresStorageOptions> = {}
-): Storage => ({
-  has: async (namespace: string, key: string): Promise<boolean> => {
-    return hasItem(client, namespace, key);
-  },
-
-  keys: async (namespace: string): Promise<string[]> => {
-    validateNamespace(namespace);
-
-    if (await doesNamespaceExist(client, namespace)) {
-      const result = await client.query(`SELECT key FROM "${namespace}"`);
-
-      return result.rows.map((row) => row.key);
+): Storage =>
+  new (class extends Storage {
+    async has(namespace: string, key: string): Promise<boolean> {
+      return hasItem(client, namespace, key);
     }
 
-    return [];
-  },
+    async *keys(namespace: string): AsyncGenerator<string> {
+      validateNamespace(namespace);
 
-  values: async <T extends JsonObject>(namespace: string): Promise<T[]> => {
-    validateNamespace(namespace);
+      if (await doesNamespaceExist(client, namespace)) {
+        const result = await client.query(
+          format('SELECT key FROM %I', namespace)
+        );
 
-    if (await doesNamespaceExist(client, namespace)) {
-      const result = await client.query(`SELECT value FROM "${namespace}"`);
-
-      return result.rows.map((row) => row.value);
-    }
-
-    return [];
-  },
-
-  entries: async <T extends JsonObject>(
-    namespace: string
-  ): Promise<[string, T][]> => {
-    validateNamespace(namespace);
-
-    if (await doesNamespaceExist(client, namespace)) {
-      const result = await client.query(
-        `SELECT key, value FROM "${namespace}"`
-      );
-
-      return result.rows.map((row) => [row.key, row.value]);
-    }
-
-    return [];
-  },
-
-  get: async <T extends JsonObject>(
-    namespace: string,
-    key: string
-  ): Promise<T | undefined> => {
-    return getItem<T>(client, namespace, key);
-  },
-
-  set: async <T extends JsonObject>(
-    namespace: string,
-    key: string,
-    value: T
-  ): Promise<void> => {
-    let query: string;
-
-    validateNamespaceAndKey(namespace, key);
-    createNamespace(client, namespace);
-
-    if (await hasItem(client, namespace, key)) {
-      query = `UPDATE "${namespace}" SET value = $2 WHERE key = $1`;
-    } else {
-      query = `INSERT INTO "${namespace}"(key, value) VALUES($1, $2)`;
-    }
-
-    await client.query(query, [key, JSON.stringify(value)]);
-  },
-
-  update: async <T extends JsonObject>(
-    namespace: string,
-    key: string,
-    value: Partial<T>
-  ): Promise<T> => {
-    const oldValue = await getItem<T>(client, namespace, key);
-
-    if (oldValue != null) {
-      const newValue = { ...oldValue, ...value };
-
-      await client.query(
-        `UPDATE "${namespace}" SET value = $1 WHERE key = $2`,
-        [JSON.stringify(newValue), key]
-      );
-
-      return newValue;
-    }
-
-    throw new ItemDoesNotExistError('Item does not exist');
-  },
-
-  delete: async (namespace: string, key: string): Promise<boolean> => {
-    validateNamespaceAndKey(namespace, key);
-
-    if (await doesNamespaceExist(client, namespace)) {
-      const result = await client.query(
-        `DELETE FROM "${namespace}" WHERE key = $1`,
-        [key]
-      );
-
-      if (result.rowCount > 0) {
-        if (options.dropEmptyTables) {
-          const rowCountResult = await client.query(
-            `SELECT COUNT(*) FROM "${namespace}"`
-          );
-
-          if (rowCountResult.rows?.[0]?.count == 0) {
-            await client.query(`DROP TABLE "${namespace}"`);
-          }
+        for (const row of result.rows) {
+          yield row.key;
         }
-
-        return true;
       }
     }
 
-    return false;
-  },
-});
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
+      validateNamespace(namespace);
+
+      if (await doesNamespaceExist(client, namespace)) {
+        const result = await client.query(
+          format('SELECT value FROM %I', namespace)
+        );
+
+        for (const row of result.rows) {
+          yield row.value;
+        }
+      }
+    }
+
+    async *entries<T extends JsonObject>(
+      namespace: string
+    ): AsyncGenerator<Entry<T>> {
+      validateNamespace(namespace);
+
+      if (await doesNamespaceExist(client, namespace)) {
+        const result = await client.query(
+          format('SELECT key, value FROM %I', namespace)
+        );
+
+        for (const row of result.rows) {
+          yield [row.key, row.value];
+        }
+      }
+    }
+
+    async get<T extends JsonObject>(
+      namespace: string,
+      key: string
+    ): Promise<T | undefined> {
+      return getItem<T>(client, namespace, key);
+    }
+
+    async set<T extends JsonObject>(
+      namespace: string,
+      key: string,
+      value: T
+    ): Promise<void> {
+      let query: string;
+
+      validateNamespaceAndKey(namespace, key);
+      createNamespace(client, namespace);
+
+      if (await hasItem(client, namespace, key)) {
+        query = format(
+          'UPDATE %I SET value = %L WHERE key = %L',
+          namespace,
+          key,
+          JSON.stringify(value)
+        );
+      } else {
+        query = format(
+          'INSERT INTO %I(key, value) VALUES(%L, %L)',
+          namespace,
+          key,
+          JSON.stringify(value)
+        );
+      }
+
+      await client.query(query);
+    }
+
+    async update<T extends JsonObject>(
+      namespace: string,
+      key: string,
+      value: Partial<T>
+    ): Promise<T> {
+      const oldValue = await getItem<T>(client, namespace, key);
+
+      if (oldValue != null) {
+        const newValue = { ...oldValue, ...value };
+
+        await client.query(
+          format(
+            'UPDATE %I set value = %L WHERE key = %L',
+            namespace,
+            JSON.stringify(newValue),
+            key
+          )
+        );
+
+        return newValue;
+      }
+
+      throw new ItemDoesNotExistError('Item does not exist');
+    }
+
+    async delete(namespace: string, key: string): Promise<boolean> {
+      validateNamespaceAndKey(namespace, key);
+
+      if (await doesNamespaceExist(client, namespace)) {
+        const result = await client.query(
+          format('DELETE FROM %I WHERE key = %L', namespace, key)
+        );
+
+        if (result.rowCount > 0) {
+          if (options.dropEmptyTables) {
+            const rowCountResult = await client.query(
+              format('SELECT COUNT(*) FROM %I', namespace)
+            );
+
+            if (rowCountResult.rows?.[0]?.count == 0) {
+              await client.query(format('DROP TABLE %I', namespace));
+            }
+          }
+
+          return true;
+        }
+      }
+
+      return false;
+    }
+  })();

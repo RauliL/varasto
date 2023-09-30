@@ -88,27 +88,21 @@ export const createRouter = <T extends JsonObject = JsonObject>(
 
   router.use(express.json());
 
-  router.get('/', (req, res) => {
-    storage
-      .entries(namespace)
-      .then((entries) => {
-        res.status(200).json(
-          entries.reduce(
-            (mapping, entry) => ({
-              ...mapping,
-              [entry[0]]: entry[1],
-            }),
-            {}
-          )
-        );
-      })
-      .catch((err) => {
-        if (err instanceof InvalidSlugError) {
-          res.status(400).json({ error: err.message });
-        } else {
-          res.status(500).json({ error: 'Unable to retrieve items.' });
-        }
-      });
+  router.get('/', async (req, res) => {
+    try {
+      const result: Record<string, JsonObject> = {};
+
+      for await (const [key, value] of storage.entries<T>(namespace)) {
+        result[key] = value;
+      }
+      res.status(200).json(result);
+    } catch (err) {
+      if (err instanceof InvalidSlugError) {
+        res.status(400).json({ error: err.message });
+      } else {
+        res.status(500).json({ error: 'Unable to retrieve items.' });
+      }
+    }
   });
 
   router.get('/:key', (req, res) => {

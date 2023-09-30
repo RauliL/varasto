@@ -1,8 +1,12 @@
 # @varasto/validator-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of [storage] that performs validation on the inserted data,
 using [Yup] schemas.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/validator-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/validator-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 [yup]: https://github.com/jquense/yup
 
