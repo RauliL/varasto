@@ -295,7 +295,7 @@
       <h3>Listing keys stored in a namespace</h3>
       <pre><code class="language-typescript">keys(
   namespace: string
-): Promise&lt;string[]&gt;</code></pre>
+): AsyncGenerator&lt;string&gt;</code></pre>
       <p>
         Returns keys of all items stored under an namespace. The promise will
         fail if an I/O error occurs while listing the keys.
@@ -304,7 +304,7 @@
       <h3>Listing values stored in a namespace</h3>
       <pre><code class="language-typescript">values&lt;T extends JsonObject&gt;(
   namespace: string
-): Promise&lt;T[]&gt;</code></pre>
+): AsyncGenerator&lt;T&gt;</code></pre>
       <p>
         Returns all items stored under an namespace. The promise will fail if an
         I/O error occurs.
@@ -313,7 +313,7 @@
       <h3>Listing entries stored in a namespace</h3>
       <pre><code class="language-typescript">entries&lt;T extends JsonObject&gt;(
   namespace: string
-): Promise&lt;[string, T][]&gt;</code></pre>
+): AsyncGenerator&lt;[string, T]&gt;</code></pre>
       <p>
         Returns all items stored under an namespace, with the keys they are
         identified by. The promise will fail if an I/O error occurs.
