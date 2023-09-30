@@ -1,4 +1,5 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import all from 'it-all';
 import MockDate from 'mockdate';
 
 import { createCacheStorage } from './storage';
@@ -19,15 +20,15 @@ describe('cache storage', () => {
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
       MockDate.set('2021-10-05T11:00:00.000Z');
-      expect(await cacheStorage.keys('foo')).toEqual(['bar']);
+      expect(await all(cacheStorage.keys('foo'))).toEqual(['bar']);
 
       await memoryStorage.delete('foo', 'bar');
 
       MockDate.set('2021-10-05T11:00:03.000Z');
-      expect(await cacheStorage.keys('foo')).toEqual(['bar']);
+      expect(await all(cacheStorage.keys('foo'))).toEqual(['bar']);
 
       MockDate.set('2021-10-05T11:00:10.000Z');
-      expect(await cacheStorage.keys('foo')).toEqual([]);
+      expect(await all(cacheStorage.keys('foo'))).toEqual([]);
     });
   });
 
@@ -38,15 +39,15 @@ describe('cache storage', () => {
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
       MockDate.set('2021-10-05T11:00:00.000Z');
-      expect(await cacheStorage.values('foo')).toEqual([{ value: 5 }]);
+      expect(await all(cacheStorage.values('foo'))).toEqual([{ value: 5 }]);
 
       await memoryStorage.delete('foo', 'bar');
 
       MockDate.set('2021-10-05T11:00:03.000Z');
-      expect(await cacheStorage.values('foo')).toEqual([{ value: 5 }]);
+      expect(await all(cacheStorage.values('foo'))).toEqual([{ value: 5 }]);
 
       MockDate.set('2021-10-05T11:00:10.000Z');
-      expect(await cacheStorage.values('foo')).toEqual([]);
+      expect(await all(cacheStorage.values('foo'))).toEqual([]);
     });
   });
 
@@ -57,19 +58,19 @@ describe('cache storage', () => {
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
       MockDate.set('2021-10-05T11:00:00.000Z');
-      expect(await cacheStorage.entries('foo')).toEqual([
+      expect(await all(cacheStorage.entries('foo'))).toEqual([
         ['bar', { value: 5 }],
       ]);
 
       await memoryStorage.delete('foo', 'bar');
 
       MockDate.set('2021-10-05T11:00:03.000Z');
-      expect(await cacheStorage.entries('foo')).toEqual([
+      expect(await all(cacheStorage.entries('foo'))).toEqual([
         ['bar', { value: 5 }],
       ]);
 
       MockDate.set('2021-10-05T11:00:10.000Z');
-      expect(await cacheStorage.entries('foo')).toEqual([]);
+      expect(await all(cacheStorage.entries('foo'))).toEqual([]);
     });
   });
 

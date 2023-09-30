@@ -1,7 +1,11 @@
 # @varasto/cache-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of an [storage] which acts as an cache for another storage.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/cache-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/cache-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 
 ## Installation

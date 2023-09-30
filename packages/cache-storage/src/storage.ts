@@ -1,4 +1,4 @@
-import { Storage } from '@varasto/storage';
+import { Entry, Storage } from '@varasto/storage';
 import { JsonObject } from 'type-fest';
 
 import { Cache, NamespaceCache } from './cache';
@@ -19,50 +19,61 @@ export const createCacheStorage = (
   const entryCache = new Cache<[string, JsonObject][]>(ttl);
   const namespaceCache = new NamespaceCache(ttl);
 
-  return {
-    keys(namespace: string) {
-      const keys = keyCache.get(namespace);
+  return new (class extends Storage {
+    async *keys(namespace: string): AsyncGenerator<string> {
+      let keys = keyCache.get(namespace);
 
       if (keys != null) {
-        return Promise.resolve(keys);
-      }
-
-      return storage.keys(namespace).then((keys) => {
+        for (const key of keys) {
+          yield key;
+        }
+      } else {
+        keys = [];
+        for await (const key of storage.keys(namespace)) {
+          keys.push(key);
+          yield key;
+        }
         keyCache.set(namespace, keys);
+      }
+    }
 
-        return Promise.resolve(keys);
-      });
-    },
-
-    values<T extends JsonObject>(namespace: string) {
-      const values = valueCache.get(namespace);
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
+      let values = valueCache.get(namespace);
 
       if (values != null) {
-        return Promise.resolve(values as T[]);
-      }
-
-      return storage.values<T>(namespace).then((values) => {
+        for (const value of values) {
+          yield value as T;
+        }
+      } else {
+        values = [];
+        for await (const value of storage.values<T>(namespace)) {
+          values.push(value);
+          yield value;
+        }
         valueCache.set(namespace, values);
+      }
+    }
 
-        return Promise.resolve(values);
-      });
-    },
-
-    entries<T extends JsonObject>(namespace: string) {
-      const entries = entryCache.get(namespace);
+    async *entries<T extends JsonObject>(
+      namespace: string
+    ): AsyncGenerator<Entry<T>> {
+      let entries = entryCache.get(namespace);
 
       if (entries != null) {
-        return Promise.resolve(entries as [string, T][]);
-      }
-
-      return storage.entries<T>(namespace).then((entries) => {
+        for (const entry of entries) {
+          yield entry as Entry<T>;
+        }
+      } else {
+        entries = [];
+        for await (const entry of storage.entries<T>(namespace)) {
+          entries.push(entry);
+          yield entry;
+        }
         entryCache.set(namespace, entries);
+      }
+    }
 
-        return Promise.resolve(entries);
-      });
-    },
-
-    has(namespace: string, key: string) {
+    has(namespace: string, key: string): Promise<boolean> {
       const cachedValue = namespaceCache.get(namespace, key);
 
       if (cachedValue != null) {
@@ -70,7 +81,7 @@ export const createCacheStorage = (
       }
 
       return storage.has(namespace, key);
-    },
+    }
 
     get<T extends JsonObject>(
       namespace: string,
@@ -89,9 +100,13 @@ export const createCacheStorage = (
 
         return Promise.resolve(value);
       });
-    },
+    }
 
-    set<T extends JsonObject>(namespace: string, key: string, value: T) {
+    set<T extends JsonObject>(
+      namespace: string,
+      key: string,
+      value: T
+    ): Promise<void> {
       return storage.set<T>(namespace, key, value).then(() => {
         keyCache.delete(namespace);
         valueCache.delete(namespace);
@@ -100,13 +115,13 @@ export const createCacheStorage = (
 
         return Promise.resolve();
       });
-    },
+    }
 
     update<T extends JsonObject>(
       namespace: string,
       key: string,
       value: Partial<T>
-    ) {
+    ): Promise<T> {
       return storage.update<T>(namespace, key, value).then((result) => {
         valueCache.delete(namespace);
         entryCache.delete(namespace);
@@ -114,15 +129,15 @@ export const createCacheStorage = (
 
         return Promise.resolve(result);
       });
-    },
+    }
 
-    delete(namespace: string, key: string) {
+    delete(namespace: string, key: string): Promise<boolean> {
       keyCache.delete(namespace);
       valueCache.delete(namespace);
       entryCache.delete(namespace);
       namespaceCache.delete(namespace, key);
 
       return storage.delete(namespace, key);
-    },
-  };
+    }
+  })();
 };
