@@ -1,4 +1,4 @@
-import { Storage } from '@varasto/storage';
+import { Entry, Storage } from '@varasto/storage';
 import { JsonObject } from 'type-fest';
 import { AnySchema } from 'yup';
 
@@ -21,32 +21,38 @@ export const createValidatorStorage = (
     return mapping[namespace];
   };
 
-  return {
+  return new (class extends Storage {
     async has(namespace: string, key: string): Promise<boolean> {
       namespaceCheck(namespace);
 
       return storage.has(namespace, key);
-    },
+    }
 
-    async keys(namespace: string): Promise<string[]> {
+    async *keys(namespace: string): AsyncGenerator<string> {
       namespaceCheck(namespace);
 
-      return storage.keys(namespace);
-    },
+      for await (const key of storage.keys(namespace)) {
+        yield key;
+      }
+    }
 
-    async values<T extends JsonObject>(namespace: string): Promise<T[]> {
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
       namespaceCheck(namespace);
 
-      return storage.values(namespace);
-    },
+      for await (const value of storage.values<T>(namespace)) {
+        yield value;
+      }
+    }
 
-    async entries<T extends JsonObject>(
+    async *entries<T extends JsonObject>(
       namespace: string
-    ): Promise<[string, T][]> {
+    ): AsyncGenerator<Entry<T>> {
       namespaceCheck(namespace);
 
-      return storage.entries(namespace);
-    },
+      for await (const entry of storage.entries<T>(namespace)) {
+        yield entry;
+      }
+    }
 
     async get<T extends JsonObject>(
       namespace: string,
@@ -55,7 +61,7 @@ export const createValidatorStorage = (
       namespaceCheck(namespace);
 
       return storage.get(namespace, key);
-    },
+    }
 
     async set<T extends JsonObject>(
       namespace: string,
@@ -65,7 +71,7 @@ export const createValidatorStorage = (
       await getSchema(namespace).validate(value);
 
       return storage.set(namespace, key, value);
-    },
+    }
 
     async update<T extends JsonObject>(
       namespace: string,
@@ -80,12 +86,12 @@ export const createValidatorStorage = (
       await storage.set(namespace, key, newValue);
 
       return newValue;
-    },
+    }
 
     async delete(namespace: string, key: string): Promise<boolean> {
       namespaceCheck(namespace);
 
       return storage.delete(namespace, key);
-    },
-  };
+    }
+  })();
 };
