@@ -1,4 +1,5 @@
 import {
+  Entry,
   InvalidSlugError,
   ItemDoesNotExistError,
   Storage,
@@ -26,7 +27,7 @@ export const createRemoteStorage = (
     auth: options.auth,
   });
 
-  return {
+  return new (class extends Storage {
     has(namespace: string, key: string): Promise<boolean> {
       return client
         .head(`/${namespace}/${key}`)
@@ -34,33 +35,35 @@ export const createRemoteStorage = (
         .catch((err: AxiosError) =>
           err.response?.status === 404 ? false : Promise.reject(err)
         );
-    },
+    }
 
-    keys(namespace: string): Promise<string[]> {
-      return client
-        .get<Record<string, JsonObject>>(`/${namespace}`)
-        .then((response) => Object.keys(response.data));
-    },
+    async *keys(namespace: string): AsyncGenerator<string> {
+      const response = await client.get<Record<string, JsonObject>>(
+        `/${namespace}`
+      );
 
-    values<T extends JsonObject>(namespace: string): Promise<T[]> {
-      return client
-        .get<Record<string, T>>(`/${namespace}`)
-        .then((response) => Object.values(response.data));
-    },
+      for (const key of Object.keys(response.data)) {
+        yield key;
+      }
+    }
 
-    entries<T extends JsonObject>(namespace: string): Promise<[string, T][]> {
-      return client
-        .get<Record<string, T>>(`/${namespace}`)
-        .then((response) => {
-          const result: Array<[string, T]> = [];
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
+      const response = await client.get<Record<string, T>>(`/${namespace}`);
 
-          Object.keys(response.data).forEach((key) => {
-            result.push([key, response.data[key]]);
-          });
+      for (const value of Object.values(response.data)) {
+        yield value;
+      }
+    }
 
-          return result;
-        });
-    },
+    async *entries<T extends JsonObject>(
+      namespace: string
+    ): AsyncGenerator<Entry<T>> {
+      const response = await client.get<Record<string, T>>(`/${namespace}`);
+
+      for (const key of Object.keys(response.data)) {
+        yield [key, response.data[key]];
+      }
+    }
 
     get<T extends JsonObject>(
       namespace: string,
@@ -70,7 +73,7 @@ export const createRemoteStorage = (
         .get<T>(`/${namespace}/${key}`)
         .then((response) => response.data)
         .catch(errorHandler);
-    },
+    }
 
     set<T extends JsonObject>(
       namespace: string,
@@ -81,7 +84,7 @@ export const createRemoteStorage = (
         .post(`/${namespace}/${key}`, value)
         .then(() => undefined)
         .catch(errorHandler);
-    },
+    }
 
     update<T extends JsonObject>(
       namespace: string,
@@ -102,7 +105,7 @@ export const createRemoteStorage = (
               : err
           )
         );
-    },
+    }
 
     delete(namespace: string, key: string): Promise<boolean> {
       return client
@@ -111,6 +114,6 @@ export const createRemoteStorage = (
         .catch((err: AxiosError) =>
           err.response?.status === 404 ? false : Promise.reject(err)
         );
-    },
-  };
+    }
+  })();
 };

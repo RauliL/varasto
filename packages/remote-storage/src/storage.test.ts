@@ -1,6 +1,7 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import all from 'it-all';
 
 import { createRemoteStorage } from './storage';
 
@@ -50,7 +51,10 @@ describe('remote storage', () => {
         jane: MOCK_DATA_JANE,
       });
 
-      return expect(storage.keys('people')).resolves.toEqual(['john', 'jane']);
+      return expect(all(storage.keys('people'))).resolves.toEqual([
+        'john',
+        'jane',
+      ]);
     });
 
     it('should handle erroneous response from the server', () => {
@@ -58,7 +62,7 @@ describe('remote storage', () => {
         .onGet('https://example.com/people')
         .reply(500, { error: 'Unable to retrieve items.' });
 
-      return expect(storage.keys('people')).rejects.toBeInstanceOf(Error);
+      return expect(all(storage.keys('people'))).rejects.toBeInstanceOf(Error);
     });
   });
 
@@ -69,7 +73,7 @@ describe('remote storage', () => {
         jane: MOCK_DATA_JANE,
       });
 
-      return expect(storage.values('people')).resolves.toEqual([
+      return expect(all(storage.values('people'))).resolves.toEqual([
         MOCK_DATA_JOHN,
         MOCK_DATA_JANE,
       ]);
@@ -80,7 +84,9 @@ describe('remote storage', () => {
         .onGet('https://example.com/people')
         .reply(500, { error: 'Unable to retrieve items.' });
 
-      return expect(storage.values('people')).rejects.toBeInstanceOf(Error);
+      return expect(all(storage.values('people'))).rejects.toBeInstanceOf(
+        Error
+      );
     });
   });
 
@@ -91,7 +97,7 @@ describe('remote storage', () => {
         jane: MOCK_DATA_JANE,
       });
 
-      return expect(storage.entries('people')).resolves.toEqual([
+      return expect(all(storage.entries('people'))).resolves.toEqual([
         ['john', MOCK_DATA_JOHN],
         ['jane', MOCK_DATA_JANE],
       ]);
@@ -102,7 +108,9 @@ describe('remote storage', () => {
         .onGet('https://example.com/people')
         .reply(500, { error: 'Unable to retrieve items.' });
 
-      return expect(storage.entries('people')).rejects.toBeInstanceOf(Error);
+      return expect(all(storage.entries('people'))).rejects.toBeInstanceOf(
+        Error
+      );
     });
   });
 
