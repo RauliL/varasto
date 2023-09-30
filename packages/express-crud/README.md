@@ -1,5 +1,7 @@
 # @varasto/express-crud
 
+[![npm][npm-image]][npm-url]
+
 Utility for generating [Express.js] [router] that handles [CRUD] operations for
 a single namespace in Varasto storage, with optional validation performed by
 [Yup].
@@ -9,6 +11,8 @@ It is similar to [Varasto server] (which can also be used as [Express.js]
 generates automatically keys for new items stored in the namespace and provides
 optional validation.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/express-crud.svg
+[npm-url]: https://npmjs.org/package/@varasto/express-crud
 [express.js]: https://expressjs.com/
 [router]: https://expressjs.com/en/4x/api.html#router
 [crud]: https://en.wikipedia.org/wiki/Create,_read,_update_and_delete

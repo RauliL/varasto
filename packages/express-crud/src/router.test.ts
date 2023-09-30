@@ -1,6 +1,7 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import express from 'express';
 import isUUID from 'is-uuid';
+import all from 'it-all';
 import request from 'supertest';
 import * as yup from 'yup';
 
@@ -108,7 +109,7 @@ describe('createRouter()', () => {
         .post('/people')
         .send(validPersonData)
         .then(async (response) => {
-          const entries = await storage.entries('people');
+          const entries = await all(storage.entries('people'));
 
           expect(response.status).toBe(201);
           expect(entries).toEqual([['test', validPersonData]]);
