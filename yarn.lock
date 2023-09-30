@@ -1666,16 +1666,7 @@
     is-valid-slug "^1.0.0"
     type-fest "^1.2.2"
 
-"@varasto/query@^1.0.2":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@varasto/query/-/query-1.1.0.tgz#d439ffa84e48ad66ef205bca624b44b07cba38a7"
-  integrity sha512-Q/BjoSDWK0sJP3sCiRL7k2OHAqwgE+OXnqResPJksBvIsQhEhaMnIQuG2ZticCDbvOmsbn7QKkerQWxtcRqyUw==
-  dependencies:
-    "@varasto/storage" "^3.1.0"
-    lodash.partition "^4.6.0"
-    simple-json-match "^1.0.7"
-
-"@varasto/storage@^3.0.0", "@varasto/storage@^3.1.0", "@varasto/storage@^3.1.2":
+"@varasto/storage@^3.0.0", "@varasto/storage@^3.1.0":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@varasto/storage/-/storage-3.1.2.tgz#eaae377dead489d80836a42f160a8ffddbe48f2f"
   integrity sha512-StFvTorFBnVMpUAUEphew/jrvyGE+t/oHquBk/1T8+qRaMHPQ6/i4TxvI6UuEbfTqTtC3ti0b7FcZikEBeHXtA==
@@ -6944,13 +6935,6 @@ sigstore@^1.0.0:
     "@sigstore/protobuf-specs" "^0.1.0"
     make-fetch-happen "^11.0.1"
     tuf-js "^1.1.3"
-
-simple-json-match@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/simple-json-match/-/simple-json-match-1.0.7.tgz#a875fdcdc8ce6287e3489f3f5c31ee4f826f635c"
-  integrity sha512-47674bRfrjNk9QmXerNtyiA6aV9lqzNqpWBV3So2dERi4otDaKRbc1H02wnVpWGtuJE1nU0cd6yoLFTKxafahQ==
-  dependencies:
-    jsonpath "^1.1.1"
 
 simple-json-match@^1.1.0:
   version "1.1.0"

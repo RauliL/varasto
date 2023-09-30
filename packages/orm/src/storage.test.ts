@@ -1,4 +1,5 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import all from 'it-all';
 
 import { Field, Key, Model } from './decorator';
 import { ConfigurationError, ModelDoesNotExistError } from './error';
@@ -94,11 +95,13 @@ describe('storage utilities', () => {
       await storage.set('users', 'rick', { username: 'rick', isActive: true });
       await storage.set('users', 'john', { username: 'john', isActive: true });
 
-      return updateAll(
-        storage,
-        User,
-        { username: { $neq: 'mike' } },
-        { isActive: false }
+      return all(
+        updateAll(
+          storage,
+          User,
+          { username: { $neq: 'mike' } },
+          { isActive: false }
+        )
       ).then(async (result) => {
         expect(result).toHaveLength(2);
         expect(result[0]).toBeInstanceOf(User);
