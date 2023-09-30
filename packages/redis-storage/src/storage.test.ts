@@ -1,4 +1,5 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
+import all from 'it-all';
 import { createClient } from 'redis';
 
 import { createRedisStorage } from './storage';
@@ -13,7 +14,7 @@ describe('Redis storage', () => {
 
   describe('keys()', () => {
     it('should fail if given namespace is not valid slug', () =>
-      expect(storage.keys('n;amespace')).rejects.toBeInstanceOf(
+      expect(all(storage.keys('n;amespace'))).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
 
@@ -22,7 +23,7 @@ describe('Redis storage', () => {
       client.hset('namespace', 'b', '{"b":1}');
       client.hset('namespace', 'c', '{"c":1}');
 
-      return expect(storage.keys('namespace')).resolves.toEqual([
+      return expect(all(storage.keys('namespace'))).resolves.toEqual([
         'a',
         'b',
         'c',
@@ -30,12 +31,12 @@ describe('Redis storage', () => {
     });
 
     it('should return empty array if namespace if empty', () =>
-      expect(storage.keys('namespace')).resolves.toEqual([]));
+      expect(all(storage.keys('namespace'))).resolves.toEqual([]));
   });
 
   describe('values()', () => {
     it('should fail if given namespace is not valid slug', () =>
-      expect(storage.values('n;amespace')).rejects.toBeInstanceOf(
+      expect(all(storage.values('n;amespace'))).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
 
@@ -44,7 +45,7 @@ describe('Redis storage', () => {
       client.hset('namespace', 'b', '{"b":1}');
       client.hset('namespace', 'c', '{"c":1}');
 
-      return storage.values('namespace').then((values) => {
+      return all(storage.values('namespace')).then((values) => {
         expect(values).toHaveLength(3);
         expect(values).toContainEqual({ a: 1 });
         expect(values).toContainEqual({ b: 1 });
@@ -57,16 +58,18 @@ describe('Redis storage', () => {
       client.hset('namespace', 'b', 'fail');
       client.hset('namespace', 'c', '{"c":1}');
 
-      return expect(storage.values('namespace')).rejects.toBeInstanceOf(Error);
+      return expect(all(storage.values('namespace'))).rejects.toBeInstanceOf(
+        Error
+      );
     });
 
     it('should return empty array if namespace is empty', () =>
-      expect(storage.values('namespace')).resolves.toEqual([]));
+      expect(all(storage.values('namespace'))).resolves.toEqual([]));
   });
 
   describe('entries', () => {
     it('should fail if given namespace is not valid slug', () =>
-      expect(storage.entries('n;amespace')).rejects.toBeInstanceOf(
+      expect(all(storage.entries('n;amespace'))).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
 
@@ -75,7 +78,7 @@ describe('Redis storage', () => {
       client.hset('namespace', 'b', '{"b":1}');
       client.hset('namespace', 'c', '{"c":1}');
 
-      return storage.entries('namespace').then((entries) => {
+      return all(storage.entries('namespace')).then((entries) => {
         expect(entries).toHaveLength(3);
         expect(entries).toContainEqual(['a', { a: 1 }]);
         expect(entries).toContainEqual(['b', { b: 1 }]);
@@ -88,13 +91,13 @@ describe('Redis storage', () => {
       client.hset('namespace', 'b', 'fail');
       client.hset('namespace', 'c', '{"c":1}');
 
-      return expect(storage.entries('namespace')).rejects.toBeInstanceOf(
+      return expect(all(storage.entries('namespace'))).rejects.toBeInstanceOf(
         Error
       );
     });
 
     it('should return empty array if namespace is empty', () =>
-      expect(storage.entries('namespace')).resolves.toEqual([]));
+      expect(all(storage.entries('namespace'))).resolves.toEqual([]));
   });
 
   describe('has()', () => {

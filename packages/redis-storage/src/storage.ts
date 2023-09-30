@@ -1,8 +1,10 @@
 import {
+  Entry,
   InvalidSlugError,
   ItemDoesNotExistError,
   Storage,
 } from '@varasto/storage';
+import { promisify } from 'util';
 
 import { isValidSlug } from 'is-valid-slug';
 import { RedisClient } from 'redis';
@@ -23,90 +25,49 @@ export const createRedisStorage = (
   const serialize = options.serialize ?? JSON.stringify;
   const deserialize = options.deserialize ?? JSON.parse;
 
-  return {
-    keys(namespace: string): Promise<string[]> {
+  return new (class extends Storage {
+    async *keys(namespace: string): AsyncGenerator<string> {
       if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
+        throw new InvalidSlugError('Given namespace is not valid slug');
       }
 
-      return new Promise<string[]>((resolve, reject) => {
-        client.hkeys(namespace, (err, reply) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(reply);
-          }
-        });
-      });
-    },
+      const hkeys = promisify(client.hkeys);
+      const reply = await hkeys.call(client, namespace);
 
-    values<T extends JsonObject>(namespace: string): Promise<T[]> {
+      for (const key of reply) {
+        yield key;
+      }
+    }
+
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
       if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
+        throw new InvalidSlugError('Given namespace is not valid slug');
       }
 
-      return new Promise<T[]>((resolve, reject) => {
-        client.hvals(namespace, (err, reply) => {
-          const result: T[] = [];
-          let error: Error | undefined;
+      const hvals = promisify(client.hvals);
+      const reply = await hvals.call(client, namespace);
 
-          if (err) {
-            reject(err);
-            return;
-          }
-          reply.forEach((data) => {
-            try {
-              result.push(deserialize(data));
-            } catch (err) {
-              error = err;
-            }
-          });
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
-        });
-      });
-    },
+      for (const data of reply) {
+        yield deserialize(data);
+      }
+    }
 
-    entries<T extends JsonObject>(namespace: string): Promise<[string, T][]> {
+    async *entries<T extends JsonObject>(
+      namespace: string
+    ): AsyncGenerator<Entry<T>> {
       if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
+        throw new InvalidSlugError('Given namespace is not valid slug');
       }
 
-      return new Promise<[string, T][]>((resolve, reject) => {
-        client.hgetall(namespace, (err, reply) => {
-          const result: [string, T][] = [];
-          let error: Error | undefined;
+      const hgetall = promisify(client.hgetall);
+      const reply = await hgetall.call(client, namespace);
 
-          if (err) {
-            reject(err);
-            return;
-          }
-          if (reply != null) {
-            Object.keys(reply).forEach((key) => {
-              try {
-                result.push([key, deserialize(reply[key])]);
-              } catch (err) {
-                error = err;
-              }
-            });
-          }
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
-        });
-      });
-    },
+      if (reply != null) {
+        for (const key of Object.keys(reply)) {
+          yield [key, deserialize(reply[key])];
+        }
+      }
+    }
 
     has(namespace: string, key: string): Promise<boolean> {
       if (!isValidSlug(namespace)) {
@@ -128,7 +89,7 @@ export const createRedisStorage = (
           }
         });
       });
-    },
+    }
 
     get<T extends JsonObject>(
       namespace: string,
@@ -159,7 +120,7 @@ export const createRedisStorage = (
           }
         });
       });
-    },
+    }
 
     set<T extends JsonObject>(
       namespace: string,
@@ -194,7 +155,7 @@ export const createRedisStorage = (
           }
         });
       });
-    },
+    }
 
     update<T extends JsonObject>(
       namespace: string,
@@ -212,7 +173,7 @@ export const createRedisStorage = (
           new ItemDoesNotExistError('Item does not exist')
         );
       });
-    },
+    }
 
     delete(namespace: string, key: string): Promise<boolean> {
       if (!isValidSlug(namespace)) {
@@ -234,6 +195,6 @@ export const createRedisStorage = (
           }
         });
       });
-    },
-  };
+    }
+  })();
 };
