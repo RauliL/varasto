@@ -1,8 +1,12 @@
 # @varasto/query
 
+[![npm][npm-image]][npm-url]
+
 Collection of useful query and bulk operation utilities for [Varasto storages]
 that use [simple-json-match] schemas for finding entries.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/query.svg
+[npm-url]: https://npmjs.org/package/@varasto/query
 [varasto storages]: https://www.npmjs.com/package/@varasto/storage
 [simple-json-match]: https://www.npmjs.com/package/simple-json-match
 
@@ -69,7 +73,7 @@ findAll<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<T[]>
+): AsyncGenerator<T>
 ```
 
 Searches for entries from given namespace that match given schema and returns
@@ -83,7 +87,7 @@ findAllKeys(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<string[]>
+): AsyncGenerator<string>
 ```
 
 Searches for entries from given namespace that match given schema and returns
@@ -97,7 +101,7 @@ findAllEntries<T extends JsonObject>(
   storage: Storage,
   namespace: string,
   schema: Schema
-): Promise<[string, T][]>
+): AsyncGenerator<[string, T]>
 ```
 
 Searches for entries from given namespace that match given schema and returns
@@ -160,7 +164,7 @@ updateAll<T extends JsonObject>(
   namespace: string,
   schema: Schema,
   value: Partial<T>
-): Promise<T[]>
+): AsyncGenerator<T>
 ```
 
 Performs an bulk update where all entries from given namespace that match the
@@ -175,7 +179,7 @@ updateAllEntries<T extends JsonObject>(
   namespace: string,
   schema: Schema,
   value: Partial<T>
-): Promise<[string, T][]>
+): AsyncGenerator<[string, T]>
 ```
 
 Performs an bulk update where all entries from given namespace that match the

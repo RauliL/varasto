@@ -1661,6 +1661,15 @@
     is-valid-slug "^1.0.0"
     type-fest "^1.2.2"
 
+"@varasto/query@^1.0.2":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@varasto/query/-/query-1.1.0.tgz#d439ffa84e48ad66ef205bca624b44b07cba38a7"
+  integrity sha512-Q/BjoSDWK0sJP3sCiRL7k2OHAqwgE+OXnqResPJksBvIsQhEhaMnIQuG2ZticCDbvOmsbn7QKkerQWxtcRqyUw==
+  dependencies:
+    "@varasto/storage" "^3.1.0"
+    lodash.partition "^4.6.0"
+    simple-json-match "^1.0.7"
+
 "@varasto/storage@^3.0.0", "@varasto/storage@^3.1.0", "@varasto/storage@^3.1.2":
   version "3.1.2"
   resolved "https://registry.yarnpkg.com/@varasto/storage/-/storage-3.1.2.tgz#eaae377dead489d80836a42f160a8ffddbe48f2f"
@@ -6930,6 +6939,13 @@ simple-json-match@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/simple-json-match/-/simple-json-match-1.0.7.tgz#a875fdcdc8ce6287e3489f3f5c31ee4f826f635c"
   integrity sha512-47674bRfrjNk9QmXerNtyiA6aV9lqzNqpWBV3So2dERi4otDaKRbc1H02wnVpWGtuJE1nU0cd6yoLFTKxafahQ==
+  dependencies:
+    jsonpath "^1.1.1"
+
+simple-json-match@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/simple-json-match/-/simple-json-match-1.1.0.tgz#09c78ec5621ec0be6f9d46e8f6c4d09dd6c822a0"
+  integrity sha512-jGUwoQt3FkwpB9uc0UgEU41IACfMUvD+DsAsCsDII2H2EPl8Ngq0a7HzHx3B6Myuym/heCJaMJI8xVher134Hg==
   dependencies:
     jsonpath "^1.1.1"
 
