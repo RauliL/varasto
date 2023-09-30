@@ -1652,6 +1652,13 @@
     "@typescript-eslint/types" "4.28.3"
     eslint-visitor-keys "^2.0.0"
 
+"@varasto/storage@^3.0.0", "@varasto/storage@^3.1.0", "@varasto/storage@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@varasto/storage/-/storage-3.1.2.tgz#eaae377dead489d80836a42f160a8ffddbe48f2f"
+  integrity sha512-StFvTorFBnVMpUAUEphew/jrvyGE+t/oHquBk/1T8+qRaMHPQ6/i4TxvI6UuEbfTqTtC3ti0b7FcZikEBeHXtA==
+  dependencies:
+    type-fest "^1.2.2"
+
 "@yarnpkg/lockfile@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@yarnpkg/lockfile/-/lockfile-1.1.0.tgz#e77a97fbd345b76d83245edcd17d393b1b41fb31"

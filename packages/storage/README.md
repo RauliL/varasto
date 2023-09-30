@@ -1,6 +1,11 @@
 # @varasto/storage
 
+[![npm][npm-image]][npm-url]
+
 Type definitions for Varasto JSON key-value store.
+
+[npm-image]: https://img.shields.io/npm/v/@varasto/storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/storage
 
 ## Installation
 
@@ -10,9 +15,10 @@ $ npm install --save @varasto/storage
 
 ## Usage
 
-This package only provides TypeScript type definitions for Varasto storage
-implementation and an custom JavaScript error class used to indicate that
-an item identifier (either namespace or key) does not pass the slug validation.
+This package provides abstract base class for Varasto storage implementations
+as well as error classes to indicate that an item identifier (either namespace
+or key) does not pass the slug validation or that an item being updated does
+not exist.
 
 Usually you don't need to use or install this package directly, but use an
 storage implementation package instead. Below is an list of storage
@@ -120,21 +126,21 @@ occurs while testing whether item exists or not.
 ```TypeScript
 keys(
   namespace: string
-): Promise<string[]>
+): AsyncGenerator<string>
 ```
 
-Returns keys of all items stored under an namespace. The promise will fail if
-an I/O error occurs while listing the keys.
+Lists keys of all items stored under an namespace. The promise will fail if an
+I/O error occurs while listing the keys.
 
 ### Listing values stored in a namespace
 
 ```TypeScript
 values<T extends JsonObject>(
   namespace: string
-): Promise<T[]>
+): AsyncGenerator<T>
 ```
 
-Returns all items stored under an namespace. The promise will fail if an I/O
+Lists all items stored under an namespace. The promise will fail if an I/O
 error occurs.
 
 ### Listing entries stored in a namespace
@@ -142,8 +148,8 @@ error occurs.
 ```TypeScript
 entries<T extends JsonObject>(
   namespace: string
-): Promise<[string, T][]>
+): AsyncGenerator<[string, T]>
 ```
 
-Returns all items stored under an namespace, with the keys they are identified
+Lists all items stored under an namespace, with the keys they are identified
 by. The promise will fail if an I/O error occurs.
