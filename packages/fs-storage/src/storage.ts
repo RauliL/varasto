@@ -1,4 +1,4 @@
-import { ItemDoesNotExistError, Storage } from '@varasto/storage';
+import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
 import fs from 'fs';
 import path from 'path';
 import { JsonObject } from 'type-fest';
@@ -22,8 +22,8 @@ export const createFileSystemStorage = (
   const serialize = options.serialize ?? JSON.stringify;
   const deserialize = options.deserialize ?? JSON.parse;
 
-  return {
-    has: (namespace: string, key: string): Promise<boolean> => {
+  return new (class extends Storage {
+    has(namespace: string, key: string): Promise<boolean> {
       let filename: string;
 
       try {
@@ -33,49 +33,46 @@ export const createFileSystemStorage = (
       }
 
       return Promise.resolve(fs.existsSync(filename));
-    },
+    }
 
-    keys: (namespace: string): Promise<string[]> =>
-      globNamespace(dir, namespace).then((matches) =>
-        matches.map((match) => path.basename(match, '.json'))
-      ),
+    async *keys(namespace: string): AsyncGenerator<string> {
+      const matches = await globNamespace(dir, namespace);
 
-    values: <T extends JsonObject>(namespace: string): Promise<T[]> =>
-      globNamespace(dir, namespace)
-        .then((filenames) =>
-          Promise.all(
-            filenames.map((filename) =>
-              readItem(filename, encoding, deserialize)
-            )
-          )
-        )
-        .then(
-          (values) => values.filter((value) => value !== undefined) as T[]
-        ),
+      for (const match of matches) {
+        yield path.basename(match, '.json');
+      }
+    }
 
-    entries: <T extends JsonObject>(
+    async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
+      const filenames = await globNamespace(dir, namespace);
+
+      for (const filename of filenames) {
+        const value = await readItem<T>(filename, encoding, deserialize);
+
+        if (value !== undefined) {
+          yield value;
+        }
+      }
+    }
+
+    async *entries<T extends JsonObject>(
       namespace: string
-    ): Promise<[string, T][]> =>
-      globNamespace(dir, namespace)
-        .then((filenames) =>
-          Promise.all(
-            filenames.map((filename) =>
-              readItem(filename, encoding, deserialize).then((value) => [
-                path.basename(filename, '.json'),
-                value,
-              ])
-            )
-          )
-        )
-        .then(
-          (entries) =>
-            entries.filter((entry) => entry[1] !== undefined) as [string, T][]
-        ),
+    ): AsyncGenerator<Entry<T>> {
+      const filenames = await globNamespace(dir, namespace);
 
-    get: <T extends JsonObject>(
+      for (const filename of filenames) {
+        const value = await readItem<T>(filename, encoding, deserialize);
+
+        if (value !== undefined) {
+          yield [path.basename(filename, '.json'), value];
+        }
+      }
+    }
+
+    get<T extends JsonObject>(
       namespace: string,
       key: string
-    ): Promise<T | undefined> => {
+    ): Promise<T | undefined> {
       let filename: string;
 
       try {
@@ -85,14 +82,14 @@ export const createFileSystemStorage = (
       }
 
       return readItem<T>(filename, encoding, deserialize);
-    },
+    }
 
-    set: <T extends JsonObject>(
+    set<T extends JsonObject>(
       namespace: string,
       key: string,
       value: T
-    ): Promise<void> =>
-      createNamespace(dir, namespace).then(
+    ): Promise<void> {
+      return createNamespace(dir, namespace).then(
         () =>
           new Promise<void>((resolve, reject) => {
             let filename: string;
@@ -112,13 +109,14 @@ export const createFileSystemStorage = (
               }
             });
           })
-      ),
+      );
+    }
 
-    update: <T extends JsonObject>(
+    update<T extends JsonObject>(
       namespace: string,
       key: string,
       value: Partial<T>
-    ): Promise<T> => {
+    ): Promise<T> {
       let filename: string;
 
       try {
@@ -146,10 +144,10 @@ export const createFileSystemStorage = (
           new ItemDoesNotExistError('Item does not exist')
         );
       });
-    },
+    }
 
-    delete: (namespace: string, key: string): Promise<boolean> =>
-      new Promise<boolean>((resolve, reject) => {
+    delete(namespace: string, key: string): Promise<boolean> {
+      return new Promise<boolean>((resolve, reject) => {
         let filename: string;
 
         try {
@@ -177,6 +175,7 @@ export const createFileSystemStorage = (
             }
           });
         });
-      }),
-  };
+      });
+    }
+  })();
 };

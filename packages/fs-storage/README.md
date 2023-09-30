@@ -1,7 +1,11 @@
 # @varasto/fs-storage
 
+[![npm][npm-image]][npm-url]
+
 Implementation of [storage] which stores data to hard disk.
 
+[npm-image]: https://img.shields.io/npm/v/@varasto/fs-storage.svg
+[npm-url]: https://npmjs.org/package/@varasto/fs-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
 
 ## Installation
