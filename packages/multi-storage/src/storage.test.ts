@@ -1,4 +1,5 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import all from 'it-all';
 
 import { createMultiStorage } from './storage';
 
@@ -19,11 +20,16 @@ describe('multi storage', () => {
       await memoryStorage1.set('items', '3', { id: 3 });
       await memoryStorage2.set('items', '4', { id: 4 });
 
-      expect(await multiStorage.keys('items')).toEqual(['1', '2', '3', '4']);
+      expect(await all(multiStorage.keys('items'))).toEqual([
+        '1',
+        '2',
+        '3',
+        '4',
+      ]);
     });
 
     it('should return empty array if no storages are given', async () => {
-      expect(await createMultiStorage().keys('items')).toEqual([]);
+      expect(await all(createMultiStorage().keys('items'))).toEqual([]);
     });
   });
 
@@ -34,7 +40,7 @@ describe('multi storage', () => {
       await memoryStorage1.set('items', '3', { id: 3 });
       await memoryStorage2.set('items', '4', { id: 4 });
 
-      expect(await multiStorage.values('items')).toEqual([
+      expect(await all(multiStorage.values('items'))).toEqual([
         { id: 1 },
         { id: 2 },
         { id: 3 },
@@ -43,7 +49,7 @@ describe('multi storage', () => {
     });
 
     it('should return empty array if no storages are given', async () => {
-      expect(await createMultiStorage().values('items')).toEqual([]);
+      expect(await all(createMultiStorage().values('items'))).toEqual([]);
     });
   });
 
@@ -56,7 +62,7 @@ describe('multi storage', () => {
       await memoryStorage2.set('items', '4', { id: 4 });
       await memoryStorage2.set('items', '5', { id: 5 });
 
-      expect(await multiStorage.entries('items')).toEqual([
+      expect(await all(multiStorage.entries('items'))).toEqual([
         ['1', { id: 1 }],
         ['2', { id: 2 }],
         ['3', { id: 3 }],
@@ -66,7 +72,7 @@ describe('multi storage', () => {
     });
 
     it('should return empty array if no storages are given', async () => {
-      expect(await createMultiStorage().entries('items')).toEqual([]);
+      expect(await all(createMultiStorage().entries('items'))).toEqual([]);
     });
   });
 

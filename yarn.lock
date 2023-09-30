@@ -1657,7 +1657,7 @@
     "@typescript-eslint/types" "4.28.3"
     eslint-visitor-keys "^2.0.0"
 
-"@varasto/memory-storage@^1.0.0", "@varasto/memory-storage@^1.0.1", "@varasto/memory-storage@^1.1.0":
+"@varasto/memory-storage@^1.0.0", "@varasto/memory-storage@^1.0.1":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@varasto/memory-storage/-/memory-storage-1.1.0.tgz#916ee2bb65aea7eb022235d16e8e42efa13cdcee"
   integrity sha512-W8KZx8bkN+ru3mNdveF4+8EKgHocDnYS/PtKBxubjcSiAGUjP65Tbg0x78wOVY3Z/NEetbGbI4TPfHraO4sVCw==
