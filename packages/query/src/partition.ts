@@ -1,5 +1,4 @@
 import { Entry, Storage } from '@varasto/storage';
-import p from 'lodash.partition';
 import match, { Schema } from 'simple-json-match';
 import { JsonObject } from 'type-fest';
 

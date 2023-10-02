@@ -43,11 +43,9 @@
   },
   "dependencies": {
     "@varasto/storage": "^4.0.0",
-    "lodash.partition": "^4.6.0",
     "simple-json-match": "^1.1.0"
   },
   "devDependencies": {
-    "@types/lodash.partition": "^4.6.6",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
     "@typescript-eslint/parser": "^4.28.3",
     "@varasto/memory-storage": "^2.0.0",
