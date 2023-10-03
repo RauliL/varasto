@@ -318,6 +318,48 @@
         Returns all items stored under an namespace, with the keys they are
         identified by. The promise will fail if an I/O error occurs.
       </p>
+
+      <h3>Searching for entries stored in a namespace</h3>
+      <pre><code class="language-typescript">find&lt;T extends JsonObject&gt;(
+  namespace: string,
+  callback: (value: T, key: string) =&gt; boolean
+): Promise&lt;[string, T | undefined]&gt;</code></pre>
+      <p>
+        Returns the first entry from specified namespace to which given
+        callback function returns <code>true</code> for, or
+        <code>undefined</code> if the callback function does not return
+        <code>true</code> for any entry in the namespace.
+      </p>
+      <p>
+        The promise will fail if an I/O error occurs.
+      </p>
+
+      <h3>Filtering entries stored in a namespace</h3>
+      <pre><code class="language-typescript">filter&lt;T extends JsonObject&gt;(
+  namespace: string,
+  callback: (value: T, key: string) =&gt; boolean
+): AsyncGenerator&lt;[string, T]&gt;</code></pre>
+      <p>
+        Goes through all entries from the given namespace, returning ones for
+        which the given callback function returns <code>true</code> for.
+      </p>
+      <p>
+        The promise will fail if an I/O error occurs.
+      </p>
+
+      <h3>Map operation</h3>
+      <pre><code class="language-typescript">map&lt;T extends JsonObject, U extends JsonObject&gt;(
+  namespace: string,
+  callback: (value: T, key: string) =&gt; U
+): AsyncGenerator&lt;[string, U]&gt;</code></pre>
+      <p>
+        Goes through all entries from given namespace, passing them to the
+        given callback function and returning whatever the callback function
+        returned.
+      </p>
+      <p>
+        The promise will fail if an I/O error occurs.
+      </p>
     </div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
