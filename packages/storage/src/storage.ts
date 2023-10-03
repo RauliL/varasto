@@ -1,10 +1,7 @@
 import { JsonObject } from 'type-fest';
-import { ItemDoesNotExistError } from './errors';
 
-/**
- * Represents an entry in key-value store.
- */
-export type Entry<T extends JsonObject> = [string, T];
+import { ItemDoesNotExistError } from './errors';
+import { Entry, FilterCallback, MapCallback } from './types';
 
 /**
  * JSON key-value store that persists JSON objects identified by namespace and
@@ -75,6 +72,60 @@ export abstract class Storage {
       if (entry[0] === key) {
         return entry[1];
       }
+    }
+  }
+
+  /**
+   * Returns the first entry from specified namespace to which given callback
+   * function returns `true` for, or `undefined` if the callback function does
+   * not return `true` for any entry in the namespace.
+   *
+   * The promise will fail if an I/O error occurs, or if given namespace is not
+   * a valid slug.
+   */
+  async find<T extends JsonObject>(
+    namespace: string,
+    callback: FilterCallback<T>
+  ): Promise<Entry<T> | undefined> {
+    for await (const entry of this.entries<T>(namespace)) {
+      if (callback(entry[1], entry[0])) {
+        return entry;
+      }
+    }
+  }
+
+  /**
+   * Goes through all entries from the given namespace, returning ones for
+   * which the given callback functions returns `true` for.
+   *
+   * The promise will fail if an I/O error occurs, or if given namespace is not
+   * a valid slug.
+   */
+  async *filter<T extends JsonObject>(
+    namespace: string,
+    callback: FilterCallback<T>
+  ): AsyncGenerator<Entry<T>> {
+    for await (const entry of this.entries<T>(namespace)) {
+      if (callback(entry[1], entry[0])) {
+        yield entry;
+      }
+    }
+  }
+
+  /**
+   * Goes through all entries from the given namespace, passing them to the
+   * given callback function and returning whatever the callback function
+   * returned.
+   *
+   * The promise will fail if an I/O error occurs, or if given namespace is not
+   * a valid slug.
+   */
+  async *map<T extends JsonObject, U extends JsonObject = T>(
+    namespace: string,
+    callback: MapCallback<T, U>
+  ): AsyncGenerator<Entry<U>> {
+    for await (const [key, value] of this.entries<T>(namespace)) {
+      yield [key, callback(value, key)];
     }
   }
 
