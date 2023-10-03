@@ -1,6 +1,6 @@
 {
   "name": "@varasto/storage",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "Type definitions for Varasto key-value storage",
   "license": "MIT",
   "author": "Rauli Laine <rauli.laine@iki.fi>",
@@ -45,6 +45,7 @@
     "@typescript-eslint/parser": "^4.28.3",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
+    "is-valid-slug": "^1.0.0",
     "it-all": "^1.0.6",
     "jest": "^29.7.0",
     "prettier": "^2.3.2",

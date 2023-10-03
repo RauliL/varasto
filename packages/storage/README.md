@@ -7,6 +7,20 @@ Type definitions for Varasto JSON key-value store.
 [npm-image]: https://img.shields.io/npm/v/@varasto/storage.svg
 [npm-url]: https://npmjs.org/package/@varasto/storage
 
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Storing items](#storing-items)
+  - [Retrieving items](#retrieving-items)
+  - [Removing items](#removing-items)
+  - [Searching for entries](#searching-for-entries)
+  - [Updating already existing item](#updating-already-existing-item)
+  - [Testing whether an item exists or not](#testing-whether-an-item-exists-or-not)
+  - [Listing keys stored in a namespace](#listing-keys-stored-in-a-namespace)
+  - [Listing values stored in a namespace](#listing-values-stored-in-a-namespace)
+  - [Listing entries stored in a namespace](#listing-entries-stored-in-a-namespace)
+  - [Filtering entries stored in a namespace](#filtering-entries-stored-in-a-namespace)
+  - [Map operation](#map-operation)
+
 ## Installation
 
 ```shell
@@ -94,6 +108,22 @@ promise will resolve into a boolean value which tells whether an value with
 the given identifier existed or not. The promise will fail if an I/O error
 occurs while removing the item.
 
+### Searching for entries
+
+```TypeScript
+find<T extends JsonObject>(
+  namespace: string,
+  callback: (value: T, key: string) => boolean
+): Promise<[string, T | undefined]>
+```
+
+Returns the first entry from specified namespace to which given callback
+function returns `true` for, or `undefined` if the callback function does not
+return `true` for any entry in the namespace.
+
+The promise will fail if an I/O error occurs, or if given namespace is not a
+valid slug.
+
 ### Updating already existing item
 
 ```TypeScript
@@ -153,3 +183,33 @@ entries<T extends JsonObject>(
 
 Lists all items stored under an namespace, with the keys they are identified
 by. The promise will fail if an I/O error occurs.
+
+### Filtering entries stored in a namespace
+
+```TypeScript
+filter<T extends JsonObject>(
+  namespace: string,
+  callback: (value: T, key: string) => boolean
+): AsyncGenerator<[string, T]>
+```
+
+Goes through all entries from the given namespace, returning ones for which
+the given callback functions returns `true` for.
+
+The promise will fail if an I/O error occurs, or if given namespace is not a
+valid slug.
+
+### Map operation
+
+```TypeScript
+map<T extends JsonObject, U extends JsonObject>(
+  namespace: string,
+  callback: (value: T, key: string) => U
+): AsyncGenerator<[string, U]>
+```
+
+Goes through all entries from the given namespace, passing them to the given
+callback function and returning whatever the callback function returned.
+
+The promise will fail if an I/O error occurs, or if given namespace is not a
+valid slug.
