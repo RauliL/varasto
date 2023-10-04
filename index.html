@@ -323,7 +323,7 @@
       <pre><code class="language-typescript">find&lt;T extends JsonObject&gt;(
   namespace: string,
   callback: (value: T, key: string) =&gt; boolean
-): Promise&lt;[string, T | undefined]&gt;</code></pre>
+): Promise&lt;[string, T] | undefined&gt;</code></pre>
       <p>
         Returns the first entry from specified namespace to which given
         callback function returns <code>true</code> for, or
