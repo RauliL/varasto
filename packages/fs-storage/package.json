@@ -1,6 +1,6 @@
 {
   "name": "@varasto/fs-storage",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Varasto storage implementation that stores data to hard disk",
   "license": "MIT",
   "keywords": [
@@ -14,7 +14,7 @@
     "./dist"
   ],
   "engines": {
-    "node": ">=16.0"
+    "node": ">=18.0"
   },
   "homepage": "https://rauli.dev/varasto",
   "repository": {
@@ -40,18 +40,17 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": "^4.0.0",
-    "glob": "^7.1.7",
+    "@varasto/storage": "^5.0.0",
+    "glob": "^10.3.10",
     "is-valid-slug": "^1.0.0",
-    "mkdirp": "^1.0.4"
+    "mkdirp": "^3.0.1"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.4",
-    "@types/mkdirp": "^1.0.2",
+    "@types/jest": "^29.5.5",
     "@types/mock-fs": "^4.13.2",
-    "@types/node": "^16.3.3",
-    "@typescript-eslint/eslint-plugin": "^4.28.3",
-    "@typescript-eslint/parser": "^4.28.3",
+    "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "it-all": "^1.0.6",
@@ -60,6 +59,7 @@
     "prettier": "^2.3.2",
     "rimraf": "^4.4.1",
     "ts-jest": "^29.1.0",
-    "typescript": "^4.3.5"
+    "type-fest": "^4.3.3",
+    "typescript": "^5.2.2"
   }
 }

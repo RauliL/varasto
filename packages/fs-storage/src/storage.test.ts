@@ -17,6 +17,15 @@ describe('file system storage', () => {
           '2.json': '{"a":2}',
           '3.json': '{"a":3}',
         },
+        unwriteable: mock.directory({
+          items: {
+            '1.json': mock.file({
+              content: '{"a":1}',
+              mode: 555,
+            }),
+          },
+          mode: 555,
+        }),
       },
     });
   });
@@ -29,11 +38,22 @@ describe('file system storage', () => {
 
     it('should return false if the item does not exist', () =>
       expect(storage.has('foo', 'non-existent')).resolves.toBe(false));
+
+    it('should return false if given namespace is not valid slug', () =>
+      expect(storage.has('f;o;o', 'bar')).resolves.toBe(false));
+
+    it('should return false if given key is not valid slug', () =>
+      expect(storage.has('foo', 'b;a;r')).resolves.toBe(false));
   });
 
   describe('keys()', () => {
     it('should return keys of all found items', () =>
-      expect(all(storage.keys('foo'))).resolves.toEqual(['1', '2', '3']));
+      all(storage.keys('foo')).then((result) => {
+        expect(result).toHaveLength(3);
+        expect(result).toContainEqual('1');
+        expect(result).toContainEqual('2');
+        expect(result).toContainEqual('3');
+      }));
 
     it('should return empty array if the namespace does not contain items', () =>
       expect(all(storage.keys('bar'))).resolves.toEqual([]));
@@ -41,11 +61,12 @@ describe('file system storage', () => {
 
   describe('values()', () => {
     it('should return values of all found items', () =>
-      expect(all(storage.values('foo'))).resolves.toEqual([
-        { a: 1 },
-        { a: 2 },
-        { a: 3 },
-      ]));
+      all(storage.values('foo')).then((result) => {
+        expect(result).toHaveLength(3);
+        expect(result).toContainEqual({ a: 1 });
+        expect(result).toContainEqual({ a: 2 });
+        expect(result).toContainEqual({ a: 3 });
+      }));
 
     it('should return empty array if the namespace does not contain items', () =>
       expect(all(storage.values('bar'))).resolves.toEqual([]));
@@ -53,11 +74,12 @@ describe('file system storage', () => {
 
   describe('entries', () => {
     it('should return keys and values of all found items', () =>
-      expect(all(storage.entries('foo'))).resolves.toEqual([
-        ['1', { a: 1 }],
-        ['2', { a: 2 }],
-        ['3', { a: 3 }],
-      ]));
+      all(storage.entries('foo')).then((result) => {
+        expect(result).toHaveLength(3);
+        expect(result).toContainEqual(['1', { a: 1 }]);
+        expect(result).toContainEqual(['2', { a: 2 }]);
+        expect(result).toContainEqual(['3', { a: 3 }]);
+      }));
 
     it('should return empty array if the namespace does not contain items', () =>
       expect(all(storage.entries('bar'))).resolves.toEqual([]));
@@ -111,6 +133,11 @@ describe('file system storage', () => {
       expect(storage.set('foo', 'b;ar', { a: 1 })).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
+
+    it('should fail if an I/O error occurs', () =>
+      expect(storage.set('unwriteable', '1', { a: 1 })).rejects.toBeInstanceOf(
+        Error
+      ));
   });
 
   describe('update()', () => {
@@ -138,6 +165,11 @@ describe('file system storage', () => {
       expect(storage.update('foo', 'b;ar', { a: 1 })).rejects.toBeInstanceOf(
         InvalidSlugError
       ));
+
+    it('should fail if an I/O error occurs', () =>
+      expect(
+        storage.update('unwriteable', '1', { a: 2 })
+      ).rejects.toBeInstanceOf(Error));
   });
 
   describe('delete()', () => {
@@ -158,6 +190,11 @@ describe('file system storage', () => {
     it('should fail if given key is not valid slug', () =>
       expect(storage.delete('foo', 'b;ar')).rejects.toBeInstanceOf(
         InvalidSlugError
+      ));
+
+    it('should fail if an I/O error occurs', () =>
+      expect(storage.delete('unwriteable', '1')).rejects.toBeInstanceOf(
+        Error
       ));
   });
 });

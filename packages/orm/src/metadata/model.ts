@@ -83,7 +83,7 @@ export class ModelMetadata {
 
   public save<T extends Object>(storage: Storage, instance: T): Promise<T> {
     const data: JsonObject = {};
-    let key: string;
+    let key: string | undefined;
 
     if (!this.keyPropertyName) {
       return Promise.reject(
@@ -92,7 +92,10 @@ export class ModelMetadata {
     }
     this.clean(instance);
     this.fields.forEach((field) => field.save(instance, data));
-    if (!(key = Reflect.get(instance, this.keyPropertyName))) {
+
+    // Generate a key if the model does not have one already.
+    key = Reflect.get(instance, this.keyPropertyName) as string | undefined;
+    if (!key) {
       key = this.keyGenerator ? this.keyGenerator(instance) : uuid();
       Reflect.set(instance, this.keyPropertyName, key);
     }

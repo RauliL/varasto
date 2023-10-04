@@ -2,7 +2,6 @@ import { JsonObject } from 'type-fest';
 import { ValidationError } from '../error';
 
 import { FieldOptions } from '../options';
-import { FieldType } from '../types';
 import { ModelMetadata } from './model';
 
 export class FieldMetadata {
@@ -21,7 +20,12 @@ export class FieldMetadata {
   }
 
   public load<T extends Object>(instance: T, data: JsonObject) {
-    let value = Reflect.get(data, this.propertyName);
+    let value = Reflect.get(data, this.propertyName) as
+      | string
+      | number
+      | boolean
+      | null
+      | undefined;
 
     if (value === undefined) {
       value = this.options.default;
@@ -35,7 +39,12 @@ export class FieldMetadata {
   }
 
   public save<T extends Object>(instance: T, data: JsonObject) {
-    let value = Reflect.get(instance, this.propertyName);
+    let value = Reflect.get(instance, this.propertyName) as
+      | string
+      | number
+      | boolean
+      | null
+      | undefined;
 
     if (value === undefined) {
       value = this.options.default;
