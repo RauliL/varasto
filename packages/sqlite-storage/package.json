@@ -1,6 +1,6 @@
 {
   "name": "@varasto/sqlite-storage",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Varasto storage implementation that stores data to SQLite database",
   "license": "MIT",
   "keywords": [
