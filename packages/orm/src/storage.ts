@@ -54,7 +54,7 @@ export const remove = <T extends Object>(
   instance: T
 ): Promise<void> =>
   ModelMetadata.requireFor<T>(instance.constructor).then((metadata) => {
-    let key: string;
+    let key: string | undefined;
 
     if (!metadata.keyPropertyName) {
       return Promise.reject(
@@ -62,7 +62,11 @@ export const remove = <T extends Object>(
       );
     }
 
-    if (!(key = Reflect.get(instance, metadata.keyPropertyName))) {
+    // Ensure that the model instance has a key.
+    key = Reflect.get(instance, metadata.keyPropertyName) as
+      | string
+      | undefined;
+    if (!key) {
       return Promise.reject(
         new ModelDoesNotExistError('Model instance has no key.')
       );

@@ -1,6 +1,6 @@
 {
   "name": "@varasto/query",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Query and bulk operation utilities for Varasto storage",
   "license": "MIT",
   "keywords": [
@@ -16,7 +16,7 @@
     "./dist"
   ],
   "engines": {
-    "node": ">=16.0"
+    "node": ">=18.0"
   },
   "homepage": "https://rauli.dev/varasto",
   "repository": {
@@ -42,13 +42,14 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": "^4.0.0",
+    "@varasto/storage": "^5.0.0",
     "simple-json-match": "^1.1.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.28.3",
-    "@typescript-eslint/parser": "^4.28.3",
-    "@varasto/memory-storage": "^2.0.0",
+    "@types/jest": "^29.5.5",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "@varasto/memory-storage": "^3.0.0",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "it-all": "^1.0.6",
@@ -56,6 +57,7 @@
     "prettier": "^2.3.2",
     "rimraf": "^4.4.1",
     "ts-jest": "^29.1.0",
-    "typescript": "^4.3.5"
+    "type-fest": "^4.3.3",
+    "typescript": "^5.2.2"
   }
 }

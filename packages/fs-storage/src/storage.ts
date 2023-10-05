@@ -157,23 +157,16 @@ export const createFileSystemStorage = (
           return;
         }
 
-        fs.exists(filename, (exists) => {
-          if (!exists) {
-            resolve(false);
-            return;
-          }
-
-          fs.unlink(filename, (err) => {
-            if (err) {
-              if (err.code === 'ENOENT') {
-                resolve(false);
-              } else {
-                reject(err);
-              }
+        fs.unlink(filename, (err) => {
+          if (err) {
+            if (err.code === 'ENOENT') {
+              resolve(false);
             } else {
-              resolve(true);
+              reject(err);
             }
-          });
+          } else {
+            resolve(true);
+          }
         });
       });
     }

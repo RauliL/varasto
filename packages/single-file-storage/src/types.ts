@@ -12,7 +12,7 @@ export type SingleFileStorageOptions = {
   /**
    * Character encoding to use. Defaults to UTF-8.
    */
-  encoding: string;
+  encoding: BufferEncoding;
 
   /**
    * Custom serialization function used for converting JSON into text that is

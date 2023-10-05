@@ -61,6 +61,15 @@ describe('query utilities', () => {
 
       return expect(count(storage, User)).resolves.toEqual(2);
     });
+
+    it('should accept an optional schema and count entries that only match that schema', async () => {
+      await storage.set('users', '1', { username: 'foo' });
+      await storage.set('users', '2', { username: 'bar' });
+
+      return expect(
+        count(storage, User, { username: 'foo' })
+      ).resolves.toEqual(1);
+    });
   });
 
   describe('list()', () => {

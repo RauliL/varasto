@@ -50,13 +50,21 @@ export const get = <T extends Object>(
  */
 export async function count<T extends Object>(
   storage: Storage,
-  modelClass: Class<T>
+  modelClass: Class<T>,
+  schema?: Schema
 ): Promise<number> {
-  const metadata = await ModelMetadata.requireFor<T>(modelClass);
   let result = 0;
 
-  for await (const key of storage.keys(metadata.namespace)) {
-    ++result;
+  if (schema) {
+    for await (const key of findAll(storage, modelClass, schema)) {
+      ++result;
+    }
+  } else {
+    const metadata = await ModelMetadata.requireFor<T>(modelClass);
+
+    for await (const key of storage.keys(metadata.namespace)) {
+      ++result;
+    }
   }
 
   return result;

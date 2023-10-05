@@ -1,8 +1,8 @@
 import { InvalidSlugError } from '@varasto/storage';
 import fs from 'fs';
-import glob from 'glob';
+import { glob } from 'glob';
 import { isValidSlug } from 'is-valid-slug';
-import mkdirp from 'mkdirp';
+import { mkdirp } from 'mkdirp';
 import path from 'path';
 import { JsonObject } from 'type-fest';
 
@@ -49,24 +49,15 @@ export const globNamespace = (
   dir: string,
   namespace: string
 ): Promise<string[]> =>
-  new Promise<string[]>((resolve, reject) => {
-    if (!isValidSlug(namespace)) {
-      reject(new InvalidSlugError('Given namespace is not valid slug'));
-      return;
-    }
-
-    glob(`${path.join(dir, namespace)}/*.json`, (err, matches) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(matches);
-      }
-    });
-  });
+  isValidSlug(namespace)
+    ? glob(path.join(dir, namespace, '*.json'))
+    : Promise.reject(
+        new InvalidSlugError('Given namespace is not valid slug')
+      );
 
 export const readItem = <T extends JsonObject>(
   filename: string,
-  encoding: string,
+  encoding: BufferEncoding,
   deserialize: (data: string) => JsonObject
 ): Promise<T | undefined> =>
   new Promise<T | undefined>((resolve, reject) => {
