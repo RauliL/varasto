@@ -40,7 +40,7 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": "^5.0.0",
+    "@varasto/storage": ">=5.0.0,<6.0.0",
     "is-valid-slug": "^1.0.0"
   },
   "devDependencies": {
