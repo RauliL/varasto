@@ -61,7 +61,12 @@ export const createRouter = <T extends JsonObject = JsonObject>(
         }
       })
       .catch((err) => {
-        if (err instanceof InvalidSlugError) {
+        /*if (err instanceof InvalidSlugError) {
+          res.status(400).json({ error: err.message });
+        } else {
+          res.status(500).json({ error: 'Unable to retrieve item.' });
+        }*/
+        if (err.name === InvalidSlugError.name) {
           res.status(400).json({ error: err.message });
         } else {
           res.status(500).json({ error: 'Unable to retrieve item.' });
