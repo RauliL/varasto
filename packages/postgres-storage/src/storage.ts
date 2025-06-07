@@ -138,7 +138,7 @@ export const createPostgresStorage = (
           format('DELETE FROM %I WHERE key = %L', namespace, key)
         );
 
-        if (result.rowCount > 0) {
+        if (result.rowCount != null && result.rowCount > 0) {
           if (options.dropEmptyTables) {
             const rowCountResult = await client.query(
               format('SELECT COUNT(*) FROM %I', namespace)
