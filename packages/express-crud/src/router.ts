@@ -86,6 +86,14 @@ export const createRouter = <T extends JsonObject = JsonObject>(
     });
   };
 
+  const handleError = (res: Response, error: unknown, message: string) => {
+    if (error instanceof InvalidSlugError) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: message });
+    }
+  };
+
   router.use(express.json());
 
   router.get('/', async (req, res) => {
@@ -97,11 +105,7 @@ export const createRouter = <T extends JsonObject = JsonObject>(
       }
       res.status(200).json(result);
     } catch (err) {
-      if (err instanceof InvalidSlugError) {
-        res.status(400).json({ error: err.message });
-      } else {
-        res.status(500).json({ error: 'Unable to retrieve items.' });
-      }
+      handleError(res, err, 'Unable to retrieve items.');
     }
   });
 
@@ -121,11 +125,7 @@ export const createRouter = <T extends JsonObject = JsonObject>(
           res.status(201).json({ key });
         })
         .catch((err) => {
-          if (err instanceof InvalidSlugError) {
-            res.status(400).json({ error: err.message });
-          } else {
-            res.status(500).json({ error: 'Unable to store item.' });
-          }
+          handleError(res, err, 'Unable to store item.');
         });
     });
   });
@@ -156,11 +156,7 @@ export const createRouter = <T extends JsonObject = JsonObject>(
           res.status(201).json(value);
         })
         .catch((err) => {
-          if (err instanceof InvalidSlugError) {
-            res.status(400).json({ error: err.message });
-          } else {
-            res.status(500).json({ error: 'Unable to remove item.' });
-          }
+          handleError(res, err, 'Unable to remove item.');
         });
     });
   });
