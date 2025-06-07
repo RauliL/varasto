@@ -1,8 +1,5 @@
 {
-  "useWorkspaces": true,
   "version": "independent",
   "npmClient": "yarn",
-  "packages": [
-    "packages/*"
-  ]
+  "packages": ["packages/*"]
 }

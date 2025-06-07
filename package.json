@@ -2,7 +2,7 @@
   "name": "@varasto/root",
   "private": true,
   "engines": {
-    "node": ">=16.0"
+    "node": ">=18.0"
   },
   "workspaces": [
     "packages/*"
@@ -18,6 +18,6 @@
     "format:check": "lerna run format:check"
   },
   "devDependencies": {
-    "lerna": "^6.6.1"
+    "lerna": "^8.2.2"
   }
 }
