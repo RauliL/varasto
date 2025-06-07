@@ -5,7 +5,7 @@ export default defineConfig({
   plugins: [swc.vite()],
   test: {
     coverage: {
-      provider: 'istanbul',
+      provider: 'v8',
       reporter: ['lcov', 'text'],
     },
   },

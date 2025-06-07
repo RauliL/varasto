@@ -6,7 +6,7 @@ export default defineConfig({
       redis: 'redis-mock',
     },
     coverage: {
-      provider: 'istanbul',
+      provider: 'v8',
       reporter: ['lcov', 'text'],
     },
   },
