@@ -57,7 +57,7 @@
     "it-all": "^1.0.6",
     "mock-storage": "^1.1.0",
     "prettier": "^2.3.2",
-    "rimraf": "^4.4.1",
+    "rimraf": "^6.0.1",
     "type-fest": "^4.3.3",
     "typescript": "^5.2.2",
     "vitest": "^3.2.2"
