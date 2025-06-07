@@ -1,6 +1,7 @@
 import { JsonObject } from 'type-fest';
-import { ValidationError } from '../error';
+import { describe, expect, it, vi } from 'vitest';
 
+import { ValidationError } from '../error';
 import { FieldMetadata } from './field';
 import { ModelMetadata } from './model';
 
@@ -41,7 +42,7 @@ describe('class FieldMetadata', () => {
     });
 
     it('should run validator functions given to the field', () => {
-      const mockValidator = jest.fn();
+      const mockValidator = vi.fn();
       const metadata = new FieldMetadata(mockModelMetadata, 'foo', {
         validators: [mockValidator],
       });

@@ -6,6 +6,7 @@ import {
 import all from 'it-all';
 import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
+import { describe, expect, it } from 'vitest';
 
 import { createSqliteStorage } from './storage';
 import { SqliteStorageOptions } from './types';

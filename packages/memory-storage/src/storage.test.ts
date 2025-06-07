@@ -1,5 +1,6 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import all from 'it-all';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { createMemoryStorage } from './storage';
 

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { ConfigurationError } from '../error';
 import { Key } from './key';
 import { Model } from './model';

@@ -1,4 +1,5 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { partition, partitionEntries, partitionKeys } from './partition';
 
