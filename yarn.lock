@@ -1074,6 +1074,14 @@
     "@typescript-eslint/types" "6.21.0"
     eslint-visitor-keys "^3.4.1"
 
+"@varasto/query@>=3.0.0,<4.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@varasto/query/-/query-3.0.0.tgz#748e866c8a97021f1cda43c49adf4196a2d9380a"
+  integrity sha512-Jm7qhfojXsBtkBrHK0PCo4vPSBhpeHcA7dQD/v9HVk7Rbd1dvrafBDLOGombEw9AvGy5ntBrXlBXtyibzay8dw==
+  dependencies:
+    "@varasto/storage" "^5.0.0"
+    simple-json-match "^1.1.0"
+
 "@varasto/storage@>=5.0.0,<6.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@varasto/storage/-/storage-5.0.0.tgz#3d46885b08a3e56b73f168a988a8f8ea76374048"
