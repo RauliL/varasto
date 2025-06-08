@@ -8,6 +8,15 @@ import { ValidationError } from 'yup';
 import { RouterOptions } from './types';
 
 /**
+ * Using `instanceof` doesn't work in the CI for some reason, which is why I
+ * added separate function for testing whether an object is instance of
+ * `InvalidSlugError`.
+ */
+const isInvalidSlugError = (object: unknown): boolean =>
+  object instanceof InvalidSlugError ||
+  (object != null && Reflect.get(object, 'name') === InvalidSlugError.name);
+
+/**
  * Constructs an router that provides CRUD operations for an namespace in given
  * storage. All data passed through `POST` or `PATCH` operations must pass
  * validation provided by given schema.
@@ -50,6 +59,14 @@ export const createRouter = <T extends JsonObject = JsonObject>(
     }
   };
 
+  const handleError = (res: Response, error: unknown, message: string) => {
+    if (isInvalidSlugError(error)) {
+      res.status(400).json({ error: (error as InvalidSlugError).message });
+    } else {
+      res.status(500).json({ error: message });
+    }
+  };
+
   const get = (res: Response, key: string, onSuccess: (value: T) => void) => {
     storage
       .get<T>(namespace, key)
@@ -61,11 +78,7 @@ export const createRouter = <T extends JsonObject = JsonObject>(
         }
       })
       .catch((err) => {
-        if (err instanceof InvalidSlugError) {
-          res.status(400).json({ error: err.message });
-        } else {
-          res.status(500).json({ error: 'Unable to retrieve item.' });
-        }
+        handleError(res, err, 'Unable to retrieve item.');
       });
   };
 
@@ -77,21 +90,9 @@ export const createRouter = <T extends JsonObject = JsonObject>(
           res.status(201).json(validData);
         })
         .catch((err) => {
-          if (err instanceof InvalidSlugError) {
-            res.status(400).json({ error: err.message });
-          } else {
-            res.status(500).json({ error: 'Unable to store item.' });
-          }
+          handleError(res, err, 'Unable to store item.');
         });
     });
-  };
-
-  const handleError = (res: Response, error: unknown, message: string) => {
-    if (error instanceof InvalidSlugError) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: message });
-    }
   };
 
   router.use(express.json());
