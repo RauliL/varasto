@@ -1,6 +1,7 @@
 import { isValidSlug } from 'is-valid-slug';
 import all from 'it-all';
 import { JsonObject } from 'type-fest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { InvalidSlugError, ItemDoesNotExistError } from './errors';
 import { Storage } from './storage';

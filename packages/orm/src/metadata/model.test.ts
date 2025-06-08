@@ -1,4 +1,6 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import { describe, expect, it, vi } from 'vitest';
+
 import { Field, Key, Model } from '../decorator';
 import { ConfigurationError, ModelMissingMetadataError } from '../error';
 import { ModelMetadata } from './model';
@@ -65,7 +67,7 @@ describe('class ModelMetadata', () => {
 
   describe('save()', () => {
     it('should allow use of custom key generators', () => {
-      const mockKeyGenerator = jest.fn(() => 'foo');
+      const mockKeyGenerator = vi.fn(() => 'foo');
       @Model()
       class MockModel {
         @Key({ generator: mockKeyGenerator })

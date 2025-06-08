@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { ValidationError } from './error';
 import {
   maxValidator,

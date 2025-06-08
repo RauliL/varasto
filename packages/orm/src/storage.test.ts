@@ -1,5 +1,6 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Field, Key, Model } from './decorator';
 import { ConfigurationError, ModelDoesNotExistError } from './error';
@@ -59,7 +60,7 @@ describe('storage utilities', () => {
     });
 
     it('should call `clean` method if the model class has one', async () => {
-      const mockClean = jest.fn(function () {
+      const mockClean = vi.fn(function () {
         this.username = 'not mike';
       });
       const user = new User();

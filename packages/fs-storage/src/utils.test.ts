@@ -2,6 +2,7 @@ import { InvalidSlugError } from '@varasto/storage';
 import fs from 'fs';
 import mock from 'mock-fs';
 import path from 'path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   buildFilename,

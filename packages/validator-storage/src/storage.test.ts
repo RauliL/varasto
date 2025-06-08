@@ -1,5 +1,6 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
+import { beforeEach, describe, expect, it } from 'vitest';
 import * as Yup from 'yup';
 
 import { UnrecognizedNamespaceError } from './errors';

@@ -1,6 +1,6 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
-import MockDate from 'mockdate';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { createCacheStorage } from './storage';
 
@@ -9,9 +9,14 @@ const TEN_SECONDS = 10 * 1000;
 describe('cache storage', () => {
   const memoryStorage = createMemoryStorage();
 
-  beforeEach(() => memoryStorage.clear());
+  beforeEach(() => {
+    memoryStorage.clear();
+    vi.useFakeTimers();
+  });
 
-  afterAll(() => MockDate.reset());
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   describe('keys()', () => {
     it('should cache keys coming from the original storage', async () => {
@@ -19,15 +24,15 @@ describe('cache storage', () => {
 
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       expect(await all(cacheStorage.keys('foo'))).toEqual(['bar']);
 
       await memoryStorage.delete('foo', 'bar');
 
-      MockDate.set('2021-10-05T11:00:03.000Z');
+      vi.setSystemTime('2021-10-05T11:00:03.000Z');
       expect(await all(cacheStorage.keys('foo'))).toEqual(['bar']);
 
-      MockDate.set('2021-10-05T11:00:10.000Z');
+      vi.setSystemTime('2021-10-05T11:00:10.000Z');
       expect(await all(cacheStorage.keys('foo'))).toEqual([]);
     });
   });
@@ -38,15 +43,15 @@ describe('cache storage', () => {
 
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       expect(await all(cacheStorage.values('foo'))).toEqual([{ value: 5 }]);
 
       await memoryStorage.delete('foo', 'bar');
 
-      MockDate.set('2021-10-05T11:00:03.000Z');
+      vi.setSystemTime('2021-10-05T11:00:03.000Z');
       expect(await all(cacheStorage.values('foo'))).toEqual([{ value: 5 }]);
 
-      MockDate.set('2021-10-05T11:00:10.000Z');
+      vi.setSystemTime('2021-10-05T11:00:10.000Z');
       expect(await all(cacheStorage.values('foo'))).toEqual([]);
     });
   });
@@ -57,19 +62,19 @@ describe('cache storage', () => {
 
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       expect(await all(cacheStorage.entries('foo'))).toEqual([
         ['bar', { value: 5 }],
       ]);
 
       await memoryStorage.delete('foo', 'bar');
 
-      MockDate.set('2021-10-05T11:00:03.000Z');
+      vi.setSystemTime('2021-10-05T11:00:03.000Z');
       expect(await all(cacheStorage.entries('foo'))).toEqual([
         ['bar', { value: 5 }],
       ]);
 
-      MockDate.set('2021-10-05T11:00:10.000Z');
+      vi.setSystemTime('2021-10-05T11:00:10.000Z');
       expect(await all(cacheStorage.entries('foo'))).toEqual([]);
     });
   });
@@ -82,14 +87,14 @@ describe('cache storage', () => {
 
       expect(await cacheStorage.has('foo', 'bar')).toBe(true);
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       await cacheStorage.get('foo', 'bar');
 
       await memoryStorage.delete('foo', 'bar');
 
       expect(await cacheStorage.has('foo', 'bar')).toBe(true);
 
-      MockDate.set('2021-10-05T11:00:10.000Z');
+      vi.setSystemTime('2021-10-05T11:00:10.000Z');
       expect(await cacheStorage.has('foo', 'bar')).toBe(false);
     });
   });
@@ -100,15 +105,15 @@ describe('cache storage', () => {
 
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       expect(await cacheStorage.get('foo', 'bar')).toEqual({ value: 5 });
 
       await memoryStorage.delete('foo', 'bar');
 
-      MockDate.set('2021-10-05T11:00:03.000Z');
+      vi.setSystemTime('2021-10-05T11:00:03.000Z');
       expect(await cacheStorage.get('foo', 'bar')).toEqual({ value: 5 });
 
-      MockDate.set('2021-10-05T11:00:10.000Z');
+      vi.setSystemTime('2021-10-05T11:00:10.000Z');
       expect(await cacheStorage.get('foo', 'bar')).toBeUndefined();
     });
   });
@@ -117,12 +122,12 @@ describe('cache storage', () => {
     it('should pass the value to the original storage and cache it', async () => {
       const cacheStorage = createCacheStorage(memoryStorage, TEN_SECONDS);
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       await cacheStorage.set('foo', 'bar', { value: 5 });
       expect(await memoryStorage.get('foo', 'bar')).toEqual({ value: 5 });
 
       await memoryStorage.delete('foo', 'bar');
-      MockDate.set('2021-10-05T11:00:03.000Z');
+      vi.setSystemTime('2021-10-05T11:00:03.000Z');
       expect(await cacheStorage.get('foo', 'bar')).toEqual({ value: 5 });
     });
   });
@@ -133,7 +138,7 @@ describe('cache storage', () => {
 
       await memoryStorage.set('foo', 'bar', { value: 5 });
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       await cacheStorage.update('foo', 'bar', { anotherValue: 6 });
 
       expect(await memoryStorage.get('foo', 'bar')).toEqual({
@@ -143,13 +148,13 @@ describe('cache storage', () => {
 
       await memoryStorage.delete('foo', 'bar');
 
-      MockDate.set('2021-10-05T11:00:05.000Z');
+      vi.setSystemTime('2021-10-05T11:00:05.000Z');
       expect(await cacheStorage.get('foo', 'bar')).toEqual({
         value: 5,
         anotherValue: 6,
       });
 
-      MockDate.set('2021-10-05T11:00:10.000Z');
+      vi.setSystemTime('2021-10-05T11:00:10.000Z');
       expect(await cacheStorage.get('foo', 'bar')).toBeUndefined();
     });
   });
@@ -158,7 +163,7 @@ describe('cache storage', () => {
     it('should remove the cached entry', async () => {
       const cacheStorage = createCacheStorage(memoryStorage, TEN_SECONDS);
 
-      MockDate.set('2021-10-05T11:00:00.000Z');
+      vi.setSystemTime('2021-10-05T11:00:00.000Z');
       await cacheStorage.set('foo', 'bar', { value: 5 });
       await cacheStorage.delete('foo', 'bar');
 

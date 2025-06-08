@@ -1,6 +1,7 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import all from 'it-all';
 import { mockStorage } from 'mock-storage';
+import { describe, expect, it } from 'vitest';
 
 import { createWebStorage } from './storage';
 

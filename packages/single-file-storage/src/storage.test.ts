@@ -2,6 +2,7 @@ import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import fs from 'fs';
 import all from 'it-all';
 import mock from 'mock-fs';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { createSingleFileStorage } from './storage';
 

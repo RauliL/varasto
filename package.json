@@ -2,22 +2,29 @@
   "name": "@varasto/root",
   "private": true,
   "engines": {
-    "node": ">=16.0"
+    "node": ">=20.0"
   },
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "clean": "lerna run clean",
-    "build": "lerna run build",
-    "watch": "lerna run watch",
-    "lint": "lerna run lint",
-    "test": "lerna run test",
-    "test:coverage": "lerna run test:coverage",
-    "format": "lerna run format",
-    "format:check": "lerna run format:check"
+    "clean": "nx run-many -t clean",
+    "build": "nx run-many -t build",
+    "watch": "nx run-many -t watch",
+    "lint": "nx run-many -t lint",
+    "test": "nx run-many -t test",
+    "test:coverage": "nx run-many -t test:coverage",
+    "format": "nx run-many -t format",
+    "format:check": "nx run-many -t format:check"
   },
   "devDependencies": {
-    "lerna": "^6.6.1"
+    "nx": "^21.1.3"
+  },
+  "resolutions": {
+    "cacache": "^19.0.1",
+    "express": "^5.1.0",
+    "lru-cache": "^11.0.0",
+    "make-fetch-happen": "^14.0.3",
+    "node-gyp": "^11.2.0"
   }
 }

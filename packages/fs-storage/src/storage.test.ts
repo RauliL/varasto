@@ -3,6 +3,7 @@ import fs from 'fs';
 import mock from 'mock-fs';
 import all from 'it-all';
 import path from 'path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { createFileSystemStorage } from './storage';
 

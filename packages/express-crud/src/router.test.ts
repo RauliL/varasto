@@ -3,6 +3,7 @@ import express from 'express';
 import isUUID from 'is-uuid';
 import all from 'it-all';
 import request from 'supertest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import * as yup from 'yup';
 
 import { createRouter } from './router';
@@ -40,21 +41,17 @@ describe('createRouter()', () => {
 
       await storage.set('people', 'john-doe', validPersonData);
 
-      return request(app)
-        .get('/people')
-        .then((response) => {
-          expect(response.status).toBe(200);
-          expect(response.body).toEqual({ 'john-doe': validPersonData });
-        });
+      return expect(request(app).get('/people')).resolves.toMatchObject({
+        status: 200,
+        body: { 'john-doe': validPersonData },
+      });
     });
 
     it('should return empty object if the namespace does not exist', () =>
-      request(createApp())
-        .get('/people')
-        .then((response) => {
-          expect(response.status).toBe(200);
-          expect(response.body).toEqual({});
-        }));
+      expect(request(createApp()).get('/people')).resolves.toMatchObject({
+        status: 200,
+        body: {},
+      }));
   });
 
   describe('retrieval', () => {
@@ -63,31 +60,26 @@ describe('createRouter()', () => {
 
       await storage.set('people', 'john-doe', validPersonData);
 
-      return request(app)
-        .get('/people/john-doe')
-        .then((response) => {
-          expect(response.status).toBe(200);
-          expect(response.body).toEqual(validPersonData);
-        });
+      return expect(
+        request(app).get('/people/john-doe')
+      ).resolves.toMatchObject({
+        status: 200,
+        body: validPersonData,
+      });
     });
 
     it('should return 404 if the entry does not exist', () =>
-      request(createApp())
-        .get('/people/john-doe')
-        .then((response) => {
-          expect(response.status).toBe(404);
-        }));
+      expect(
+        request(createApp()).get('/people/john-doe')
+      ).resolves.toHaveProperty('status', 404));
 
     it('should return 400 if key is not valid slug', () =>
-      request(createApp())
-        .get('/people/f;oo')
-        .then((response) => {
-          expect(response.status).toBe(400);
-          expect(response.body).toHaveProperty(
-            'error',
-            'Given key is not valid slug'
-          );
-        }));
+      expect(request(createApp()).get('/people/f;oo')).resolves.toMatchObject({
+        status: 400,
+        body: {
+          error: 'Given key is not valid slug',
+        },
+      }));
   });
 
   describe('creation', () => {
@@ -116,114 +108,99 @@ describe('createRouter()', () => {
         }));
 
     it('should validate data against schema, if one is given', () =>
-      request(createApp({ schema: personSchema }))
-        .post('/people')
-        .send({ ...validPersonData, age: -25 })
-        .then((response) => {
-          expect(response.status).toBe(400);
-          expect(response.body).toEqual({
-            error: 'Data did not pass validation.',
-            errors: ['age must be a positive number'],
-          });
-        }));
+      expect(
+        request(createApp({ schema: personSchema }))
+          .post('/people')
+          .send({ ...validPersonData, age: -25 })
+      ).resolves.toMatchObject({
+        status: 400,
+        body: {
+          error: 'Data did not pass validation.',
+          errors: ['age must be a positive number'],
+        },
+      }));
   });
 
   describe('replacement', () => {
     it('should return 201 after successful replacement', async () => {
       await storage.set('people', 'john-doe', validPersonData);
 
-      return request(createApp())
-        .post('/people/john-doe')
-        .send({ ...validPersonData, age: 26 })
-        .then((response) => {
-          expect(response.status).toBe(201);
-          expect(response.body).toEqual({ ...validPersonData, age: 26 });
-        });
+      return expect(
+        request(createApp())
+          .post('/people/john-doe')
+          .send({ ...validPersonData, age: 26 })
+      ).resolves.toMatchObject({ status: 201, body: { age: 26 } });
     });
 
     it('should validate data against schema, if one is given', async () => {
       await storage.set('people', 'john-doe', validPersonData);
 
-      return request(createApp({ schema: personSchema }))
-        .post('/people/john-doe')
-        .send({ ...validPersonData, age: -25 })
-        .then((response) => {
-          expect(response.status).toBe(400);
-          expect(response.body).toEqual({
-            error: 'Data did not pass validation.',
-            errors: ['age must be a positive number'],
-          });
-        });
+      return expect(
+        request(createApp({ schema: personSchema }))
+          .post('/people/john-doe')
+          .send({ ...validPersonData, age: -25 })
+      ).resolves.toMatchObject({
+        status: 400,
+        body: {
+          error: 'Data did not pass validation.',
+          errors: ['age must be a positive number'],
+        },
+      });
     });
 
     it('should return 404 if the entry does not exist', () =>
-      request(createApp())
-        .post('/people/john-doe')
-        .send(validPersonData)
-        .then((response) => {
-          expect(response.status).toBe(404);
-        }));
+      expect(
+        request(createApp()).post('/people/john-doe').send(validPersonData)
+      ).resolves.toHaveProperty('status', 404));
 
     it('should return 400 if key is not valid slug', () =>
-      request(createApp())
-        .post('/people/f;oo')
-        .send(validPersonData)
-        .then((response) => {
-          expect(response.status).toBe(400);
-          expect(response.body).toHaveProperty(
-            'error',
-            'Given key is not valid slug'
-          );
-        }));
+      expect(
+        request(createApp()).post('/people/f;oo').send(validPersonData)
+      ).resolves.toMatchObject({
+        status: 400,
+        body: {
+          error: 'Given key is not valid slug',
+        },
+      }));
   });
 
   describe('patching', () => {
     it('should return the resulting patched object', async () => {
       await storage.set('people', 'john-doe', validPersonData);
 
-      return request(createApp())
-        .patch('/people/john-doe')
-        .send({ age: 26 })
-        .then((response) => {
-          expect(response.status).toBe(201);
-          expect(response.body).toEqual({ ...validPersonData, age: 26 });
-        });
+      return expect(
+        request(createApp()).patch('/people/john-doe').send({ age: 26 })
+      ).resolves.toMatchObject({ status: 201, body: { age: 26 } });
     });
 
     it('should validate data against schema, if one is given', async () => {
       await storage.set('people', 'john-doe', validPersonData);
 
-      return request(createApp({ schema: personSchema }))
-        .patch('/people/john-doe')
-        .send({ age: -25 })
-        .then((response) => {
-          expect(response.status).toBe(400);
-          expect(response.body).toEqual({
-            error: 'Data did not pass validation.',
-            errors: ['age must be a positive number'],
-          });
-        });
+      return expect(
+        request(createApp({ schema: personSchema }))
+          .patch('/people/john-doe')
+          .send({ age: -25 })
+      ).resolves.toMatchObject({
+        status: 400,
+        body: {
+          error: 'Data did not pass validation.',
+          errors: ['age must be a positive number'],
+        },
+      });
     });
 
     it('should return 404 if the entry does not exist', () =>
-      request(createApp())
-        .patch('/people/john-doe')
-        .send({ age: 26 })
-        .then((response) => {
-          expect(response.status).toBe(404);
-        }));
+      expect(
+        request(createApp()).patch('/people/john-doe').send({ age: 26 })
+      ).resolves.toHaveProperty('status', 404));
 
     it('should return 400 if key is not valid slug', () =>
-      request(createApp())
-        .patch('/people/f;oo')
-        .send({ age: 26 })
-        .then((response) => {
-          expect(response.status).toBe(400);
-          expect(response.body).toHaveProperty(
-            'error',
-            'Given key is not valid slug'
-          );
-        }));
+      expect(
+        request(createApp()).patch('/people/f;oo').send({ age: 26 })
+      ).resolves.toMatchObject({
+        status: 400,
+        body: { error: 'Given key is not valid slug' },
+      }));
   });
 
   describe('removal', () => {
@@ -232,30 +209,22 @@ describe('createRouter()', () => {
 
       await storage.set('people', 'john-doe', validPersonData);
 
-      return request(app)
-        .delete('/people/john-doe')
-        .then((response) => {
-          expect(response.status).toBe(201);
-          expect(response.body).toEqual(validPersonData);
-        });
+      return expect(
+        request(app).delete('/people/john-doe')
+      ).resolves.toMatchObject({ status: 201, body: validPersonData });
     });
 
     it('should return 404 if the entry does not exist', () =>
-      request(createApp())
-        .delete('/people/john-doe')
-        .then((response) => {
-          expect(response.status).toBe(404);
-        }));
+      expect(
+        request(createApp()).delete('/people/john-doe')
+      ).resolves.toHaveProperty('status', 404));
 
     it('should return 400 if key is not valid slug', () =>
-      request(createApp())
-        .delete('/people/f;oo')
-        .then((response) => {
-          expect(response.status).toBe(400);
-          expect(response.body).toHaveProperty(
-            'error',
-            'Given key is not valid slug'
-          );
-        }));
+      expect(
+        request(createApp()).delete('/people/f;oo')
+      ).resolves.toMatchObject({
+        status: 400,
+        body: { error: 'Given key is not valid slug' },
+      }));
   });
 });

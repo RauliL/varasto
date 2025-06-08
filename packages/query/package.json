@@ -16,7 +16,7 @@
     "./dist"
   ],
   "engines": {
-    "node": ">=18.0"
+    "node": ">=20.0"
   },
   "homepage": "https://rauli.dev/varasto",
   "repository": {
@@ -36,28 +36,26 @@
     "lint": "eslint './src/*.ts'",
     "format": "prettier --write './src'",
     "format:check": "prettier --check './src'",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "prebuild": "$npm_execpath run clean",
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": "^5.0.0",
+    "@varasto/storage": ">=5.0.0,<6.0.0",
     "simple-json-match": "^1.1.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.5",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
-    "@varasto/memory-storage": "^3.0.0",
+    "@varasto/memory-storage": ">=3.0.0,<4.0.0",
+    "@vitest/coverage-v8": "^3.2.2",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
     "it-all": "^1.0.6",
-    "jest": "^29.7.0",
     "prettier": "^2.3.2",
-    "rimraf": "^4.4.1",
-    "ts-jest": "^29.1.0",
-    "type-fest": "^4.3.3",
-    "typescript": "^5.2.2"
+    "rimraf": "^6.0.1",
+    "typescript": "^5.2.2",
+    "vitest": "^3.2.2"
   }
 }
