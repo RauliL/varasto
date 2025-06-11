@@ -4,7 +4,7 @@
 
 Utility for generating [Express.js] [router] that handles [CRUD] operations for
 a single namespace in Varasto storage, with optional validation performed by
-[Yup].
+[Zod].
 
 It is similar to [Varasto server] (which can also be used as [Express.js]
 [router]) expect that it only handles single namespace in the storage,
@@ -16,7 +16,7 @@ optional validation.
 [express.js]: https://expressjs.com/
 [router]: https://expressjs.com/en/4x/api.html#router
 [crud]: https://en.wikipedia.org/wiki/Create,_read,_update_and_delete
-[yup]: https://github.com/jquense/yup
+[zod]: https://zod.dev
 [varasto server]: https://www.npmjs.com/package/@varasto/server
 
 ## Installation
@@ -29,20 +29,20 @@ $ npm install --save @varasto/express-crud
 
 The package provides an function called `createRouter`, which creates an
 Express.js [router] that provides basic [CRUD] operations to an namespace
-in Varasto storage, with optional validation provided by [Yup].
+in Varasto storage, with optional validation provided by [Zod].
 
 ```TypeScript
 import { createRouter } from '@varasto/express-crud';
 import { createFileSystemStorage } from '@varasto/fs-storage';
 import express from 'express';
-import * as yup from 'yup';
+import { z } from 'zod/v4';
 
 const storage = createFileSystemStorage({ dir: './data' });
 
-const personSchema = yup.object().shape({
-  name: yup.string().required(),
-  age: yup.number().required().positive().integer(),
-  email: yup.string().email(),
+const personSchema = z.object({
+  name: z.string(),
+  age: z.number().positive().int(),
+  email: z.email().optional(),
 });
 
 const app = express();
@@ -65,7 +65,7 @@ settings:
 
 #### `schema`
 
-Optional [Yup] schema to which all data is validated against. If omitted, no
+Optional [Zod] schema to which all data is validated against. If omitted, no
 validation is performed at all.
 
 #### `keyGenerator`

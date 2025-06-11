@@ -1,3 +1,3 @@
-import { AnySchema } from 'yup';
+import { ZodType } from 'zod/v4';
 
-export type NamespaceMapping = Record<string, AnySchema>;
+export type NamespaceMapping = Record<string, ZodType>;

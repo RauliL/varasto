@@ -1,5 +1,5 @@
 import { JsonObject } from 'type-fest';
-import { AnySchema } from 'yup';
+import { ZodType } from 'zod/v4';
 
 /**
  * Various options that can be given to an router.
@@ -14,5 +14,5 @@ export type RouterOptions<T extends JsonObject = JsonObject> = {
   /**
    * Optional schema to validate data against.
    */
-  schema: AnySchema<T>;
+  schema: ZodType<T>;
 };
