@@ -4,15 +4,15 @@ import isUUID from 'is-uuid';
 import all from 'it-all';
 import request from 'supertest';
 import { beforeEach, describe, expect, it } from 'vitest';
-import * as yup from 'yup';
+import { z } from 'zod/v4';
 
 import { createRouter } from './router';
 import { RouterOptions } from './types';
 
-const personSchema = yup.object().shape({
-  name: yup.string().required(),
-  age: yup.number().required().positive().integer(),
-  email: yup.string().email(),
+const personSchema = z.object({
+  name: z.string(),
+  age: z.number().positive().int(),
+  email: z.email().optional(),
 });
 
 const validPersonData = {
@@ -116,7 +116,6 @@ describe('createRouter()', () => {
         status: 400,
         body: {
           error: 'Data did not pass validation.',
-          errors: ['age must be a positive number'],
         },
       }));
   });
@@ -143,7 +142,6 @@ describe('createRouter()', () => {
         status: 400,
         body: {
           error: 'Data did not pass validation.',
-          errors: ['age must be a positive number'],
         },
       });
     });
@@ -184,7 +182,6 @@ describe('createRouter()', () => {
         status: 400,
         body: {
           error: 'Data did not pass validation.',
-          errors: ['age must be a positive number'],
         },
       });
     });

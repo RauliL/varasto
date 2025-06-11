@@ -3,7 +3,7 @@ import { InvalidSlugError, Storage } from '@varasto/storage';
 import express, { Response, Router } from 'express';
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from 'type-fest';
-import { ValidationError } from 'yup';
+import { ZodError } from 'zod/v4';
 
 import { RouterOptions } from './types';
 
@@ -43,15 +43,12 @@ export const createRouter = <T extends JsonObject = JsonObject>(
   ) => {
     if (schema) {
       schema
-        .validate(data, {
-          strict: false,
-          stripUnknown: true,
-        })
+        .parseAsync(data)
         .then(onSuccess)
-        .catch((err: ValidationError) => {
+        .catch((err: ZodError) => {
           res.status(400).json({
             error: 'Data did not pass validation.',
-            errors: err.errors,
+            errors: err.issues,
           });
         });
     } else {
