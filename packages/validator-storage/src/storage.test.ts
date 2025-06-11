@@ -1,20 +1,20 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
 import { beforeEach, describe, expect, it } from 'vitest';
-import * as Yup from 'yup';
+import { z } from 'zod/v4';
 
 import { UnrecognizedNamespaceError } from './errors';
 import { createValidatorStorage } from './storage';
 import { NamespaceMapping } from './types';
 
-const personSchema = Yup.object({
-  name: Yup.string().required(),
-  age: Yup.number().required().positive().integer(),
+const personSchema = z.object({
+  name: z.string(),
+  age: z.number().positive().int(),
 });
 
-const taskSchema = Yup.object({
-  text: Yup.string().required(),
-  done: Yup.boolean().optional(),
+const taskSchema = z.object({
+  text: z.string(),
+  done: z.boolean().optional(),
 });
 
 const mapping: Readonly<NamespaceMapping> = {
@@ -123,7 +123,7 @@ describe('createValidatorStorage()', () => {
     it('should reject entries that do not pass validation', () =>
       expect(
         storage.set('people', 'john', { name: 'john', age: -5 })
-      ).rejects.toBeInstanceOf(Yup.ValidationError));
+      ).rejects.toBeInstanceOf(z.ZodError));
   });
 
   describe('update()', () => {
@@ -148,7 +148,7 @@ describe('createValidatorStorage()', () => {
 
       await expect(
         storage.update('people', 'john', { age: -5 })
-      ).rejects.toBeInstanceOf(Yup.ValidationError);
+      ).rejects.toBeInstanceOf(z.ZodError);
     });
   });
 

@@ -1,6 +1,6 @@
 import { Entry, Storage } from '@varasto/storage';
 import { JsonObject } from 'type-fest';
-import { AnySchema } from 'yup';
+import { ZodType } from 'zod/v4';
 
 import { UnrecognizedNamespaceError } from './errors';
 import { NamespaceMapping } from './types';
@@ -15,10 +15,10 @@ export const createValidatorStorage = (
     }
   };
 
-  const getSchema = (namespace: string): AnySchema => {
+  const getSchema = <T extends JsonObject>(namespace: string): ZodType<T> => {
     namespaceCheck(namespace);
 
-    return mapping[namespace];
+    return mapping[namespace] as ZodType<T>;
   };
 
   return new (class extends Storage {
@@ -68,9 +68,7 @@ export const createValidatorStorage = (
       key: string,
       value: T
     ): Promise<void> {
-      await getSchema(namespace).validate(value);
-
-      return storage.set(namespace, key, value);
+      return storage.set(namespace, key, getSchema<T>(namespace).parse(value));
     }
 
     async update<T extends JsonObject>(
@@ -78,11 +76,10 @@ export const createValidatorStorage = (
       key: string,
       value: Partial<T>
     ): Promise<T> {
-      const schema = getSchema(namespace);
+      const schema = getSchema<T>(namespace);
       const oldValue = await storage.get<T>(namespace, key);
-      const newValue = { ...oldValue, ...value } as T;
+      const newValue = schema.parse({ ...oldValue, ...value } as T);
 
-      await schema.validate(newValue);
       await storage.set(namespace, key, newValue);
 
       return newValue;

@@ -1,10 +1,12 @@
 {
   "name": "@varasto/validator-storage",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Varasto storage implementation that performs validation",
   "license": "MIT",
   "keywords": [
-    "varasto"
+    "validator",
+    "varasto",
+    "zod"
   ],
   "author": "Rauli Laine <rauli.laine@iki.fi>",
   "main": "./dist/index.js",
@@ -39,14 +41,14 @@
     "prebuild": "$npm_execpath run clean",
     "prepack": "$npm_execpath run build"
   },
-  "dependencies": {
-    "@varasto/storage": ">=5.0.0,<6.0.0",
-    "yup": ">=1.0.0,<2.0.0"
+  "peerDependencies": {
+    "@varasto/storage": ">=5,<6",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
-    "@varasto/memory-storage": ">=3.0.0,<4.0.0",
+    "@varasto/memory-storage": "^3.0.0",
     "@vitest/coverage-v8": "^3.2.2",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
@@ -54,6 +56,7 @@
     "prettier": "^2.3.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.2.2",
-    "vitest": "^3.2.2"
+    "vitest": "^3.2.2",
+    "zod": "^3.25.0"
   }
 }

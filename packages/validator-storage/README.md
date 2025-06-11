@@ -3,12 +3,12 @@
 [![npm][npm-image]][npm-url]
 
 Implementation of [storage] that performs validation on the inserted data,
-using [Yup] schemas.
+using [Zod] schemas.
 
 [npm-image]: https://img.shields.io/npm/v/@varasto/validator-storage.svg
 [npm-url]: https://npmjs.org/package/@varasto/validator-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
-[yup]: https://github.com/jquense/yup
+[zod]: https://zod.dev
 
 ## Installation
 
@@ -20,24 +20,24 @@ $ npm install --save @varasto/validator-storage
 
 Validator storage acts as an wrapper for another storage. Before data is
 allowed to be inserted into the wrapped storage, an validation is performed on
-it against Yup schema that is mapped to an namespace.
+it against [Zod] schema that is mapped to an namespace.
 
 Inserting data to an namespace that is not mapped to a schema is not allowed
 and will result in `UnrecognizedNamespaceError`.
 
 ```TypeScript
-import * as Yup from 'yup';
+import { z } from 'zod/v4';
 import { createRemoteStorage } from '@varasto/remote-storage';
 import { createValidatorStorage } from '@varasto/validator-storage';
 
-const personSchema = Yup.object({
-  name: Yup.string().required(),
-  age: Yup.number().required().positive().integer()
+const personSchema = z.object({
+  name: z.string(),
+  age: z.number().positive().int()
 });
 
-const taskSchema = Yup.object({
-  title: Yup.string().required(),
-  completed: Yup.boolean().required()
+const taskSchema = z.object({
+  title: z.string(),
+  completed: z.boolean()
 });
 
 const namespaces = {
