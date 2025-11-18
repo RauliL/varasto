@@ -41,7 +41,7 @@
   },
   "dependencies": {
     "@varasto/storage": ">=5.0.0,<6.0.0",
-    "glob": "^10.3.10",
+    "glob": "^10.5.0",
     "is-valid-slug": "^1.0.0",
     "mkdirp": "^3.0.1"
   },
