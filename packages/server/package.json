@@ -49,7 +49,7 @@
   "dependencies": {
     "@varasto/fs-storage": ">=3.0.0,<4.0.0",
     "basic-auth": "^2.0.1",
-    "express": "^5.1.0",
+    "express": "^5.2.0",
     "morgan": "^1.10.0",
     "yargs": "^17.7.2"
   },
