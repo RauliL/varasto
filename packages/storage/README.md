@@ -38,21 +38,23 @@ Usually you don't need to use or install this package directly, but use an
 storage implementation package instead. Below is an list of storage
 implementations for different use cases.
 
-| Name                  | Description                               |
-| --------------------- | ----------------------------------------- |
-| [cache-storage]       | Acts as an cache for another storage.     |
-| [fs-storage]          | Stores data persistently to hard disk.    |
-| [memory-storage]      | Stores data to memory.                    |
-| [multi-storage]       | Stores data to multiple other storages.   |
-| [postgres-storage]    | Stores data to [PostgreSQL] database.     |
-| [remote-storage]      | Stores data to remote server.             |
-| [redis-storage]       | Stores data to [Redis].                   |
-| [single-file-storage] | Stores data to a single file.             |
-| [sqlite-storage]      | Stores data to [SQLite] database.         |
-| [validator-storage]   | Acts as an validator for another storage. |
-| [web-storage]         | Stores data to browser storage.           |
+| Name                   | Description                               |
+| ---------------------- | ----------------------------------------- |
+| [cache-storage]        | Acts as an cache for another storage.     |
+| [event-target-storage] | Middleware that dispatches events.        |
+| [fs-storage]           | Stores data persistently to hard disk.    |
+| [memory-storage]       | Stores data to memory.                    |
+| [multi-storage]        | Stores data to multiple other storages.   |
+| [postgres-storage]     | Stores data to [PostgreSQL] database.     |
+| [remote-storage]       | Stores data to remote server.             |
+| [redis-storage]        | Stores data to [Redis].                   |
+| [single-file-storage]  | Stores data to a single file.             |
+| [sqlite-storage]       | Stores data to [SQLite] database.         |
+| [validator-storage]    | Acts as an validator for another storage. |
+| [web-storage]          | Stores data to browser storage.           |
 
 [cache-storage]: https://www.npmjs.com/package/@varasto/cache-storage
+[event-target-storage]: https://www.npmjs.com/package/@varasto/event-target-storage
 [fs-storage]: https://www.npmjs.com/package/@varasto/fs-storage
 [memory-storage]: https://www.npmjs.com/package/@varasto/memory-storage
 [multi-storage]: https://www.npmjs.com/package/@varasto/multi-storage
