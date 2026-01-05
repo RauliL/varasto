@@ -1,0 +1,49 @@
+#!/usr/bin/env node
+
+const { createFileSystemStorage } = require('@varasto/fs-storage');
+const { open } = require('@varasto/url');
+const fs = require('node:fs');
+const path = require('node:path');
+const yargs = require('yargs');
+const { hideBin } = require('yargs/helpers');
+
+const { repl, runCommand } = require(path.join(
+  path.dirname(fs.realpathSync(__filename)),
+  '..',
+  'dist'
+));
+
+const args = yargs()
+  .usage('$0 <url> [command]', 'Start the CLI.')
+  .positional('url', {
+    demand: true,
+    describe: 'URL to the Varasto storage.',
+    type: 'string',
+  })
+  .positional('command', {
+    demand: false,
+    describe: 'Command to execute.',
+    type: 'string',
+  })
+  .help()
+  .parse(hideBin(process.argv));
+
+const onSuccess = () => {
+  process.exit(0);
+};
+
+const onError = (err) => {
+  console.error(err);
+  process.exit(1);
+};
+
+(args.url.includes(':')
+  ? open(args.url)
+  : Promise.resolve(createFileSystemStorage({ dir: args.url }))
+).then((storage) => {
+  if (args.command) {
+    runCommand(storage, args.command).then(onSuccess).catch(onError);
+  } else {
+    repl(storage);
+  }
+});
