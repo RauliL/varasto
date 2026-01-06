@@ -10,7 +10,8 @@ export type CommandDefinition = {
   callback: (storage: Storage, args: string[]) => Promise<void>;
 };
 
-const renderValue = (value: any): string => colorize(value, { indent: 2 });
+const renderValue = (value: string | object): string =>
+  colorize(value, { indent: 2 });
 
 export const renderUsage = (command: CommandDefinition): string =>
   command.args?.map((arg) => `<${arg}>`).join(' ') ?? '';
@@ -41,7 +42,7 @@ const commands: Readonly<Record<string, CommandDefinition>> = {
     args: ['namespace'],
     async callback(storage, [namespace]) {
       for await (const [key, value] of storage.entries(namespace)) {
-        console.log(renderValue({ key: value }));
+        console.log(renderValue({ [key]: value }));
       }
     },
   },
@@ -102,7 +103,6 @@ export const runCommand = async (
 ): Promise<void> => {
   const args = tokenize(input);
   let command: CommandDefinition;
-  let arity: number;
 
   if (args.length === 0) {
     return;
@@ -110,7 +110,8 @@ export const runCommand = async (
     throw new Error(`Unknown command: ${args[0]}`);
   }
 
-  arity = command.args?.length ?? 0;
+  const arity = command.args?.length ?? 0;
+
   if (args.length - 1 < arity) {
     throw new Error(`Missing arguments for command ${args[0]}`);
   } else if (args.length - 1 > arity) {

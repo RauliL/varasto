@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, expect, it } from 'vitest';
 
 import { ConfigurationError } from '../error';
@@ -10,7 +11,7 @@ describe('Field decorator', () => {
       @Model()
       class MockModel {
         @Field()
-        value?: Object;
+        value?: object;
       }
     }).toThrow(ConfigurationError);
   });

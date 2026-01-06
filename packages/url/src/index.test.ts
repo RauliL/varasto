@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { open } from '.';
 
 describe('open()', () => {
-  const expectStorage = (result: any) => {
+  const expectStorage = (result: object) => {
     ['entries', 'keys', 'get', 'set', 'delete', 'update'].forEach((method) => {
       expect(Reflect.get(result, method)).toBeInstanceOf(Function);
     });

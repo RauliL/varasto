@@ -27,7 +27,9 @@ export const createSqliteStorage = (
       if (typeof result === 'object') {
         return result as T;
       }
-    } catch {}
+    } catch {
+      // Ignore.
+    }
 
     return undefined;
   };

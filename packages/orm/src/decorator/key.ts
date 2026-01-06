@@ -6,7 +6,7 @@ import { KeyOptions } from '../options';
 
 export const Key =
   (options: KeyOptions = {}): PropertyDecorator =>
-  (target: Object, propertyKey: string | symbol) => {
+  (target: object, propertyKey: string | symbol) => {
     const type = Reflect.getMetadata('design:type', target, propertyKey);
     const modelMetadata = ModelMetadata.getFor(target.constructor);
 
