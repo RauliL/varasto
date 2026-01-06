@@ -9,7 +9,7 @@ import { ModelMetadata } from './metadata';
 /**
  * Tests whether an model instance with given key exists in the given storage.
  */
-export const exists = <T extends Object>(
+export const exists = <T extends object>(
   storage: Storage,
   modelClass: Class<T>,
   key: string
@@ -23,7 +23,7 @@ export const exists = <T extends Object>(
  * instance with the given key does not exist, the promise will fail with
  * `ModelDoesNotExistError`.
  */
-export const get = <T extends Object>(
+export const get = <T extends object>(
   storage: Storage,
   modelClass: Class<T>,
   key: string
@@ -48,7 +48,7 @@ export const get = <T extends Object>(
  * If an optional schema is given, only model instances that match that schema
  * are counted.
  */
-export async function count<T extends Object>(
+export async function count<T extends object>(
   storage: Storage,
   modelClass: Class<T>,
   schema?: Schema
@@ -56,12 +56,14 @@ export async function count<T extends Object>(
   let result = 0;
 
   if (schema) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for await (const key of findAll(storage, modelClass, schema)) {
       ++result;
     }
   } else {
     const metadata = await ModelMetadata.requireFor<T>(modelClass);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for await (const key of storage.keys(metadata.namespace)) {
       ++result;
     }
@@ -73,7 +75,7 @@ export async function count<T extends Object>(
 /**
  * Returns keys of model instances stored in given storage.
  */
-export async function* keys<T extends Object>(
+export async function* keys<T extends object>(
   storage: Storage,
   modelClass: Class<T>
 ): AsyncGenerator<string> {
@@ -87,7 +89,7 @@ export async function* keys<T extends Object>(
 /**
  * Returns all model instances stored in given storage.
  */
-export async function* list<T extends Object>(
+export async function* list<T extends object>(
   storage: Storage,
   modelClass: Class<T>
 ): AsyncGenerator<T> {
@@ -103,7 +105,7 @@ export async function* list<T extends Object>(
  * given schema. If no model instance that matches the schema is found,
  * undefined is returned instead.
  */
-export const find = <T extends Object>(
+export const find = <T extends object>(
   storage: Storage,
   modelClass: Class<T>,
   schema: Schema
@@ -118,7 +120,7 @@ export const find = <T extends Object>(
  * Searches for all model instances from given storages that match the given
  * schema.
  */
-export async function* findAll<T extends Object>(
+export async function* findAll<T extends object>(
   storage: Storage,
   modelClass: Class<T>,
   schema: Schema

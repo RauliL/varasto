@@ -1,5 +1,4 @@
 import { Storage } from '@varasto/storage';
-import { JsonObject } from 'type-fest';
 import { TypedEventTarget } from 'typescript-event-target';
 
 import {

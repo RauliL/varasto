@@ -31,9 +31,6 @@
   "bin": {
     "varasto": "./bin/varasto"
   },
-  "eslintConfig": {
-    "extends": "../../eslintrc.js"
-  },
   "scripts": {
     "clean": "rimraf './dist'",
     "build": "tsc",
@@ -54,20 +51,20 @@
     "yargs": "^18.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/basic-auth": "^1.1.8",
     "@types/express": "^5.0.3",
     "@types/morgan": "^1.9.10",
     "@types/supertest": "^6.0.3",
-    "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
     "@varasto/memory-storage": ">=3.0.0,<4.0.0",
     "@vitest/coverage-v8": "^3.2.2",
-    "eslint": "^7.30.0",
-    "eslint-config-prettier": "^8.3.0",
-    "prettier": "^2.3.2",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.7.4",
     "rimraf": "^6.0.1",
     "supertest": "^7.1.1",
     "typescript": "^5.2.2",
+    "typescript-eslint": "^8.52.0",
     "vitest": "^3.2.2"
   }
 }

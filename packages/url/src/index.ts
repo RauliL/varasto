@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import { Storage } from '@varasto/storage';
 
 const createMemoryStorage = (): Storage =>
@@ -45,7 +46,7 @@ const createSqliteStorage = (url: URL): Promise<Storage> =>
       filename: url.href.substr(url.protocol.length),
       driver: require('sqlite3').Database,
     })
-    .then((client: any) =>
+    .then((client: object) =>
       require('@varasto/sqlite-storage').createSqliteStorage(client)
     );
 

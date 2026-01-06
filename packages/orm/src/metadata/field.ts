@@ -19,7 +19,7 @@ export class FieldMetadata {
     this.options = options;
   }
 
-  public load<T extends Object>(instance: T, data: JsonObject) {
+  public load<T extends object>(instance: T, data: JsonObject) {
     let value = Reflect.get(data, this.propertyName) as
       | string
       | number
@@ -38,7 +38,7 @@ export class FieldMetadata {
     Reflect.set(instance, this.propertyName, value);
   }
 
-  public save<T extends Object>(instance: T, data: JsonObject) {
+  public save<T extends object>(instance: T, data: JsonObject) {
     let value = Reflect.get(instance, this.propertyName) as
       | string
       | number

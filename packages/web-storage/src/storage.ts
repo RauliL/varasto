@@ -33,21 +33,19 @@ export const createWebStorage = (
   };
 
   const getAllKeys = async (namespace: string): Promise<string[]> => {
-    let data: string | null;
-    let parsedData: string[];
-
     if (!isValidSlug(namespace)) {
       throw new InvalidSlugError('Given namespace is not valid slug');
     }
 
-    data = storage.getItem(`${namespace}:[[keys]]`);
+    const data = storage.getItem(`${namespace}:[[keys]]`);
+
     if (data == null) {
       return [];
     }
 
-    parsedData = JSON.parse(data);
+    const parsedData = JSON.parse(data);
 
-    return isArray(parsedData) ? parsedData : [];
+    return isArray(parsedData) ? (parsedData as string[]) : [];
   };
 
   return new (class extends VarastoStorage {
@@ -97,12 +95,12 @@ export const createWebStorage = (
     ): Promise<T | undefined> {
       const storageKey = await buildKey(namespace, key);
       const data = storage.getItem(storageKey);
-      let parsedData: T;
 
       if (data == null) {
         return undefined;
       }
-      parsedData = deserialize(data) as T;
+
+      const parsedData = deserialize(data) as T;
 
       return parsedData != null && typeof parsedData === 'object'
         ? parsedData

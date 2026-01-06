@@ -1,4 +1,4 @@
-import { Entry, InvalidSlugError, Storage } from '@varasto/storage';
+import { Entry, InvalidSlugError } from '@varasto/storage';
 import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 

@@ -12,7 +12,7 @@ import { ModelMetadata } from './metadata';
  * If the model instance does not have it's key set, one will be generated for
  * it.
  */
-export const save = <T extends Object>(
+export const save = <T extends object>(
   storage: Storage,
   instance: T
 ): Promise<T> =>
@@ -24,7 +24,7 @@ export const save = <T extends Object>(
  * Performs an bulk update an all model instances that match the given schema,
  * returning the updated instances.
  */
-export async function* updateAll<T extends Object>(
+export async function* updateAll<T extends object>(
   storage: Storage,
   modelClass: Class<T>,
   schema: Schema,
@@ -49,13 +49,11 @@ export async function* updateAll<T extends Object>(
  * instance does not exist in the storage, the promise will fail with
  * `ModelDoesNotExistError`.
  */
-export const remove = <T extends Object>(
+export const remove = <T extends object>(
   storage: Storage,
   instance: T
 ): Promise<void> =>
   ModelMetadata.requireFor<T>(instance.constructor).then((metadata) => {
-    let key: string | undefined;
-
     if (!metadata.keyPropertyName) {
       return Promise.reject(
         new ConfigurationError(`Model ${metadata.target} has no key property.`)
@@ -63,9 +61,10 @@ export const remove = <T extends Object>(
     }
 
     // Ensure that the model instance has a key.
-    key = Reflect.get(instance, metadata.keyPropertyName) as
+    const key = Reflect.get(instance, metadata.keyPropertyName) as
       | string
       | undefined;
+
     if (!key) {
       return Promise.reject(
         new ModelDoesNotExistError('Model instance has no key.')
@@ -86,7 +85,7 @@ export const remove = <T extends Object>(
  * Performs an bulk removal on all model instances that match the given schema,
  * returning the number of removed instances.
  */
-export async function removeAll<T extends Object>(
+export async function removeAll<T extends object>(
   storage: Storage,
   modelClass: Class<T>,
   schema: Schema

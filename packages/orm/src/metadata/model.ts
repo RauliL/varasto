@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import 'reflect-metadata';
 
 import { Storage } from '@varasto/storage';
@@ -7,7 +8,6 @@ import { v4 as uuid } from 'uuid';
 
 import { ConfigurationError, ModelMissingMetadataError } from '../error';
 import { FieldMetadata } from './field';
-import slugify from 'slugify';
 
 const METADATA_KEY = 'varasto:metadata';
 
@@ -16,7 +16,7 @@ export class ModelMetadata {
   public readonly fields: FieldMetadata[];
   private _namespace: string | undefined;
   public keyPropertyName: string | symbol | undefined;
-  public keyGenerator: (<T extends Object>(instance: T) => string) | undefined;
+  public keyGenerator: (<T extends object>(instance: T) => string) | undefined;
 
   public constructor(target: Function) {
     this.target = target;
@@ -36,7 +36,7 @@ export class ModelMetadata {
     return metadata;
   }
 
-  public static requireFor<T extends Object>(
+  public static requireFor<T extends object>(
     target: Class<T> | Function
   ): Promise<ModelMetadata> {
     return new Promise<ModelMetadata>((resolve, reject) => {
@@ -67,7 +67,7 @@ export class ModelMetadata {
     this._namespace = namespace;
   }
 
-  public load<T extends Object>(key: string, data: JsonObject): T {
+  public load<T extends object>(key: string, data: JsonObject): T {
     const instance = Object.create(this.target.prototype);
 
     if (!this.keyPropertyName) {
@@ -81,7 +81,7 @@ export class ModelMetadata {
     return instance;
   }
 
-  public save<T extends Object>(storage: Storage, instance: T): Promise<T> {
+  public save<T extends object>(storage: Storage, instance: T): Promise<T> {
     const data: JsonObject = {};
     let key: string | undefined;
 
@@ -103,7 +103,7 @@ export class ModelMetadata {
     return storage.set(this.namespace, key, data).then(() => instance);
   }
 
-  private clean<T extends Object>(instance: T) {
+  private clean<T extends object>(instance: T) {
     const cleanMethod = Reflect.get(instance, 'clean');
 
     if (typeof cleanMethod === 'function') {

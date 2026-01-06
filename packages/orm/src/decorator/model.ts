@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import slugify from 'slugify';
 
 import { ModelMetadata } from '../metadata';

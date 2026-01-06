@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type, @typescript-eslint/no-unused-vars */
 import { Class } from 'type-fest';
 
 export class ConfigurationError extends Error {
@@ -9,13 +10,13 @@ export class ConfigurationError extends Error {
   }
 }
 
-export class ModelMissingMetadataError<T extends Object> extends Error {
+export class ModelMissingMetadataError<T extends object> extends Error {
   name = 'ModelMissingMetadataError';
 
   public constructor(target: Class<T> | Function) {
     super();
     Object.setPrototypeOf(this, ModelMissingMetadataError.prototype);
-    this.message = `Model class ${target.constructor.name} is missing it\'s metadata.`;
+    this.message = `Model class ${target.constructor.name} is missing it's metadata.`;
   }
 }
 
@@ -28,7 +29,7 @@ export class ModelDoesNotExistError extends Error {
   }
 }
 
-export class ValidationError<T extends Object> extends Error {
+export class ValidationError<T extends object> extends Error {
   name = 'ValidationError';
 
   public constructor(message: string) {

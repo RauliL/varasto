@@ -27,9 +27,6 @@
   "bugs": {
     "url": "https://github.com/RauliL/varasto/issues"
   },
-  "eslintConfig": {
-    "extends": "../../eslintrc.js"
-  },
   "scripts": {
     "clean": "rimraf './dist'",
     "build": "tsc",
@@ -48,17 +45,17 @@
     "isarray": "^2.0.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@types/isarray": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^6.7.4",
-    "@typescript-eslint/parser": "^6.7.4",
     "@vitest/coverage-v8": "^3.2.2",
-    "eslint": "^7.30.0",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
     "it-all": "^1.0.6",
     "mock-storage": "^1.1.0",
-    "prettier": "^2.3.2",
+    "prettier": "^3.7.4",
     "rimraf": "^6.0.1",
     "typescript": "^5.2.2",
+    "typescript-eslint": "^8.52.0",
     "vitest": "^3.2.2"
   }
 }

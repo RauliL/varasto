@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import 'reflect-metadata';
 
 import { ConfigurationError } from '../error';
@@ -13,7 +14,7 @@ const TYPE_MAPPING = new Map<Function, FieldType>([
 
 export const Field =
   (options: FieldOptions = {}): PropertyDecorator =>
-  (target: Object, propertyKey: string | symbol) => {
+  (target: object, propertyKey: string | symbol) => {
     const modelMetadata = ModelMetadata.getFor(target.constructor);
     let type: FieldType | undefined = options.type;
 

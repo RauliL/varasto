@@ -16,8 +16,8 @@ const errorHandler = (err: AxiosError) =>
         new InvalidSlugError('Given namespace or key is not valid slug')
       )
     : err.response?.status === 404
-    ? Promise.resolve(undefined)
-    : Promise.reject(err);
+      ? Promise.resolve(undefined)
+      : Promise.reject(err);
 
 export const createRemoteStorage = (
   options: Partial<RemoteStorageOptions> = {}
@@ -101,8 +101,8 @@ export const createRemoteStorage = (
                   'Given namespace or key is not valid slug'
                 )
               : err.response?.status === 404
-              ? new ItemDoesNotExistError('Item does not exist')
-              : err
+                ? new ItemDoesNotExistError('Item does not exist')
+                : err
           )
         );
     }
