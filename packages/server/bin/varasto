@@ -7,59 +7,57 @@ const http = require('http');
 const https = require('https');
 const morgan = require('morgan');
 const yargs = require('yargs');
+const { hideBin } = require('yargs/helpers');
 
 const { createServer } = require('../dist');
 
-const argv = yargs.usage(
-  '$0 [options] <directory>',
-  'Start the HTTP server.',
-  (yargs) =>
-    yargs
-      .option('auth', {
-        alias: 'a',
-        nargs: 1,
-        describe: "Username and password to require, separated with ':'.",
-        type: 'string',
-      })
-      .option('host', {
-        alias: 'h',
-        nargs: 1,
-        default: '0.0.0.0',
-        describe: 'Hostname which to bind to.',
-        type: 'string',
-      })
-      .option('port', {
-        alias: 'p',
-        nargs: 1,
-        default: 3000,
-        describe: 'Port which to listen to.',
-        type: 'number',
-      })
-      .option('private-key', {
-        alias: 'k',
-        nargs: 1,
-        describe: 'Location of HTTPS private key',
-        type: 'string',
-      })
-      .option('certificate', {
-        alias: 'c',
-        nargs: 1,
-        describe: 'Location of HTTPS certificate',
-        type: 'string',
-      })
-      .positional('directory', {
-        describe: 'Directory where the items will be persisted into.',
-        type: 'string',
-        demand: true,
-      })
-      .help('help')
-).argv;
+const args = yargs()
+  .usage('$0 [options] <directory>', 'Start the HTTP server.')
+  .option('auth', {
+    alias: 'a',
+    nargs: 1,
+    describe: "Username and password to require, separated with ':'.",
+    type: 'string',
+  })
+  .option('host', {
+    alias: 'h',
+    nargs: 1,
+    default: '0.0.0.0',
+    describe: 'Hostname which to bind to.',
+    type: 'string',
+  })
+  .option('port', {
+    alias: 'p',
+    nargs: 1,
+    default: 3000,
+    describe: 'Port which to listen to.',
+    type: 'number',
+  })
+  .option('private-key', {
+    alias: 'k',
+    nargs: 1,
+    describe: 'Location of HTTPS private key',
+    type: 'string',
+  })
+  .option('certificate', {
+    alias: 'c',
+    nargs: 1,
+    describe: 'Location of HTTPS certificate',
+    type: 'string',
+  })
+  .positional('directory', {
+    describe: 'Directory where the items will be persisted into.',
+    type: 'string',
+    demand: true,
+  })
+  .help()
+  .parse(hideBin(process.argv));
 
 const createServerOptions = () => {
   const options = {};
 
-  if (argv.auth) {
-    const [username, password] = argv.auth.split(':');
+  if (args.auth) {
+    const [username, password] = args.auth.split(':');
 
     if (!username || !password) {
       process.stderr.write(
@@ -73,9 +71,9 @@ const createServerOptions = () => {
   return options;
 };
 
-const storage = createFileSystemStorage({ dir: argv.directory });
+const storage = createFileSystemStorage({ dir: args.directory });
 const app = express();
-const { certificate, host, port, privateKey } = argv;
+const { certificate, host, port, privateKey } = args;
 let credentials;
 
 if (certificate && privateKey) {
