@@ -51,7 +51,7 @@
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "it-all": "^1.0.6",
-    "prettier": "^2.3.2",
+    "prettier": "^3.7.4",
     "rimraf": "^6.0.1",
     "typescript": "^5.2.2",
     "typescript-eslint": "^8.52.0",
