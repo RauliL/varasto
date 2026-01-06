@@ -51,6 +51,10 @@
     "json5": "^2.2.3",
     "yargs": "^18.0.0"
   },
+  "peerDependencies": {
+    "@varasto/postgres-storage": ">=3.0.0,<4.0.0",
+    "@varasto/redis-storage": ">=3.0.0,<4.0.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/node": "^22.15.30",
