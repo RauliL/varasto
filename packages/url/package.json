@@ -38,20 +38,20 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": ">=5.0.0,<6.0.0"
+    "@varasto/storage": "^5.0.0"
   },
   "peerDependencies": {
-    "@varasto/fs-storage": ">=3.0.0,<4.0.0",
-    "@varasto/memory-storage": ">=3.0.0,<4.0.0",
-    "@varasto/postgres-storage": ">=3.0.0,<4.0.0",
-    "@varasto/redis-storage": ">=3.0.0,<4.0.0",
-    "@varasto/remote-storage": ">=3.0.0,<4.0.0",
-    "@varasto/sqlite-storage": ">=4.0.0,<5.0.0"
+    "@varasto/fs-storage": "^3.0.0",
+    "@varasto/memory-storage": "^3.0.0",
+    "@varasto/postgres-storage": "^3.0.0",
+    "@varasto/redis-storage": "^3.0.0",
+    "@varasto/remote-storage": "^3.0.0",
+    "@varasto/sqlite-storage": "^4.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
     "@types/node": "^22.15.30",
-    "@varasto/memory-storage": ">=3.0.0,<4.0.0",
+    "@varasto/memory-storage": "^3.0.0",
     "@vitest/coverage-v8": "^3.2.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
