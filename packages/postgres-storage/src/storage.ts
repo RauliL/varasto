@@ -20,7 +20,7 @@ export const createPostgresStorage = (
   client: Client,
   options: Partial<PostgresStorageOptions> = {}
 ): Storage =>
-  new (class extends Storage {
+  new (class PostgresStorage extends Storage {
     async has(namespace: string, key: string): Promise<boolean> {
       return hasItem(client, namespace, key);
     }
