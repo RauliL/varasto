@@ -76,6 +76,9 @@ export const hasItem = async (
   return false;
 };
 
+export const parseValue = <T extends JsonObject>(input: string | T): T =>
+  typeof input === 'string' ? JSON.parse(input) : input;
+
 export const getItem = async <T extends JsonObject>(
   client: Client,
   namespace: string,
@@ -89,7 +92,7 @@ export const getItem = async <T extends JsonObject>(
     );
 
     if (result.rows.length > 0) {
-      return JSON.parse(result.rows[0].value);
+      return parseValue<T>(result.rows[0].value);
     }
   }
 

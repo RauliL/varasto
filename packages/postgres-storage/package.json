@@ -1,6 +1,6 @@
 {
   "name": "@varasto/postgres-storage",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Varasto storage implementation that stores data to PostgreSQL database",
   "license": "MIT",
   "keywords": [

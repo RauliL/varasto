@@ -9,6 +9,7 @@ import {
   doesNamespaceExist,
   getItem,
   hasItem,
+  parseValue,
   validateNamespace,
   validateNamespaceAndKey,
 } from './utils';
@@ -48,7 +49,7 @@ export const createPostgresStorage = (
         );
 
         for (const row of result.rows) {
-          yield JSON.parse(row.value);
+          yield parseValue(row.value);
         }
       }
     }
@@ -64,7 +65,7 @@ export const createPostgresStorage = (
         );
 
         for (const row of result.rows) {
-          yield [row.key, JSON.parse(row.value)];
+          yield [row.key, parseValue(row.value)];
         }
       }
     }

@@ -11,6 +11,7 @@ import { describe, expect, it } from 'vitest';
 
 import { createPostgresStorage } from './storage';
 import { PostgresStorageOptions } from './types';
+import { parseValue } from './utils';
 
 describe('Postgres storage', () => {
   const getStorage = (
@@ -41,17 +42,12 @@ describe('Postgres storage', () => {
       )
     );
   };
-  const select = (
-    db: IMemoryDb,
-    namespace: string,
-    key: string
-  ): JsonObject => {
-    const { value } = db.public.one(
-      format('SELECT value FROM %I WHERE key = %L;', namespace, key)
+  const select = (db: IMemoryDb, namespace: string, key: string): JsonObject =>
+    parseValue(
+      db.public.one(
+        format('SELECT value FROM %I WHERE key = %L;', namespace, key)
+      ).value
     );
-
-    return typeof value === 'string' ? JSON.parse(value) : value;
-  };
 
   describe('has()', () => {
     it('should return true if item exists', () => {
