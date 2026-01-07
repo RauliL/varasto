@@ -36,11 +36,18 @@ export const doesNamespaceExist = async (
   return result.rows.length > 0;
 };
 
-export const createNamespace = (client: Client, namespace: string) =>
-  client.query(
+export const createNamespace = async (
+  client: Client,
+  namespace: string
+): Promise<void> => {
+  if (await doesNamespaceExist(client, namespace)) {
+    return;
+  }
+
+  await client.query(
     format(
       `
-    CREATE TABLE IF NOT EXISTS %I (
+    CREATE TABLE %I (
       key TEXT PRIMARY KEY NOT NULL,
       value JSONB NOT NULL,
       UNIQUE (key)
@@ -49,6 +56,7 @@ export const createNamespace = (client: Client, namespace: string) =>
       namespace
     )
   );
+};
 
 export const hasItem = async (
   client: Client,
@@ -81,7 +89,7 @@ export const getItem = async <T extends JsonObject>(
     );
 
     if (result.rows.length > 0) {
-      return result.rows[0].value;
+      return JSON.parse(result.rows[0].value);
     }
   }
 
