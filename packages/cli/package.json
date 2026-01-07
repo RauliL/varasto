@@ -1,6 +1,6 @@
 {
   "name": "@varasto/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Command line interface for Varasto storage",
   "license": "MIT",
   "keywords": [
@@ -45,7 +45,7 @@
     "@varasto/memory-storage": "^3.0.0",
     "@varasto/remote-storage": "^3.0.0",
     "@varasto/sqlite-storage": "^4.0.0",
-    "@varasto/url": "^1.0.0",
+    "@varasto/url": "^1.0.1",
     "json-colorizer": "^3.0.1",
     "json5": "^2.2.3",
     "yargs": "^18.0.0"
