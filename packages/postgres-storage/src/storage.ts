@@ -48,7 +48,7 @@ export const createPostgresStorage = (
         );
 
         for (const row of result.rows) {
-          yield row.value;
+          yield JSON.parse(row.value);
         }
       }
     }
@@ -64,7 +64,7 @@ export const createPostgresStorage = (
         );
 
         for (const row of result.rows) {
-          yield [row.key, row.value];
+          yield [row.key, JSON.parse(row.value)];
         }
       }
     }
@@ -84,14 +84,13 @@ export const createPostgresStorage = (
       let query: string;
 
       validateNamespaceAndKey(namespace, key);
-      createNamespace(client, namespace);
-
+      await createNamespace(client, namespace);
       if (await hasItem(client, namespace, key)) {
         query = format(
           'UPDATE %I SET value = %L WHERE key = %L',
           namespace,
-          key,
-          JSON.stringify(value)
+          JSON.stringify(value),
+          key
         );
       } else {
         query = format(
@@ -101,7 +100,6 @@ export const createPostgresStorage = (
           JSON.stringify(value)
         );
       }
-
       await client.query(query);
     }
 

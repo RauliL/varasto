@@ -17,30 +17,37 @@ export const validateNamespaceAndKey = (namespace: string, key: string) => {
   }
 };
 
-export const doesNamespaceExist = (
+export const doesNamespaceExist = async (
   client: Client,
   namespace: string
-): Promise<boolean> =>
-  client
-    .query(
-      format(
-        `
-    SELECT EXISTS (
-      SELECT FROM information_schema.tables
-      WHERE table_schema = 'public'
-      AND table_name = %I
-    );
-    `,
-        namespace
-      )
-    )
-    .then((result) => result.rows?.[0]?.exists === true);
-
-export const createNamespace = (client: Client, namespace: string) =>
-  client.query(
+): Promise<boolean> => {
+  const result = await client.query(
     format(
       `
-    CREATE TABLE IF NOT EXISTS %I (
+      SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+        AND table_name = %L;
+  `,
+      namespace
+    )
+  );
+
+  return result.rows.length > 0;
+};
+
+export const createNamespace = async (
+  client: Client,
+  namespace: string
+): Promise<void> => {
+  if (await doesNamespaceExist(client, namespace)) {
+    return;
+  }
+
+  await client.query(
+    format(
+      `
+    CREATE TABLE %I (
       key TEXT PRIMARY KEY NOT NULL,
       value JSONB NOT NULL,
       UNIQUE (key)
@@ -49,6 +56,7 @@ export const createNamespace = (client: Client, namespace: string) =>
       namespace
     )
   );
+};
 
 export const hasItem = async (
   client: Client,
@@ -81,7 +89,7 @@ export const getItem = async <T extends JsonObject>(
     );
 
     if (result.rows.length > 0) {
-      return result.rows[0].value;
+      return JSON.parse(result.rows[0].value);
     }
   }
 
