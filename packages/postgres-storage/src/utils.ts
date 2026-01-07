@@ -17,24 +17,24 @@ export const validateNamespaceAndKey = (namespace: string, key: string) => {
   }
 };
 
-export const doesNamespaceExist = (
+export const doesNamespaceExist = async (
   client: Client,
   namespace: string
-): Promise<boolean> =>
-  client
-    .query(
-      format(
-        `
-    SELECT EXISTS (
-      SELECT FROM information_schema.tables
-      WHERE table_schema = 'public'
-      AND table_name = %I
-    );
-    `,
-        namespace
-      )
+): Promise<boolean> => {
+  const result = await client.query(
+    format(
+      `
+      SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+        AND table_name = %L;
+  `,
+      namespace
     )
-    .then((result) => result.rows?.[0]?.exists === true);
+  );
+
+  return result.rows.length > 0;
+};
 
 export const createNamespace = (client: Client, namespace: string) =>
   client.query(
