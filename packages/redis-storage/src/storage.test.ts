@@ -1,6 +1,6 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import all from 'it-all';
-import { createClient } from 'redis';
+import { createClient } from 'redis-mock';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { createRedisStorage } from './storage';
