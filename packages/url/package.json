@@ -1,6 +1,6 @@
 {
   "name": "@varasto/url",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Connect to an Varasto storage based on URL",
   "license": "MIT",
   "keywords": [
