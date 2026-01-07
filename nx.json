@@ -1,0 +1,30 @@
+{
+  "release": {
+    "git": {
+      "commit": true,
+      "tag": true
+    },
+    "releaseTag": {
+      "checkAllBranchesWhen": "master",
+      "pattern": "{releaseGroupName}@v{version}",
+      "preferDockerVersion": false,
+      "requireSemver": true,
+      "strictPreid": true
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        {
+          "dependencies": true,
+          "target": "build"
+        }
+      ],
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "test": {
+      "cache": true,
+      "dependsOn": ["build"]
+    }
+  }
+}

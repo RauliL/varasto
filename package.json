@@ -13,7 +13,6 @@
     "watch": "nx run-many -t watch",
     "lint": "nx run-many -t lint",
     "test": "nx run-many -t test",
-    "test:coverage": "nx run-many -t test:coverage",
     "format": "nx run-many -t format",
     "format:check": "nx run-many -t format:check"
   },

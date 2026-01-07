@@ -37,7 +37,6 @@
     "format": "prettier --write './src'",
     "format:check": "prettier --check './src'",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
     "prebuild": "$npm_execpath run clean",
     "prepack": "$npm_execpath run build"
   },
