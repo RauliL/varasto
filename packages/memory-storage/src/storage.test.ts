@@ -70,23 +70,20 @@ describe('memory storage', () => {
       expect(await storage.get('foo', 'bar')).toEqual({ a: 1, b: 2 });
     });
 
-    it('should fail if namespace is not valid slug', () => {
+    it('should fail if namespace is not valid slug', () =>
       expect(storage.update('f;o;o', 'bar', { a: 1 })).rejects.toBeInstanceOf(
         InvalidSlugError
-      );
-    });
+      ));
 
-    it('should fail if key is not valid slug', () => {
+    it('should fail if key is not valid slug', () =>
       expect(storage.update('foo', 'b;a;r', { a: 1 })).rejects.toBeInstanceOf(
         InvalidSlugError
-      );
-    });
+      ));
 
-    it('should fail if the item does not exist', () => {
+    it('should fail if the item does not exist', () =>
       expect(storage.update('foo', 'bar', { a: 1 })).rejects.toBeInstanceOf(
         ItemDoesNotExistError
-      );
-    });
+      ));
   });
 
   describe('delete()', () => {

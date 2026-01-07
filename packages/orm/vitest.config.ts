@@ -1,12 +1,11 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig, mergeConfig } from 'vitest/config';
 import swc from 'unplugin-swc';
 
-export default defineConfig({
-  plugins: [swc.vite()],
-  test: {
-    coverage: {
-      provider: 'v8',
-      reporter: ['lcov', 'text'],
-    },
-  },
-});
+import sharedConfig from '../../vitest.config';
+
+export default mergeConfig(
+  sharedConfig,
+  defineConfig({
+    plugins: [swc.vite()],
+  }),
+);

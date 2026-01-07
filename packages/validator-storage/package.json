@@ -34,12 +34,11 @@
     "format": "prettier --write './src'",
     "format:check": "prettier --check './src'",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
     "prebuild": "$npm_execpath run clean",
     "prepack": "$npm_execpath run build"
   },
   "peerDependencies": {
-    "@varasto/storage": ">=5,<6",
+    "@varasto/storage": "^5.0.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {
