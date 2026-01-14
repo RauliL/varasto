@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import 'reflect-metadata';
 
 import { ConfigurationError } from '../error.js';
 import { FieldMetadata, ModelMetadata } from '../metadata/index.js';
 import { FieldOptions } from '../options/index.js';
-import { FieldType } from '../types.js';
+import { FieldConstructor, FieldType } from '../types.js';
 
-const TYPE_MAPPING = new Map<Function, FieldType>([
+const TYPE_MAPPING = new Map<FieldConstructor, FieldType>([
   [Boolean, 'boolean'],
   [Number, 'number'],
   [String, 'string'],

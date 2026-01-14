@@ -3,6 +3,7 @@ import { ValidationError } from '../error.js';
 
 import { FieldOptions } from '../options/index.js';
 import { ModelMetadata } from './model.js';
+import { OptionalFieldValue } from '../types.js';
 
 export class FieldMetadata {
   public readonly model: ModelMetadata;
@@ -20,8 +21,7 @@ export class FieldMetadata {
   }
 
   public load<T extends object>(instance: T, data: JsonObject) {
-    let value = Reflect.get(data, this.propertyName) as
-      string | number | boolean | null | undefined;
+    let value = Reflect.get(data, this.propertyName) as OptionalFieldValue;
 
     if (value === undefined) {
       value = this.options.default;
@@ -35,8 +35,7 @@ export class FieldMetadata {
   }
 
   public save<T extends object>(instance: T, data: JsonObject) {
-    let value = Reflect.get(instance, this.propertyName) as
-      string | number | boolean | null | undefined;
+    let value = Reflect.get(instance, this.propertyName) as OptionalFieldValue;
 
     if (value === undefined) {
       value = this.options.default;
