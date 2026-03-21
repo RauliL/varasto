@@ -196,7 +196,7 @@
                 >@varasto/validator-storage</a
               >
             </td>
-            <td>Acts as an validator for another storage.</td>
+            <td>Acts as an validator middleware for another storage.</td>
           </tr>
           <tr>
             <td>
@@ -227,7 +227,7 @@
         <code>Storage</code> class provided by an backend has following methods:
       </p>
 
-      <h3>Storing items</h3>
+      <h3 class="mt-5">Storing items</h3>
       <pre><code class="language-typescript">set&lt;T extends JsonObject&gt;(
   namespace: string,
   key: string,
@@ -235,11 +235,20 @@
 ): Promise&lt;void&gt;</code></pre>
       <p>
         Attempts to store an item identified by <var>namespace</var> and
-        <var>key</var>. Returned promise will fail if an I/O error occurs while
-        storing the item.
+        <var>key</var>.
       </p>
+      <p>
+        Returned promise will fail if an I/O error occurs while storing the
+        item.
+      </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Item = {
+  value: number;
+};
 
-      <h3>Retrieving items</h3>
+await storage.set&lt;Item&gt;("items", "c57aa66c-2512-11f1-8836-cfad1ba1ae45", { value: 5 });</code></pre>
+
+      <h3 class="mt-5">Retrieving items</h3>
       <pre><code class="language-typescript">get&lt;T extends JsonObject&gt;(
   namespace: string,
   key: string
@@ -248,10 +257,24 @@
         Attempts to retrieve an item identified by <var>namespace</var> and
         <var>key</var>. Returned promise will either resolve into the value, or
         <code>undefined</code> if item with the given identifier does not exist.
+      </p>
+      <p>
         The promise will fail if an I/O error occurs while retrieving the item.
       </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Item = {
+  value: number;
+};
 
-      <h3>Removing items</h3>
+const item = await storage.get&lt;Item&gt;("items", "c57aa66c-2512-11f1-8836-cfad1ba1ae45");
+
+if (item != null) {
+  console.log(`Value of the item is: ${item.value}`);
+} else {
+  console.error("Item does not exist.");
+}</code></pre>
+
+      <h3 class="mt-5">Removing items</h3>
       <pre><code class="language-typescript">delete(
   namespace: string,
   key: string
@@ -259,11 +282,19 @@
       <p>
         Attempts to remove an item identified by <var>namespace</var> and
         <var>key</var>. Returned promise will resolve into a boolean value which
-        tells whether an value with the given identifier existed or not. The
-        promise will fail if an I/O error occurs while removing the item.
+        tells whether an value with the given identifier existed or not.
       </p>
+      <p>
+        The promise will fail if an I/O error occurs while removing the item.
+      </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">if (await storage.delete("items", "c57aa66c-2512-11f1-8836-cfad1ba1ae45")) {
+  console.log("Item successfully removed.");
+} else {
+  console.error("Item does not exist.");
+}</code></pre>
 
-      <h3>Updating already existing item</h3>
+      <h3 class="mt-5">Updating already existing item</h3>
       <pre><code class="language-typescript">update&lt;T extends JsonObject&gt;(
   namespace: string,
   key: string,
@@ -276,11 +307,23 @@
           href="https://egghead.io/lessons/javascript-shallow-merge-two-objects-in-javascript"
           >shallowly merging</a
         >
-        with the given new data. Returned promise will resolve into the new
-        value, or will fail if no such item exists.
+        with the given new data.
       </p>
+      <p>
+        Returned promise will resolve into the new value, or will fail if no
+        such item exists.
+      </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Person = {
+  name: string;
+  age: number;
+};
 
-      <h3>Testing whether an item exists or not</h3>
+const john = await storage.update&lt;Person&gt;("people", "john", { age: 39 });
+
+console.log(`Age of ${john.name} is now ${john.age}.`);</code></pre>
+
+      <h3 class="mt-5">Testing whether an item exists or not</h3>
       <pre><code class="language-typescript">has(
   namespace: string,
   key: string
@@ -288,11 +331,18 @@
       <p>
         Returns <code>true</code> if an item identified by
         <var>namespace</var> and <var>key</var> exists in the storage, or
-        <code>false</code> if it doesn't. The promise will fail if an I/O error
-        occurs while testing whether item exists or not.
+        <code>false</code> if it doesn't.
       </p>
+      <p>
+        The promise will fail if an I/O error occurs while testing whether item
+        exists or not.
+      </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">if (await storage.has("items", "c57aa66c-2512-11f1-8836-cfad1ba1ae45")) {
+  console.log("Item does exist.");
+}</code></pre>
 
-      <h3>Listing keys stored in a namespace</h3>
+      <h3 class="mt-5">Listing keys stored in a namespace</h3>
       <pre><code class="language-typescript">keys(
   namespace: string
 ): AsyncGenerator&lt;string&gt;</code></pre>
@@ -300,26 +350,52 @@
         Returns keys of all items stored under an namespace. The promise will
         fail if an I/O error occurs while listing the keys.
       </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">for await (const key of storage.keys("items")) {
+  console.log(key);
+}</code></pre>
 
-      <h3>Listing values stored in a namespace</h3>
+      <h3 class="mt-5">Listing values stored in a namespace</h3>
       <pre><code class="language-typescript">values&lt;T extends JsonObject&gt;(
   namespace: string
 ): AsyncGenerator&lt;T&gt;</code></pre>
       <p>
-        Returns all items stored under an namespace. The promise will fail if an
-        I/O error occurs.
+        Returns all items stored under an namespace.
       </p>
+      <p>
+        The promise will fail if an I/O error occurs.
+      </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Person = {
+  name: string;
+  age: number;
+};
 
-      <h3>Listing entries stored in a namespace</h3>
+for await (const person of storage.values&lt;Person&gt;("people")) {
+  console.log(`${person.name}, ${person.age} years young.`);
+}</code></pre>
+
+      <h3 class="mt-5">Listing entries stored in a namespace</h3>
       <pre><code class="language-typescript">entries&lt;T extends JsonObject&gt;(
   namespace: string
 ): AsyncGenerator&lt;[string, T]&gt;</code></pre>
       <p>
         Returns all items stored under an namespace, with the keys they are
-        identified by. The promise will fail if an I/O error occurs.
+        identified by.
       </p>
+      <p>
+        The promise will fail if an I/O error occurs.
+      </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Item = {
+  value: number;
+};
 
-      <h3>Searching for entries stored in a namespace</h3>
+for await (const [key, item] of storage.entries&lt;Item&gt;("items")) {
+  console.log(`${item.value} was stored with key ${key}.`);
+}</code></pre>
+
+      <h3 class="mt-5">Searching for entries stored in a namespace</h3>
       <pre><code class="language-typescript">find&lt;T extends JsonObject&gt;(
   namespace: string,
   callback: (value: T, key: string) =&gt; boolean
@@ -333,8 +409,18 @@
       <p>
         The promise will fail if an I/O error occurs.
       </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Item = {
+  value: number;
+};
 
-      <h3>Filtering entries stored in a namespace</h3>
+const item = await storage.find&lt;Item&gt;("items", (item) =&gt; item.value === 42);
+
+if (item != null) {
+  console.log(`Number ${item[1]} was stored with key ${item[0]}.`);
+}</code></pre>
+
+      <h3 class="mt-5">Filtering entries stored in a namespace</h3>
       <pre><code class="language-typescript">filter&lt;T extends JsonObject&gt;(
   namespace: string,
   callback: (value: T, key: string) =&gt; boolean
@@ -346,8 +432,16 @@
       <p>
         The promise will fail if an I/O error occurs.
       </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Item = {
+  value: number;
+};
 
-      <h3>Map operation</h3>
+for await (const [key, item] of storage.filter&lt;Item&gt;("items", (item) =&gt; item.value &gt; 10)) {
+  console.log(`${key}: ${item.value}`);
+}</code></pre>
+
+      <h3 class="mt-5">Map operation</h3>
       <pre><code class="language-typescript">map&lt;T extends JsonObject, U extends JsonObject&gt;(
   namespace: string,
   callback: (value: T, key: string) =&gt; U
@@ -360,6 +454,19 @@
       <p>
         The promise will fail if an I/O error occurs.
       </p>
+      <h5>Example</h5>
+      <pre><code class="language-typescript">type Item = {
+  value: number;
+};
+
+type ItemAsString = {
+  value: string;
+};
+
+const itemsAsStrings = await storage.map&lt;Item, ItemAsString&gt;(
+  "items",
+  (item) =&gt; ({ value: `${item.value}` })
+);</code></pre>
     </div>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
