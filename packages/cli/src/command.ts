@@ -86,17 +86,33 @@ const commands: Readonly<Record<string, CommandDefinition>> = {
     description: 'Patches an already existing entry in namespace.',
     args: ['namespace', 'key', 'value'],
     async callback(storage, [namespace, key, value]) {
-      console.log(
-        renderValue(await storage.update(namespace, key, JSON5.parse(value)))
-      );
+      if (key === '*') {
+        for await (const key of storage.keys(namespace)) {
+          console.log(
+            renderValue({
+              [key]: await storage.update(namespace, key, JSON5.parse(value)),
+            })
+          );
+        }
+      } else {
+        console.log(
+          renderValue(await storage.update(namespace, key, JSON5.parse(value)))
+        );
+      }
     },
   },
   delete: {
     description: 'Deletes an entry from namespace.',
     args: ['namespace', 'key'],
     async callback(storage, [namespace, key]) {
-      if (!(await storage.delete(namespace, key))) {
-        console.error('Item does not exist.');
+      if (key === '*') {
+        for await (const key of storage.keys(namespace)) {
+          await storage.delete(namespace, key);
+        }
+      } else {
+        if (!(await storage.delete(namespace, key))) {
+          console.error('Item does not exist.');
+        }
       }
     },
   },
