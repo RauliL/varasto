@@ -41,7 +41,7 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "uuid": "^11.1.0"
+    "uuid": "^14.0.0"
   },
   "peerDependencies": {
     "@varasto/storage": "workspace:^",
