@@ -1526,6 +1526,7 @@ __metadata:
     "@types/pg": "npm:^8.16.0"
     "@types/pg-format": "npm:^1.0.5"
     "@varasto/storage": "workspace:^"
+    "@vitest/coverage-v8": "npm:^3.2.2"
     eslint: "npm:^9.39.2"
     eslint-config-prettier: "npm:^10.1.8"
     is-valid-slug: "npm:^1.0.0"
@@ -1537,6 +1538,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     typescript: "npm:^5.2.2"
     typescript-eslint: "npm:^8.52.0"
+    vitest: "npm:^3.2.2"
   languageName: unknown
   linkType: soft
 

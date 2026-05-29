@@ -22,6 +22,7 @@ jobs:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v6
         with:
+          cache: yarn
           node-version: ${{ matrix.node-version }}
       - name: Install dependencies
         run: yarn install --immutable
