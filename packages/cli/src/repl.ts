@@ -1,7 +1,7 @@
 import { Storage } from '@varasto/storage';
 import readline from 'node:readline';
 
-import { commandNames, runCommand } from './command';
+import { CommandError, commandNames, runCommand } from './command';
 
 const completer = (line: string): [Readonly<string[]>, string] => {
   const hits = commandNames.filter((command) => command.indexOf(line) === 0);
@@ -25,7 +25,11 @@ export const repl = (storage: Storage) => {
     try {
       await runCommand(storage, input);
     } catch (err) {
-      console.error(err);
+      if (err instanceof CommandError) {
+        console.error(err.message);
+      } else {
+        console.error(err);
+      }
     }
     rl.prompt();
   });

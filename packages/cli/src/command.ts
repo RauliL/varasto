@@ -10,6 +10,13 @@ export type CommandDefinition = {
   callback: (storage: Storage, args: string[]) => Promise<void>;
 };
 
+export class CommandError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'CommandError';
+  }
+}
+
 const renderValue = (value: string | object): string =>
   colorize(value, { indent: 2 });
 
@@ -107,15 +114,15 @@ export const runCommand = async (
   if (args.length === 0) {
     return;
   } else if (!(command = commands[args[0]])) {
-    throw new Error(`Unknown command: ${args[0]}`);
+    throw new CommandError(`Unknown command: ${args[0]}`);
   }
 
   const arity = command.args?.length ?? 0;
 
   if (args.length - 1 < arity) {
-    throw new Error(`Missing arguments for command ${args[0]}`);
+    throw new CommandError(`Missing arguments for command ${args[0]}`);
   } else if (args.length - 1 > arity) {
-    throw new Error(`Too many arguments for command ${args[0]}`);
+    throw new CommandError(`Too many arguments for command ${args[0]}`);
   }
 
   await command.callback(storage, args.slice(1));
