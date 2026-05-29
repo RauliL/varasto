@@ -41,11 +41,11 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/fs-storage": "^3.0.0",
-    "@varasto/memory-storage": "^3.0.0",
-    "@varasto/remote-storage": "^3.0.0",
-    "@varasto/sqlite-storage": "^4.0.0",
-    "@varasto/url": "^1.0.1",
+    "@varasto/fs-storage": "workspace:^",
+    "@varasto/memory-storage": "workspace:^",
+    "@varasto/remote-storage": "workspace:^",
+    "@varasto/sqlite-storage": "workspace:^",
+    "@varasto/url": "workspace:^",
     "json-colorizer": "^3.0.1",
     "json5": "^2.2.3",
     "yargs": "^18.0.0"

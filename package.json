@@ -7,6 +7,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "packageManager": "yarn@4.15.0",
   "scripts": {
     "clean": "nx run-many -t clean",
     "build": "nx run-many -t build",

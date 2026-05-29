@@ -1,9 +1,17 @@
 /.nx
+/.zed
 /.vscode
 /coverage
 /node_modules
 /packages/*/coverage
 /packages/*/dist
 /packages/*/node_modules
+/.pnp.*
+/.yarn/*
+!/.yarn/patches
+!/.yarn/plugins
+!/.yarn/releases
+!/.yarn/sdks
+!/.yarn/versions
 *.log
 *.tgz

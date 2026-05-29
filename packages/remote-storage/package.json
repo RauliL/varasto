@@ -36,7 +36,7 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": "^5.0.0",
+    "@varasto/storage": "workspace:^",
     "axios": "^1.5.1"
   },
   "devDependencies": {
