@@ -40,7 +40,7 @@
     "@varasto/query": "workspace:^",
     "reflect-metadata": "^0.2.2",
     "slugify": "^1.6.6",
-    "uuid": "^9.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
