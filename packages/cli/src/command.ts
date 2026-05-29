@@ -7,6 +7,7 @@ import { tokenize } from './tokenizer';
 export type CommandDefinition = {
   description: string;
   args?: string[];
+  optionalArgs?: string[];
   callback: (storage: Storage, args: string[]) => Promise<void>;
 };
 
@@ -31,16 +32,28 @@ const commands: Readonly<Record<string, CommandDefinition>> = {
     },
   },
   help: {
-    description: 'Displays information about an command.',
-    args: ['command'],
-    async callback(storage, [command]) {
+    description: 'Displays information about commands.',
+    optionalArgs: ['command'],
+    async callback(storage, args) {
+      if (args.length === 0) {
+        for (const name of commandNames) {
+          const definition = commands[name];
+
+          console.log(`${name} ${renderUsage(definition)}`.trim());
+          console.log(definition.description);
+          console.log();
+        }
+        return;
+      }
+
+      const [command] = args;
       const definition = commands[command];
 
       if (definition) {
-        console.log(`${command} ${renderUsage(definition)}`);
+        console.log(`${command} ${renderUsage(definition)}`.trim());
         console.log(definition.description);
       } else {
-        throw new Error(`Unknown command: ${command}`);
+        throw new CommandError(`Unknown command: ${command}`);
       }
     },
   },
@@ -133,11 +146,13 @@ export const runCommand = async (
     throw new CommandError(`Unknown command: ${args[0]}`);
   }
 
-  const arity = command.args?.length ?? 0;
+  const minArity = command.args?.length ?? 0;
+  const maxArity = minArity + (command.optionalArgs?.length ?? 0);
+  const providedArity = args.length - 1;
 
-  if (args.length - 1 < arity) {
+  if (providedArity < minArity) {
     throw new CommandError(`Missing arguments for command ${args[0]}`);
-  } else if (args.length - 1 > arity) {
+  } else if (providedArity > maxArity) {
     throw new CommandError(`Too many arguments for command ${args[0]}`);
   }
 
