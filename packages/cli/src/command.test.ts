@@ -30,8 +30,8 @@ describe('runCommand()', () => {
   });
 
   it('should reject help for an unknown command', async () => {
-    await expect(runCommand(createMemoryStorage(), 'help foo')).rejects.toThrow(
-      CommandError
-    );
+    await expect(
+      runCommand(createMemoryStorage(), 'help foo')
+    ).rejects.toThrow(CommandError);
   });
 });
