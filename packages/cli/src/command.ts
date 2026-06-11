@@ -129,6 +129,72 @@ const commands: Readonly<Record<string, CommandDefinition>> = {
       }
     },
   },
+  incr: {
+    description: 'Increments value of an field in an entry.',
+    args: ['namespace', 'key', 'field'],
+    async callback(storage, [namespace, key, field]) {
+      const incr = async (key: string) => {
+        const value = await storage.get(namespace, key);
+
+        if (value != null) {
+          if (typeof value[field] !== 'number') {
+            throw new Error('Non-numeric value');
+          }
+          value[field] += 1;
+          console.log(
+            renderValue({
+              [key]: await storage.update(namespace, key, {
+                [field]: value[field],
+              }),
+            })
+          );
+        } else {
+          throw new Error(`No such entry: ${key}`);
+        }
+      };
+
+      if (key === '*') {
+        for await (const key of storage.keys(namespace)) {
+          await incr(key);
+        }
+      } else {
+        await incr(key);
+      }
+    },
+  },
+  decr: {
+    description: 'Decrements value of an field in an entry.',
+    args: ['namespace', 'slug', 'key'],
+    async callback(storage, [namespace, key, field]) {
+      const decr = async (key: string) => {
+        const value = await storage.get(namespace, key);
+
+        if (value != null) {
+          if (typeof value[field] !== 'number') {
+            throw new Error('Non-numeric value');
+          }
+          value[field] -= 1;
+          console.log(
+            renderValue({
+              [key]: await storage.update(namespace, key, {
+                [field]: value[field],
+              }),
+            })
+          );
+        } else {
+          throw new Error(`No such entry: ${key}`);
+        }
+      };
+
+      if (key === '*') {
+        for await (const key of storage.keys(namespace)) {
+          await decr(key);
+        }
+      } else {
+        await decr(key);
+      }
+    },
+  },
 };
 
 export const commandNames: Readonly<string[]> = Object.keys(commands).sort();
