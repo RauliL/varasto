@@ -46,7 +46,7 @@
     "@varasto/fs-storage": "workspace:^",
     "basic-auth": "^2.0.1",
     "express": "^5.1.0",
-    "morgan": "^1.10.0",
+    "morgan": "^1.11.0",
     "yargs": "^18.0.0"
   },
   "devDependencies": {
