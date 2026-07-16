@@ -4,53 +4,76 @@ import {
   ItemDoesNotExistError,
   Storage,
 } from '@varasto/storage';
-
-import axios, { AxiosError } from 'axios';
+import type { Got, HTTPError } from 'got' with { 'resolution-mode': 'import' };
 import { JsonObject } from 'type-fest';
 
 import { RemoteStorageOptions } from './types';
 
-const errorHandler = (err: AxiosError) =>
-  err.response?.status === 400
+const gotModule = import('got');
+
+const getStatusCode = (err: unknown): number | undefined => {
+  if (
+    typeof err === 'object' &&
+    err !== null &&
+    'response' in err &&
+    typeof (err as HTTPError).response?.statusCode === 'number'
+  ) {
+    return (err as HTTPError).response.statusCode;
+  }
+
+  return undefined;
+};
+
+const errorHandler = (err: unknown) => {
+  const status = getStatusCode(err);
+
+  return status === 400
     ? Promise.reject(
         new InvalidSlugError('Given namespace or key is not valid slug')
       )
-    : err.response?.status === 404
+    : status === 404
       ? Promise.resolve(undefined)
       : Promise.reject(err);
+};
 
 export const createRemoteStorage = (
   options: Partial<RemoteStorageOptions> = {}
 ): Storage => {
-  const client = axios.create({
-    baseURL: options.url ?? 'http://0.0.0.0:3000/',
-    auth: options.auth,
-  });
+  const clientPromise: Promise<Got> = gotModule.then(({ default: got }) =>
+    got.extend({
+      prefixUrl: options.url ?? 'http://0.0.0.0:3000/',
+      username: options.auth?.username,
+      password: options.auth?.password,
+      retry: { limit: 0 },
+    })
+  );
 
   return new (class extends Storage {
     has(namespace: string, key: string): Promise<boolean> {
-      return client
-        .head(`/${namespace}/${key}`)
+      return clientPromise
+        .then((client) => client.head(`${namespace}/${key}`))
         .then(() => true)
-        .catch((err: AxiosError) =>
-          err.response?.status === 404 ? false : Promise.reject(err)
+        .catch((err: unknown) =>
+          getStatusCode(err) === 404 ? false : Promise.reject(err)
         );
     }
 
     async *keys(namespace: string): AsyncGenerator<string> {
-      const response = await client.get<Record<string, JsonObject>>(
-        `/${namespace}`
-      );
+      const client = await clientPromise;
+      const data = await client
+        .get(namespace)
+        .json<Record<string, JsonObject>>();
 
-      for (const key of Object.keys(response.data)) {
+      for (const key of Object.keys(data)) {
         yield key;
       }
     }
 
     async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
-      const response = await client.get<Record<string, T>>(`/${namespace}`);
+      const client = await clientPromise;
+      const data = await client.get(namespace).json<Record<string, T>>();
 
-      for (const value of Object.values(response.data)) {
+      for (const value of Object.values(data) as T[]) {
         yield value;
       }
     }
@@ -58,10 +81,11 @@ export const createRemoteStorage = (
     async *entries<T extends JsonObject>(
       namespace: string
     ): AsyncGenerator<Entry<T>> {
-      const response = await client.get<Record<string, T>>(`/${namespace}`);
+      const client = await clientPromise;
+      const data = await client.get(namespace).json<Record<string, T>>();
 
-      for (const key of Object.keys(response.data)) {
-        yield [key, response.data[key]];
+      for (const key of Object.keys(data)) {
+        yield [key, data[key]];
       }
     }
 
@@ -69,9 +93,8 @@ export const createRemoteStorage = (
       namespace: string,
       key: string
     ): Promise<T | undefined> {
-      return client
-        .get<T>(`/${namespace}/${key}`)
-        .then((response) => response.data)
+      return clientPromise
+        .then((client) => client.get(`${namespace}/${key}`).json<T>())
         .catch(errorHandler);
     }
 
@@ -80,8 +103,8 @@ export const createRemoteStorage = (
       key: string,
       value: T
     ): Promise<void> {
-      return client
-        .post(`/${namespace}/${key}`, value)
+      return clientPromise
+        .then((client) => client.post(`${namespace}/${key}`, { json: value }))
         .then(() => undefined)
         .catch(errorHandler);
     }
@@ -91,28 +114,31 @@ export const createRemoteStorage = (
       key: string,
       value: Partial<T>
     ): Promise<T> {
-      return client
-        .patch<T>(`${namespace}/${key}`, value)
-        .then((response) => response.data)
-        .catch((err) =>
-          Promise.reject(
-            err.response?.status === 400
+      return clientPromise
+        .then((client) =>
+          client.patch(`${namespace}/${key}`, { json: value }).json<T>()
+        )
+        .catch((err: unknown) => {
+          const status = getStatusCode(err);
+
+          return Promise.reject(
+            status === 400
               ? new InvalidSlugError(
                   'Given namespace or key is not valid slug'
                 )
-              : err.response?.status === 404
+              : status === 404
                 ? new ItemDoesNotExistError('Item does not exist')
                 : err
-          )
-        );
+          );
+        });
     }
 
     delete(namespace: string, key: string): Promise<boolean> {
-      return client
-        .delete(`/${namespace}/${key}`)
+      return clientPromise
+        .then((client) => client.delete(`${namespace}/${key}`))
         .then(() => true)
-        .catch((err: AxiosError) =>
-          err.response?.status === 404 ? false : Promise.reject(err)
+        .catch((err: unknown) =>
+          getStatusCode(err) === 404 ? false : Promise.reject(err)
         );
     }
   })();

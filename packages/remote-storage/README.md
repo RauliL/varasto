@@ -3,13 +3,12 @@
 [![npm][npm-image]][npm-url]
 
 Storage implementation which retrieves and stores data to an [remote server].
-Uses [axios] library as it's HTTP client and works both in Node.js and browser
-environments.
+Uses [got] library as it's HTTP client and works in Node.js environments.
 
 [npm-image]: https://img.shields.io/npm/v/@varasto/storage.svg
 [npm-url]: https://npmjs.org/package/@varasto/storage
 [remote server]: https://www.npmjs.com/package/@varasto/server
-[axios]: https://www.npmjs.com/package/axios
+[got]: https://www.npmjs.com/package/got
 
 ## Installation
 
