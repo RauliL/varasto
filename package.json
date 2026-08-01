@@ -18,7 +18,7 @@
     "format:check": "nx run-many -t format:check"
   },
   "devDependencies": {
-    "nx": "^22.3.3"
+    "nx": "^22.7.2"
   },
   "resolutions": {
     "express": "^5.1.0",
