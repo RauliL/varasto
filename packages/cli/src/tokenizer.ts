@@ -9,7 +9,7 @@ export const tokenize = (input: string): string[] => {
     }
   };
 
-  for (let i = 0; i < input.length; ) {
+  for (let i = 0; i < input.length;) {
     if (/\s/.test(input[i])) {
       flush();
       begin = end = ++i;

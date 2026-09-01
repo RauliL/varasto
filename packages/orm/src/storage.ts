@@ -62,8 +62,7 @@ export const remove = <T extends object>(
 
     // Ensure that the model instance has a key.
     const key = Reflect.get(instance, metadata.keyPropertyName) as
-      | string
-      | undefined;
+      string | undefined;
 
     if (!key) {
       return Promise.reject(

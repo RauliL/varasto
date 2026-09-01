@@ -21,11 +21,7 @@ export class FieldMetadata {
 
   public load<T extends object>(instance: T, data: JsonObject) {
     let value = Reflect.get(data, this.propertyName) as
-      | string
-      | number
-      | boolean
-      | null
-      | undefined;
+      string | number | boolean | null | undefined;
 
     if (value === undefined) {
       value = this.options.default;
@@ -40,11 +36,7 @@ export class FieldMetadata {
 
   public save<T extends object>(instance: T, data: JsonObject) {
     let value = Reflect.get(instance, this.propertyName) as
-      | string
-      | number
-      | boolean
-      | null
-      | undefined;
+      string | number | boolean | null | undefined;
 
     if (value === undefined) {
       value = this.options.default;
