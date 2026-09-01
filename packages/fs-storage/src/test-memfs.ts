@@ -17,9 +17,7 @@ vi.mock('node:fs/promises', async () => {
   return { default: memfs.fs.promises, ...memfs.fs.promises };
 });
 
-export const setupVol = (
-  json: Parameters<typeof vol.fromNestedJSON>[0]
-) => {
+export const setupVol = (json: Parameters<typeof vol.fromNestedJSON>[0]) => {
   vol.fromNestedJSON(json, process.cwd());
 };
 

@@ -145,7 +145,9 @@ describe('single file storage', () => {
       ));
 
     it('should return value of the item if it exists', () => {
-      setupVolFiles({ 'data.json': JSON.stringify({ foo: { bar: { id: 1 } } }) });
+      setupVolFiles({
+        'data.json': JSON.stringify({ foo: { bar: { id: 1 } } }),
+      });
 
       return expect(storage.get('foo', 'bar')).resolves.toEqual({ id: 1 });
     });
