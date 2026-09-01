@@ -5,6 +5,7 @@
     "strict": true,
     "esModuleInterop": true,
     "declaration": true,
+    "types": ["node"],
     "lib": [
       "es2018"
     ]

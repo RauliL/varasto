@@ -3,7 +3,7 @@ import {
   ItemDoesNotExistError,
   Storage,
 } from '@varasto/storage';
-import basicAuth from 'basic-auth';
+import { parse as parseBasicAuth } from 'basic-auth';
 import express from 'express';
 import { Express } from 'express-serve-static-core';
 import { JsonObject } from 'type-fest';
@@ -22,7 +22,7 @@ export const createServer = (
     const { username, password } = options.auth;
 
     server.use((req, res, next) => {
-      const credentials = basicAuth(req);
+      const credentials = parseBasicAuth(req.headers.authorization ?? '');
 
       if (
         !credentials ||
