@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@varasto/fs-storage": "workspace:^",
-    "basic-auth": "^2.0.1",
+    "basic-auth": "^3.0.0",
     "express": "^5.2.1",
     "morgan": "^1.12.0",
     "yargs": "^18.1.0"
@@ -54,7 +54,7 @@
     "@types/basic-auth": "^1.1.8",
     "@types/express": "^5.0.6",
     "@types/morgan": "^1.9.10",
-    "@types/supertest": "^6.0.3",
+    "@types/supertest": "^7.2.1",
     "@varasto/memory-storage": "workspace:^",
     "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^10.9.1",

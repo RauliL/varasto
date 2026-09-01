@@ -37,14 +37,14 @@
   },
   "dependencies": {
     "@varasto/storage": "workspace:^",
-    "got": "^14.6.6"
+    "got": "^16.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@vitest/coverage-v8": "^4.1.11",
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
-    "it-all": "^1.0.6",
+    "it-all": "^3.0.11",
     "nock": "^14.0.17",
     "prettier": "^3.9.6",
     "rimraf": "^6.1.3",

@@ -41,7 +41,7 @@
     "eslint": "^10.9.1",
     "eslint-config-prettier": "^10.1.8",
     "is-valid-slug": "^1.0.0",
-    "it-all": "^1.0.6",
+    "it-all": "^3.0.11",
     "prettier": "^3.9.6",
     "rimraf": "^6.1.3",
     "typescript": "^5.9.3",
