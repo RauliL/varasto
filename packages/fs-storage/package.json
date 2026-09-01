@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@isaacs/brace-expansion": "^5.0.1",
     "@types/mock-fs": "^4.13.4",
     "@types/node": "^26.4.0",
     "@vitest/coverage-v8": "^4.1.11",
