@@ -26,5 +26,6 @@
       "cache": true,
       "dependsOn": ["build"]
     }
-  }
+  },
+  "analytics": false
 }
