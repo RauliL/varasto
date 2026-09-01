@@ -1,9 +1,10 @@
 import { InvalidSlugError } from '@varasto/storage';
-import fs from 'fs';
-import mock from 'mock-fs';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import './test-memfs';
+import fs from 'fs';
+import { resetVol, setupVol } from './test-memfs';
 import {
   buildFilename,
   createNamespace,
@@ -13,10 +14,12 @@ import {
 
 describe('createNamespace()', () => {
   beforeEach(() => {
-    mock({ data: {} });
+    setupVol({ data: {} });
   });
 
-  afterEach(mock.restore);
+  afterEach(() => {
+    resetVol();
+  });
 
   it('should fail if given namespace is not valid slug', () =>
     expect(createNamespace('data', 'f;oo')).rejects.toBeInstanceOf(
@@ -33,7 +36,8 @@ describe('createNamespace()', () => {
   });
 
   it('should fail if the directory cannot be created', () => {
-    mock({ data: mock.directory({ mode: 0 }) });
+    setupVol({ data: {} });
+    fs.chmodSync('data', 0);
 
     return expect(createNamespace('data', 'foo')).rejects.toBeInstanceOf(
       Error
@@ -67,7 +71,7 @@ describe('buildFilename()', () => {
 
 describe('globNamespace()', () => {
   beforeEach(() => {
-    mock({
+    setupVol({
       data: {
         foo: {
           '1.json': '{"a":1}',
@@ -78,7 +82,9 @@ describe('globNamespace()', () => {
     });
   });
 
-  afterEach(mock.restore);
+  afterEach(() => {
+    resetVol();
+  });
 
   it('should fail if given namespace is not valid slug', () =>
     expect(globNamespace('data', 'f;oo')).rejects.toBeInstanceOf(
@@ -98,18 +104,21 @@ describe('globNamespace()', () => {
 
 describe('readItem()', () => {
   beforeEach(() => {
-    mock({
+    setupVol({
       data: {
         foo: {
           '1.json': '{"a":1}',
           '2.json': '"foo"',
-          '3.json': mock.file({ mode: 0 }),
+          '3.json': '{}',
         },
       },
     });
+    fs.chmodSync('data/foo/3.json', 0);
   });
 
-  afterEach(mock.restore);
+  afterEach(() => {
+    resetVol();
+  });
 
   it('should return `undefined` if the file does not exist', () =>
     expect(

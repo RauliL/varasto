@@ -1,37 +1,35 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
-import fs from 'fs';
-import mock from 'mock-fs';
 import all from 'it-all';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import './test-memfs';
+import fs from 'fs';
+import { resetVol, setupVol } from './test-memfs';
 import { createFileSystemStorage } from './storage';
 
 describe('file system storage', () => {
   const storage = createFileSystemStorage({ dir: 'data' });
 
   beforeEach(() => {
-    mock({
+    setupVol({
       data: {
         foo: {
           '1.json': '{"a":1}',
           '2.json': '{"a":2}',
           '3.json': '{"a":3}',
         },
-        unwriteable: mock.directory({
-          items: {
-            '1.json': mock.file({
-              content: '{"a":1}',
-              mode: 555,
-            }),
-          },
-          mode: 555,
-        }),
+        unwriteable: {
+          '1.json': '{"a":1}',
+        },
       },
     });
+    fs.chmodSync('data/unwriteable', 0);
   });
 
-  afterEach(mock.restore);
+  afterEach(() => {
+    resetVol();
+  });
 
   describe('has()', () => {
     it('should return true if the item exists', () =>

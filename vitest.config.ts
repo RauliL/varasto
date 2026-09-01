@@ -8,5 +8,10 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['lcov', 'text'],
     },
+    server: {
+      deps: {
+        inline: ['glob', 'mkdirp', 'path-scurry'],
+      },
+    },
   },
 });

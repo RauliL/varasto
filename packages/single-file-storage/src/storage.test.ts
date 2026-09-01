@@ -1,29 +1,34 @@
 import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
-import fs from 'fs';
 import all from 'it-all';
-import mock from 'mock-fs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import './test-memfs';
+import fs from 'fs';
+import { resetVol, setupVolFiles } from './test-memfs';
 import { createSingleFileStorage } from './storage';
 
 describe('single file storage', () => {
   const storage = createSingleFileStorage();
 
   beforeEach(() => {
-    mock();
+    fs.mkdirSync(process.cwd(), { recursive: true });
   });
 
-  afterEach(mock.restore);
+  afterEach(() => {
+    resetVol();
+  });
 
   describe('has()', () => {
     it('should return `true` when the item exists', () => {
-      mock({ 'data.json': JSON.stringify({ foo: { bar: { id: 1 } } }) });
+      setupVolFiles({
+        'data.json': JSON.stringify({ foo: { bar: { id: 1 } } }),
+      });
 
       return expect(storage.has('foo', 'bar')).resolves.toBe(true);
     });
 
     it('should return `false` when the item does not exist', () => {
-      mock({
+      setupVolFiles({
         'data.json': JSON.stringify({ foo: {} }),
       });
 
@@ -34,19 +39,20 @@ describe('single file storage', () => {
       expect(storage.has('foo', 'bar')).resolves.toBe(false));
 
     it('should fail if the file cannot be read', () => {
-      mock({ 'data.json': mock.file({ mode: 0 }) });
+      setupVolFiles({ 'data.json': '{}' });
+      fs.chmodSync('data.json', 0);
 
       return expect(storage.has('foo', 'bar')).rejects.toBeInstanceOf(Error);
     });
 
     it('should return `false` if the file does not contain JSON object', () => {
-      mock({ 'data.json': '"foo"' });
+      setupVolFiles({ 'data.json': '"foo"' });
 
       return expect(storage.has('foo', 'bar')).resolves.toBe(false);
     });
 
     it('should fail if deserialization of the file fails', () => {
-      mock({ 'data.json': 'foo' });
+      setupVolFiles({ 'data.json': 'foo' });
 
       return expect(storage.has('foo', 'bar')).rejects.toBeInstanceOf(
         SyntaxError
@@ -66,7 +72,7 @@ describe('single file storage', () => {
 
   describe('keys()', () => {
     it('should return keys of items stored under the namespace', () => {
-      mock({
+      setupVolFiles({
         'data.json': JSON.stringify({ foo: { 1: { id: 1 }, 2: { id: 2 } } }),
       });
 
@@ -74,7 +80,7 @@ describe('single file storage', () => {
     });
 
     it('should return empty array if the namespace does not exist', () => {
-      mock({ 'data.json': JSON.stringify({}) });
+      setupVolFiles({ 'data.json': JSON.stringify({}) });
 
       return expect(all(storage.keys('foo'))).resolves.toHaveLength(0);
     });
@@ -85,7 +91,7 @@ describe('single file storage', () => {
 
   describe('values()', () => {
     it('should return values of items stored under the namespace', () => {
-      mock({
+      setupVolFiles({
         'data.json': JSON.stringify({ foo: { 1: { id: 1 }, 2: { id: 2 } } }),
       });
 
@@ -96,7 +102,7 @@ describe('single file storage', () => {
     });
 
     it('should return empty array if the namespace does not exist', () => {
-      mock({ 'data.json': JSON.stringify({}) });
+      setupVolFiles({ 'data.json': JSON.stringify({}) });
 
       return expect(all(storage.values('foo'))).resolves.toHaveLength(0);
     });
@@ -107,7 +113,7 @@ describe('single file storage', () => {
 
   describe('entries()', () => {
     it('should return keys and values of items stored under the namespace', () => {
-      mock({
+      setupVolFiles({
         'data.json': JSON.stringify({ foo: { 1: { id: 1 }, 2: { id: 2 } } }),
       });
 
@@ -118,7 +124,7 @@ describe('single file storage', () => {
     });
 
     it('should return empty array if the namespace does not exist', () => {
-      mock({ 'data.json': JSON.stringify({}) });
+      setupVolFiles({ 'data.json': JSON.stringify({}) });
 
       return expect(all(storage.entries('foo'))).resolves.toHaveLength(0);
     });
@@ -139,13 +145,13 @@ describe('single file storage', () => {
       ));
 
     it('should return value of the item if it exists', () => {
-      mock({ 'data.json': JSON.stringify({ foo: { bar: { id: 1 } } }) });
+      setupVolFiles({ 'data.json': JSON.stringify({ foo: { bar: { id: 1 } } }) });
 
       return expect(storage.get('foo', 'bar')).resolves.toEqual({ id: 1 });
     });
 
     it('should return `undefined` if the item does not exist', () => {
-      mock({ 'data.json': JSON.stringify({ foo: {} }) });
+      setupVolFiles({ 'data.json': JSON.stringify({ foo: {} }) });
 
       return expect(storage.get('foo', 'bar')).resolves.toBeUndefined();
     });
@@ -173,7 +179,8 @@ describe('single file storage', () => {
       }));
 
     it('should fail if an I/O error occurs', () => {
-      mock({ 'data.json': mock.file({ mode: 0 }) });
+      setupVolFiles({ 'data.json': '{}' });
+      fs.chmodSync('data.json', 0);
 
       return expect(
         storage.set('foo', 'bar', { id: 1 })
@@ -207,7 +214,7 @@ describe('single file storage', () => {
       ).rejects.toBeInstanceOf(ItemDoesNotExistError));
 
     it('should serialize the updated item to an file', () => {
-      mock({
+      setupVolFiles({
         'data.json': JSON.stringify({ foo: { bar: { id: 1, counter: 1 } } }),
       });
 
@@ -237,7 +244,7 @@ describe('single file storage', () => {
       ));
 
     it('should remove the item from the file, if it exists', () => {
-      mock({
+      setupVolFiles({
         'data.json': JSON.stringify({
           foo: { bar: { id: 1 } },
         }),
