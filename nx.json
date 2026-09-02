@@ -1,4 +1,5 @@
 {
+  "parallel": 8,
   "release": {
     "git": {
       "commit": true,
@@ -14,6 +15,7 @@
   },
   "targetDefaults": {
     "build": {
+      "cache": true,
       "dependsOn": [
         {
           "dependencies": true,
@@ -21,6 +23,12 @@
         }
       ],
       "outputs": ["{projectRoot}/dist"]
+    },
+    "lint": {
+      "cache": true
+    },
+    "format:check": {
+      "cache": true
     },
     "test": {
       "cache": true,
