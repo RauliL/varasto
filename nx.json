@@ -1,13 +1,23 @@
 {
   "parallel": 8,
   "release": {
+    "projects": ["packages/*"],
+    "projectsRelationship": "independent",
+    "version": {
+      "preVersionCommand": "yarn build"
+    },
+    "changelog": {
+      "projectChangelogs": {
+        "createRelease": false
+      }
+    },
     "git": {
       "commit": true,
       "tag": true
     },
     "releaseTag": {
       "checkAllBranchesWhen": "master",
-      "pattern": "{releaseGroupName}@v{version}",
+      "pattern": "{projectName}@v{version}",
       "preferDockerVersion": false,
       "requireSemver": true,
       "strictPreid": true
