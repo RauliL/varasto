@@ -1444,8 +1444,8 @@ __metadata:
     vitest: "npm:^4.1.11"
     yargs: "npm:^18.1.0"
   peerDependencies:
-    "@varasto/postgres-storage": ^3.0.0
-    "@varasto/redis-storage": ^3.0.0
+    "@varasto/postgres-storage": ^4.0.0
+    "@varasto/redis-storage": ^4.0.0
   bin:
     varasto-cli: ./bin/varasto-cli
   languageName: unknown
@@ -1787,12 +1787,12 @@ __metadata:
     typescript-eslint: "npm:^8.69.0"
     vitest: "npm:^4.1.11"
   peerDependencies:
-    "@varasto/fs-storage": ^3.0.0
-    "@varasto/memory-storage": ^3.0.0
-    "@varasto/postgres-storage": ^3.0.0
-    "@varasto/redis-storage": ^3.0.0
-    "@varasto/remote-storage": ^3.0.0
-    "@varasto/sqlite-storage": ^4.0.0
+    "@varasto/fs-storage": ^4.0.0
+    "@varasto/memory-storage": ^4.0.0
+    "@varasto/postgres-storage": ^4.0.0
+    "@varasto/redis-storage": ^4.0.0
+    "@varasto/remote-storage": ^5.0.0
+    "@varasto/sqlite-storage": ^5.0.0
   languageName: unknown
   linkType: soft
 

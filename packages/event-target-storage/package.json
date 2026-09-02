@@ -1,6 +1,6 @@
 {
   "name": "@varasto/event-target-storage",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Varasto storage implementation that dispatches events",
   "license": "MIT",
   "keywords": [

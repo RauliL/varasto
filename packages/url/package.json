@@ -1,6 +1,6 @@
 {
   "name": "@varasto/url",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Connect to an Varasto storage based on URL",
   "license": "MIT",
   "keywords": [
@@ -41,12 +41,12 @@
     "@varasto/storage": "workspace:^"
   },
   "peerDependencies": {
-    "@varasto/fs-storage": "^3.0.0",
-    "@varasto/memory-storage": "^3.0.0",
-    "@varasto/postgres-storage": "^3.0.0",
-    "@varasto/redis-storage": "^3.0.0",
-    "@varasto/remote-storage": "^3.0.0",
-    "@varasto/sqlite-storage": "^4.0.0"
+    "@varasto/fs-storage": "^4.0.0",
+    "@varasto/memory-storage": "^4.0.0",
+    "@varasto/postgres-storage": "^4.0.0",
+    "@varasto/redis-storage": "^4.0.0",
+    "@varasto/remote-storage": "^5.0.0",
+    "@varasto/sqlite-storage": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
