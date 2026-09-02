@@ -2,7 +2,7 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { updateAll, updateAllEntries } from './update-all';
+import { updateAll, updateAllEntries } from './update-all.js';
 
 describe('update all utilities', () => {
   const storage = createMemoryStorage();

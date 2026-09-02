@@ -2,7 +2,7 @@ import { Entry, Storage } from '@varasto/storage';
 import { Schema } from 'simple-json-match';
 import { JsonObject } from 'type-fest';
 
-import { findAllKeys } from './find-all';
+import { findAllKeys } from './find-all.js';
 
 /**
  * Performs an bulk update where all entries from given namespace that match

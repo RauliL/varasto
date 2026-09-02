@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ValidationError } from './error';
+import { ValidationError } from './error.js';
 
 /**
  * Creates an validator function that will throw an validation error with given

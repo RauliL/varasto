@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
-const { createFileSystemStorage } = require('@varasto/fs-storage');
-const express = require('express');
-const fs = require('fs');
-const http = require('http');
-const https = require('https');
-const morgan = require('morgan');
-const yargs = require('yargs');
-const { hideBin } = require('yargs/helpers');
+import { createFileSystemStorage } from '@varasto/fs-storage';
+import express from 'express';
+import fs from 'node:fs';
+import http from 'node:http';
+import https from 'node:https';
+import morgan from 'morgan';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-const { createServer } = require('../dist');
+import { createServer } from '../dist/index.js';
 
 const args = yargs()
   .usage('$0 [options] <directory>', 'Start the HTTP server.')

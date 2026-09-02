@@ -1,7 +1,7 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { partition, partitionEntries, partitionKeys } from './partition';
+import { partition, partitionEntries, partitionKeys } from './partition.js';
 
 describe('partition utilities', () => {
   const storage = createMemoryStorage();

@@ -1,6 +1,7 @@
 {
   "name": "@varasto/root",
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=22.0"
   },

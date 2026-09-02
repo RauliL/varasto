@@ -1,5 +1,6 @@
 import { Entry, Storage } from '@varasto/storage';
-import match, { Schema } from 'simple-json-match';
+
+import { match, Schema } from './match.js';
 import { JsonObject } from 'type-fest';
 
 /**

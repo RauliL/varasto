@@ -1,7 +1,7 @@
 import { Storage } from '@varasto/storage';
 import readline from 'node:readline';
 
-import { CommandError, commandNames, runCommand } from './command';
+import { CommandError, commandNames, runCommand } from './command.js';
 
 const completer = (line: string): [Readonly<string[]>, string] => {
   const hits = commandNames.filter((command) => command.indexOf(line) === 0);

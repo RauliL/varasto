@@ -7,7 +7,7 @@ import isArray from 'isarray';
 import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 
-import { WebStorageOptions } from './types';
+import { WebStorageOptions } from './types.js';
 
 /**
  * Creates new Web storage.

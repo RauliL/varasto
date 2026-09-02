@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FieldType } from '../types';
+import { FieldType } from '../types.js';
 
 /**
  * Various options that can be passed to an model field.

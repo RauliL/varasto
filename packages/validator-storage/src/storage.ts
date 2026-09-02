@@ -2,8 +2,8 @@ import { Entry, Storage } from '@varasto/storage';
 import { JsonObject } from 'type-fest';
 import { ZodType } from 'zod/v4';
 
-import { UnrecognizedNamespaceError } from './errors';
-import { NamespaceMapping } from './types';
+import { UnrecognizedNamespaceError } from './errors.js';
+import { NamespaceMapping } from './types.js';
 
 export const createValidatorStorage = (
   storage: Storage,

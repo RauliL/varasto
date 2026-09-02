@@ -4,13 +4,13 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import './test-memfs';
 import fs from 'fs';
-import { resetVol, setupVol } from './test-memfs';
+import { resetVol, setupVol } from './test-memfs.js';
 import {
   buildFilename,
   createNamespace,
   globNamespace,
   readItem,
-} from './utils';
+} from './utils.js';
 
 describe('createNamespace()', () => {
   beforeEach(() => {

@@ -1,3 +1,3 @@
-export * from './field';
-export * from './key';
-export * from './model';
+export * from './field.js';
+export * from './key.js';
+export * from './model.js';

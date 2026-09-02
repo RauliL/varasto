@@ -2,7 +2,7 @@ import { Storage } from '@varasto/storage';
 import JSON5 from 'json5';
 import { colorize } from 'json-colorizer';
 
-import { tokenize } from './tokenizer';
+import { tokenize } from './tokenizer.js';
 
 export type CommandDefinition = {
   description: string;

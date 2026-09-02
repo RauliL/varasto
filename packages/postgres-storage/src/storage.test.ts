@@ -9,9 +9,9 @@ import { IMemoryDb, newDb } from 'pg-mem';
 import { JsonObject } from 'type-fest';
 import { describe, expect, it } from 'vitest';
 
-import { createPostgresStorage } from './storage';
-import { PostgresStorageOptions } from './types';
-import { parseValue } from './utils';
+import { createPostgresStorage } from './storage.js';
+import { PostgresStorageOptions } from './types.js';
+import { parseValue } from './utils.js';
 
 describe('Postgres storage', () => {
   const getStorage = (

@@ -8,7 +8,7 @@ import fs from 'fs';
 import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 
-import { SingleFileStorageOptions } from './types';
+import { SingleFileStorageOptions } from './types.js';
 
 type Namespace = Record<string, JsonObject>;
 type Container = Record<string, Namespace>;

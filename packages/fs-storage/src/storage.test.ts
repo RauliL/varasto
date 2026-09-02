@@ -5,8 +5,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import './test-memfs';
 import fs from 'fs';
-import { resetVol, setupVol } from './test-memfs';
-import { createFileSystemStorage } from './storage';
+import { resetVol, setupVol } from './test-memfs.js';
+import { createFileSystemStorage } from './storage.js';
 
 describe('file system storage', () => {
   const storage = createFileSystemStorage({ dir: 'data' });

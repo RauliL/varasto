@@ -3,7 +3,7 @@ import all from 'it-all';
 import { createClient } from 'redis-mock';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createRedisStorage } from './storage';
+import { createRedisStorage } from './storage.js';
 
 describe('Redis storage', () => {
   const client = createClient();

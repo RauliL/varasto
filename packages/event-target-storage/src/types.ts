@@ -8,7 +8,7 @@ import {
   PreDeleteEvent,
   PreSetEvent,
   PreUpdateEvent,
-} from './events';
+} from './events.js';
 
 export type StorageEventMap = {
   'pre-delete': PreDeleteEvent;

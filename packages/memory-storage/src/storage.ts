@@ -2,7 +2,7 @@ import { Entry, InvalidSlugError } from '@varasto/storage';
 import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 
-import { MemoryStorage } from './types';
+import { MemoryStorage } from './types.js';
 
 /**
  * Constructs storage implementation that stores values in memory instead of

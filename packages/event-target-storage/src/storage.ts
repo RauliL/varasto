@@ -2,7 +2,7 @@ import { Storage } from '@varasto/storage';
 import { JsonObject } from 'type-fest';
 import { TypedEventTarget } from 'typescript-event-target';
 
-import { OperationPreventedError } from './errors';
+import { OperationPreventedError } from './errors.js';
 import {
   PreDeleteEvent,
   PreSetEvent,
@@ -10,8 +10,8 @@ import {
   PostDeleteEvent,
   PostSetEvent,
   PostUpdateEvent,
-} from './events';
-import { EventTargetStorage, StorageEventMap } from './types';
+} from './events.js';
+import { EventTargetStorage, StorageEventMap } from './types.js';
 
 export const createEventTargetStorage = (
   storage: Storage
