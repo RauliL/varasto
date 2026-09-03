@@ -8,6 +8,7 @@
     "types": ["node"],
     "lib": [
       "es2018",
+      "es2025.float16",
       "dom"
     ]
   }
