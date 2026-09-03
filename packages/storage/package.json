@@ -33,7 +33,7 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "type-fest": "^4.41.0"
+    "type-fest": "^5.6.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
