@@ -7,7 +7,7 @@ import {
 import type { Got, HTTPError } from 'got' with { 'resolution-mode': 'import' };
 import { JsonObject } from 'type-fest';
 
-import { RemoteStorageOptions } from './types';
+import { RemoteStorageOptions } from './types.js';
 
 const gotModule = import('got');
 
