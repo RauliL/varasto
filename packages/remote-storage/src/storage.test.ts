@@ -3,7 +3,7 @@ import all from 'it-all';
 import nock from 'nock';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { createRemoteStorage } from './storage';
+import { createRemoteStorage } from './storage.js';
 
 const MOCK_DATA_JOHN = {
   name: 'John',
