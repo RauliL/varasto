@@ -35,10 +35,15 @@ const createPostgresStorage = async (url: URL): Promise<Storage> => {
   return require('@varasto/postgres-storage').createPostgresStorage(client);
 };
 
-const createRedisStorage = (url: URL): Storage =>
-  require('@varasto/redis-storage').createRedisStorage(
-    require('redis').createClient({ url: url.toString() })
-  );
+const createRedisStorage = async (url: URL): Promise<Storage> => {
+  const client = require('@redis/client').createClient({
+    url: url.toString(),
+  });
+
+  await client.connect();
+
+  return require('@varasto/redis-storage').createRedisStorage(client);
+};
 
 const createSqliteStorage = (url: URL): Promise<Storage> =>
   require('sqlite')
@@ -68,7 +73,7 @@ export const open = async (input: string | URL): Promise<Storage> => {
       return await createPostgresStorage(url);
 
     case 'redis:':
-      return createRedisStorage(url);
+      return await createRedisStorage(url);
 
     case 'sqlite:':
     case 'sqlite3:':

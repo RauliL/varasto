@@ -4,13 +4,12 @@ import {
   ItemDoesNotExistError,
   Storage,
 } from '@varasto/storage';
-import { promisify } from 'util';
+import { RedisClientType } from '@redis/client';
 
 import { isValidSlug } from 'is-valid-slug';
-import { RedisClient } from 'redis';
 import { JsonObject } from 'type-fest';
 
-import { RedisStorageOptions } from './types';
+import { RedisStorageOptions } from './types.js';
 
 /**
  * Creates new Redis storage.
@@ -19,7 +18,7 @@ import { RedisStorageOptions } from './types';
  * @param options Optional serialization options.
  */
 export const createRedisStorage = (
-  client: RedisClient,
+  client: RedisClientType,
   options: RedisStorageOptions = {}
 ): Storage => {
   const serialize = options.serialize ?? JSON.stringify;
@@ -31,10 +30,7 @@ export const createRedisStorage = (
         throw new InvalidSlugError('Given namespace is not valid slug');
       }
 
-      const hkeys = promisify(client.hkeys);
-      const reply = await hkeys.call(client, namespace);
-
-      for (const key of reply) {
+      for (const key of await client.hKeys(namespace)) {
         yield key;
       }
     }
@@ -44,10 +40,7 @@ export const createRedisStorage = (
         throw new InvalidSlugError('Given namespace is not valid slug');
       }
 
-      const hvals = promisify(client.hvals);
-      const reply = await hvals.call(client, namespace);
-
-      for (const data of reply) {
+      for (const data of await client.hVals(namespace)) {
         yield deserialize(data);
       }
     }
@@ -59,142 +52,84 @@ export const createRedisStorage = (
         throw new InvalidSlugError('Given namespace is not valid slug');
       }
 
-      const hgetall = promisify(client.hgetall);
-      const reply = await hgetall.call(client, namespace);
+      const reply = await client.hGetAll(namespace);
 
-      if (reply != null) {
-        for (const key of Object.keys(reply)) {
-          yield [key, deserialize(reply[key])];
-        }
+      for (const [key, data] of reply instanceof Map
+        ? reply
+        : Object.entries(reply)) {
+        yield [key, deserialize(data)];
       }
     }
 
-    has(namespace: string, key: string): Promise<boolean> {
+    async has(namespace: string, key: string): Promise<boolean> {
       if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
+        throw new InvalidSlugError('Given namespace is not valid slug');
       } else if (!isValidSlug(key)) {
-        return Promise.reject(
-          new InvalidSlugError('Given key is not valid slug')
-        );
+        throw new InvalidSlugError('Given key is not valid slug');
       }
 
-      return new Promise<boolean>((resolve, reject) => {
-        client.hexists(namespace, key, (err, reply) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(reply === 1);
-          }
-        });
-      });
+      return (await client.hExists(namespace, key)) === 1;
     }
 
-    get<T extends JsonObject>(
+    async get<T extends JsonObject>(
       namespace: string,
       key: string
     ): Promise<T | undefined> {
       if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
+        throw new InvalidSlugError('Given namespace is not valid slug');
       } else if (!isValidSlug(key)) {
-        return Promise.reject(
-          new InvalidSlugError('Given key is not valid slug')
-        );
+        throw new InvalidSlugError('Given key is not valid slug');
       }
 
-      return new Promise<T | undefined>((resolve, reject) => {
-        client.hmget(namespace, key, (err, reply) => {
-          if (err) {
-            reject(err);
-          } else if (reply.length > 0 && reply[0] != null) {
-            try {
-              resolve(deserialize(reply[0]));
-            } catch (err) {
-              reject(err);
-            }
-          } else {
-            resolve(undefined);
-          }
-        });
-      });
+      const reply = await client.hGet(namespace, key);
+
+      if (reply != null) {
+        return deserialize(reply);
+      }
+
+      return undefined;
     }
 
-    set<T extends JsonObject>(
+    async set<T extends JsonObject>(
       namespace: string,
       key: string,
       value: T
     ): Promise<void> {
       if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
+        throw new InvalidSlugError('Given namespace is not valid slug');
       } else if (!isValidSlug(key)) {
-        return Promise.reject(
-          new InvalidSlugError('Given key is not valid slug')
-        );
+        throw new InvalidSlugError('Given key is not valid slug');
       }
 
-      return new Promise<void>((resolve, reject) => {
-        let data;
-
-        try {
-          data = serialize(value);
-        } catch (err) {
-          reject(err);
-          return;
-        }
-
-        client.hmset(namespace, key, data, (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        });
-      });
+      await client.hSet(namespace, key, serialize(value));
     }
 
-    update<T extends JsonObject>(
+    async update<T extends JsonObject>(
       namespace: string,
       key: string,
       value: Partial<T>
     ): Promise<T> {
-      return this.get<T>(namespace, key).then((oldValue) => {
-        if (oldValue != null) {
-          const result = { ...oldValue, ...value };
+      const oldValue = await this.get<T>(namespace, key);
 
-          return this.set(namespace, key, result).then(() => result);
-        }
+      if (oldValue != null) {
+        const result = { ...oldValue, ...value };
 
-        return Promise.reject(
-          new ItemDoesNotExistError('Item does not exist')
-        );
-      });
-    }
+        await this.set<T>(namespace, key, result);
 
-    delete(namespace: string, key: string): Promise<boolean> {
-      if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
-      } else if (!isValidSlug(key)) {
-        return Promise.reject(
-          new InvalidSlugError('Given key is not valid slug')
-        );
+        return result;
       }
 
-      return new Promise<boolean>((resolve, reject) => {
-        client.hdel(namespace, key, (err, reply) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(reply > 0);
-          }
-        });
-      });
+      throw new ItemDoesNotExistError('Item does not exist');
+    }
+
+    async delete(namespace: string, key: string): Promise<boolean> {
+      if (!isValidSlug(namespace)) {
+        throw new InvalidSlugError('Given namespace is not valid slug');
+      } else if (!isValidSlug(key)) {
+        throw new InvalidSlugError('Given key is not valid slug');
+      }
+
+      return (await client.hDel(namespace, key)) > 0;
     }
   })();
 };
