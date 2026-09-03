@@ -21,10 +21,11 @@ The package provides an function called `createRedisStorage` which takes an
 Redis client as an argument.
 
 ```TypeScript
-import { createClient } from 'redis';
+import { createClient } from '@redis/client';
 import { createRedisStorage } from '@varasto/redis-storage';
 
-const client = createClient({ host: 'example.com' });
+const client = createClient({ url: 'redis://example.com' });
+await client.connect();
 const storage = createRedisStorage(client);
 ```
 
@@ -39,11 +40,12 @@ use your own custom serialization functions by passing them as options to the
 [json.parse]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse
 
 ```TypeScript
-import { createClient } from 'redis';
+import { createClient } from '@redis/client';
 import { createRedisStorage } from '@varasto/redis-storage';
 import { JsonObject } from 'type-fest';
 
-const client = createClient({ host: 'example.com' });
+const client = createClient({ url: 'redis://example.com' });
+await client.connect();
 const storage = createRedisStorage(client, {
   serialize: (data: string): JsonObject => {},
   deserialize: (data: JsonObject): string => "",
