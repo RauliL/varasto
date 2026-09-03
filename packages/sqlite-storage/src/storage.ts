@@ -2,14 +2,14 @@ import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
 import { Database } from 'sqlite';
 import { JsonObject } from 'type-fest';
 
-import { SqliteStorageOptions } from './types';
+import { SqliteStorageOptions } from './types.js';
 import {
   createNamespace,
   doesNamespaceExist,
   getItem,
   validateNamespace,
   validateNamespaceAndKey,
-} from './utils';
+} from './utils.js';
 
 /**
  * Construct and returns storage implementation that stores values into given
