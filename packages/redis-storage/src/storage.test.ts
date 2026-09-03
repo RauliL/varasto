@@ -3,7 +3,7 @@ import { RedisClientType } from '@redis/client';
 import all from 'it-all';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createRedisStorage } from './storage';
+import { createRedisStorage } from './storage.js';
 
 const createMockClient = (): RedisClientType => {
   const hashes = new Map<string, Map<string, string>>();

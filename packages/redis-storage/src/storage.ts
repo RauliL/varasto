@@ -9,7 +9,7 @@ import { RedisClientType } from '@redis/client';
 import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 
-import { RedisStorageOptions } from './types';
+import { RedisStorageOptions } from './types.js';
 
 /**
  * Creates new Redis storage.
