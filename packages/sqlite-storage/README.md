@@ -73,8 +73,8 @@ by passing them as options to the `createSqliteStorage` function.
 const storage = createSqliteStorage(
   database,
   {
-    serialize: (data: string): JsonObject => ({}),
-    deserialize: (data: JsonObject): string => "",
+    serialize: (data: JsonObject): string => "",
+    deserialize: (data: string): JsonObject => ({}),
   }
 );
 ```

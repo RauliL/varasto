@@ -8,9 +8,9 @@ import { Database, open } from 'sqlite';
 import sqlite3 from 'sqlite3';
 import { describe, expect, it } from 'vitest';
 
-import { createSqliteStorage } from './storage';
-import { SqliteStorageOptions } from './types';
-import { doesNamespaceExist } from './utils';
+import { createSqliteStorage } from './storage.js';
+import { SqliteStorageOptions } from './types.js';
+import { doesNamespaceExist } from './utils.js';
 
 describe('SQLite storage', () => {
   const getStorage = async (
