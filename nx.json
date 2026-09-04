@@ -20,12 +20,17 @@
           "target": "build"
         }
       ],
-      "outputs": ["{projectRoot}/dist"]
+      "outputs": [
+        "{projectRoot}/dist"
+      ]
     },
     "test": {
       "cache": true,
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
     }
   },
-  "analytics": false
+  "analytics": false,
+  "nxCloudId": "6a9a5bb18b54696247000ce5"
 }
