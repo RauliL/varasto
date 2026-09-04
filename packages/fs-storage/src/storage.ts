@@ -7,6 +7,7 @@ import { FileSystemStorageOptions } from './types';
 import {
   buildFilename,
   createNamespace,
+  fileExists,
   globNamespace,
   readItem,
   writeItem,
@@ -33,7 +34,7 @@ export const createFileSystemStorage = (
         return Promise.resolve(false);
       }
 
-      return Promise.resolve(fs.existsSync(filename));
+      return fileExists(filename);
     }
 
     async *keys(namespace: string): AsyncGenerator<string> {

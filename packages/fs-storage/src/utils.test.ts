@@ -8,6 +8,7 @@ import { resetVol, setupVol } from './test-memfs';
 import {
   buildFilename,
   createNamespace,
+  fileExists,
   globNamespace,
   readItem,
   writeItem,
@@ -68,6 +69,28 @@ describe('buildFilename()', () => {
   it('should return an filename if namespace and key are valid', () => {
     expect(buildFilename('./data', 'foo', 'bar')).toEqual('data/foo/bar.json');
   });
+});
+
+describe('fileExists()', () => {
+  beforeEach(() => {
+    setupVol({
+      data: {
+        foo: {
+          '1.json': '{"a":1}',
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    resetVol();
+  });
+
+  it('should return true if the file exists', () =>
+    expect(fileExists(path.join('data', 'foo', '1.json'))).resolves.toBe(true));
+
+  it('should return false if the file does not exist', () =>
+    expect(fileExists(path.join('data', 'foo', '2.json'))).resolves.toBe(false));
 });
 
 describe('globNamespace()', () => {

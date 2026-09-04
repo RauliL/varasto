@@ -45,6 +45,13 @@ export const buildFilename = (
   return path.join(dir, namespace, `${key}.json`);
 };
 
+export const fileExists = (filename: string): Promise<boolean> =>
+  new Promise<boolean>((resolve) => {
+    fs.access(filename, fs.constants.F_OK, (err) => {
+      resolve(!err);
+    });
+  });
+
 export const globNamespace = (
   dir: string,
   namespace: string
