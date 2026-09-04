@@ -1,6 +1,6 @@
 import { InvalidSlugError } from '@varasto/storage';
+import { randomUUID } from 'node:crypto';
 import fs from 'fs';
-import { glob } from 'glob';
 import { isValidSlug } from 'is-valid-slug';
 import { mkdirp } from 'mkdirp';
 import path from 'path';
@@ -45,15 +45,44 @@ export const buildFilename = (
   return path.join(dir, namespace, `${key}.json`);
 };
 
+export const fileExists = (filename: string): Promise<boolean> =>
+  new Promise<boolean>((resolve) => {
+    fs.access(filename, fs.constants.F_OK, (err) => {
+      resolve(!err);
+    });
+  });
+
 export const globNamespace = (
   dir: string,
   namespace: string
-): Promise<string[]> =>
-  isValidSlug(namespace)
-    ? glob(path.join(dir, namespace, '*.json'))
-    : Promise.reject(
-        new InvalidSlugError('Given namespace is not valid slug')
+): Promise<string[]> => {
+  if (!isValidSlug(namespace)) {
+    return Promise.reject(
+      new InvalidSlugError('Given namespace is not valid slug')
+    );
+  }
+
+  const namespaceDir = path.join(dir, namespace);
+
+  return new Promise<string[]>((resolve, reject) => {
+    fs.readdir(namespaceDir, (err, files) => {
+      if (err) {
+        if (err.code === 'ENOENT') {
+          resolve([]);
+        } else {
+          reject(err);
+        }
+        return;
+      }
+
+      resolve(
+        files
+          .filter((file) => file.endsWith('.json'))
+          .map((file) => path.join(namespaceDir, file))
       );
+    });
+  });
+};
 
 export const readItem = <T extends JsonObject>(
   filename: string,
@@ -82,5 +111,54 @@ export const readItem = <T extends JsonObject>(
       } catch (err) {
         reject(err);
       }
+    });
+  });
+
+export const DEFAULT_READ_CONCURRENCY = 16;
+
+export async function* readNamespaceItems<T extends JsonObject>(
+  filenames: string[],
+  encoding: BufferEncoding,
+  deserialize: (data: string) => JsonObject,
+  concurrency = DEFAULT_READ_CONCURRENCY
+): AsyncGenerator<{ filename: string; value: T }> {
+  for (let i = 0; i < filenames.length; i += concurrency) {
+    const batch = filenames.slice(i, i + concurrency);
+    const items = await Promise.all(
+      batch.map(async (filename) => ({
+        filename,
+        value: await readItem<T>(filename, encoding, deserialize),
+      }))
+    );
+
+    for (const { filename, value } of items) {
+      if (value !== undefined) {
+        yield { filename, value };
+      }
+    }
+  }
+}
+
+export const writeItem = (
+  filename: string,
+  data: string,
+  encoding: BufferEncoding
+): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    const tempFilename = `${filename}.${randomUUID()}.tmp`;
+
+    fs.writeFile(tempFilename, data, encoding, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      fs.rename(tempFilename, filename, (err) => {
+        if (err) {
+          fs.unlink(tempFilename, () => reject(err));
+        } else {
+          resolve();
+        }
+      });
     });
   });

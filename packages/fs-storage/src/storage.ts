@@ -3,13 +3,16 @@ import fs from 'fs';
 import path from 'path';
 import { JsonObject } from 'type-fest';
 
-import { FileSystemStorageOptions } from './types';
+import { FileSystemStorageOptions } from './types.js';
 import {
   buildFilename,
   createNamespace,
+  fileExists,
   globNamespace,
   readItem,
-} from './utils';
+  readNamespaceItems,
+  writeItem,
+} from './utils.js';
 
 /**
  * Creates new file system storage with given options.
@@ -32,7 +35,7 @@ export const createFileSystemStorage = (
         return Promise.resolve(false);
       }
 
-      return Promise.resolve(fs.existsSync(filename));
+      return fileExists(filename);
     }
 
     async *keys(namespace: string): AsyncGenerator<string> {
@@ -46,12 +49,12 @@ export const createFileSystemStorage = (
     async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
       const filenames = await globNamespace(dir, namespace);
 
-      for (const filename of filenames) {
-        const value = await readItem<T>(filename, encoding, deserialize);
-
-        if (value !== undefined) {
-          yield value;
-        }
+      for await (const { value } of readNamespaceItems<T>(
+        filenames,
+        encoding,
+        deserialize
+      )) {
+        yield value;
       }
     }
 
@@ -60,12 +63,12 @@ export const createFileSystemStorage = (
     ): AsyncGenerator<Entry<T>> {
       const filenames = await globNamespace(dir, namespace);
 
-      for (const filename of filenames) {
-        const value = await readItem<T>(filename, encoding, deserialize);
-
-        if (value !== undefined) {
-          yield [path.basename(filename, '.json'), value];
-        }
+      for await (const { filename, value } of readNamespaceItems<T>(
+        filenames,
+        encoding,
+        deserialize
+      )) {
+        yield [path.basename(filename, '.json'), value];
       }
     }
 
@@ -101,13 +104,9 @@ export const createFileSystemStorage = (
               return;
             }
 
-            fs.writeFile(filename, serialize(value), encoding, (err) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
-            });
+            writeItem(filename, serialize(value), encoding)
+              .then(resolve)
+              .catch(reject);
           })
       );
     }
@@ -129,15 +128,9 @@ export const createFileSystemStorage = (
         if (oldValue !== undefined) {
           const newValue = { ...oldValue, ...value } as T;
 
-          return new Promise<T>((resolve, reject) => {
-            fs.writeFile(filename, serialize(newValue), encoding, (err) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(newValue);
-              }
-            });
-          });
+          return writeItem(filename, serialize(newValue), encoding).then(
+            () => newValue
+          );
         }
 
         return Promise.reject(

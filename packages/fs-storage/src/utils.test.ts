@@ -1,16 +1,20 @@
 import { InvalidSlugError } from '@varasto/storage';
+import all from 'it-all';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import './test-memfs';
+import './test-memfs.js';
 import fs from 'fs';
-import { resetVol, setupVol } from './test-memfs';
+import { resetVol, setupVol } from './test-memfs.js';
 import {
   buildFilename,
   createNamespace,
+  fileExists,
   globNamespace,
   readItem,
-} from './utils';
+  readNamespaceItems,
+  writeItem,
+} from './utils.js';
 
 describe('createNamespace()', () => {
   beforeEach(() => {
@@ -67,6 +71,32 @@ describe('buildFilename()', () => {
   it('should return an filename if namespace and key are valid', () => {
     expect(buildFilename('./data', 'foo', 'bar')).toEqual('data/foo/bar.json');
   });
+});
+
+describe('fileExists()', () => {
+  beforeEach(() => {
+    setupVol({
+      data: {
+        foo: {
+          '1.json': '{"a":1}',
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    resetVol();
+  });
+
+  it('should return true if the file exists', () =>
+    expect(fileExists(path.join('data', 'foo', '1.json'))).resolves.toBe(
+      true
+    ));
+
+  it('should return false if the file does not exist', () =>
+    expect(fileExists(path.join('data', 'foo', '2.json'))).resolves.toBe(
+      false
+    ));
 });
 
 describe('globNamespace()', () => {
@@ -146,4 +176,95 @@ describe('readItem()', () => {
         throw new SyntaxError('Failure.');
       })
     ).rejects.toBeInstanceOf(SyntaxError));
+});
+
+describe('readNamespaceItems()', () => {
+  beforeEach(() => {
+    setupVol({
+      data: {
+        foo: {
+          '1.json': '{"a":1}',
+          '2.json': '"foo"',
+          '3.json': '{"a":3}',
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    resetVol();
+  });
+
+  it('should read all valid items from the namespace', async () => {
+    const filenames = await globNamespace('data', 'foo');
+    const items = await all(
+      readNamespaceItems(filenames, 'utf-8', JSON.parse)
+    );
+
+    expect(items).toHaveLength(2);
+    expect(items).toContainEqual({
+      filename: path.join('data', 'foo', '1.json'),
+      value: { a: 1 },
+    });
+    expect(items).toContainEqual({
+      filename: path.join('data', 'foo', '3.json'),
+      value: { a: 3 },
+    });
+  });
+
+  it('should yield nothing if the namespace is empty', async () =>
+    expect(all(readNamespaceItems([], 'utf-8', JSON.parse))).resolves.toEqual(
+      []
+    ));
+});
+
+describe('writeItem()', () => {
+  beforeEach(() => {
+    setupVol({
+      data: {
+        foo: {
+          '1.json': '{"a":1}',
+        },
+        unwriteable: {},
+      },
+    });
+    fs.chmodSync('data/unwriteable', 0);
+  });
+
+  afterEach(() => {
+    resetVol();
+  });
+
+  it('should write data to the target file atomically', async () => {
+    const filename = path.join('data', 'foo', '2.json');
+
+    await writeItem(filename, '{"a":2}', 'utf-8');
+
+    expect(fs.readFileSync(filename, 'utf-8')).toBe('{"a":2}');
+  });
+
+  it('should replace existing file contents', async () => {
+    const filename = path.join('data', 'foo', '1.json');
+
+    await writeItem(filename, '{"a":4}', 'utf-8');
+
+    expect(fs.readFileSync(filename, 'utf-8')).toBe('{"a":4}');
+  });
+
+  it('should not leave temporary files behind', async () => {
+    const filename = path.join('data', 'foo', '2.json');
+
+    await writeItem(filename, '{"a":2}', 'utf-8');
+
+    expect(
+      fs
+        .readdirSync(path.join('data', 'foo'))
+        .some((file) => file.endsWith('.tmp'))
+    ).toBe(false);
+  });
+
+  it('should fail if the file cannot be written', () =>
+    expect(
+      writeItem(path.join('data', 'unwriteable', '1.json'), '{"a":1}', 'utf-8')
+    ).rejects.toBeInstanceOf(Error));
 });
