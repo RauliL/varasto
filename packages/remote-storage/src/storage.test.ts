@@ -45,6 +45,20 @@ describe('remote storage', () => {
         Error
       );
     });
+
+    it('should handle connection errors', () => {
+      nock('https://example.com')
+        .head('/people/john')
+        .replyWithError(
+          Object.assign(new Error('Connection refused'), {
+            code: 'ECONNREFUSED',
+          })
+        );
+
+      return expect(storage.has('people', 'john')).rejects.toBeInstanceOf(
+        Error
+      );
+    });
   });
 
   describe('keys()', () => {
@@ -134,6 +148,16 @@ describe('remote storage', () => {
       return expect(storage.get('people', 'john')).resolves.toBeUndefined();
     });
 
+    it('should handle 400 response from the server', () => {
+      nock('https://example.com')
+        .get('/p;eople/john')
+        .reply(400, { error: 'Given namespace is not valid slug.' });
+
+      return expect(storage.get('p;eople', 'john')).rejects.toBeInstanceOf(
+        InvalidSlugError
+      );
+    });
+
     it('should handle erroneous response from the server', () => {
       nock('https://example.com')
         .get('/people/john')
@@ -154,6 +178,16 @@ describe('remote storage', () => {
       return expect(
         storage.set('people', 'john', MOCK_DATA_JOHN)
       ).resolves.toBeUndefined();
+    });
+
+    it('should handle 400 response from the server', () => {
+      nock('https://example.com')
+        .post('/p;eople/john')
+        .reply(400, { error: 'Given namespace is not valid slug.' });
+
+      return expect(
+        storage.set('p;eople', 'john', MOCK_DATA_JOHN)
+      ).rejects.toBeInstanceOf(InvalidSlugError);
     });
 
     it('should handle erroneous response from the server', () => {
@@ -239,5 +273,15 @@ describe('remote storage', () => {
         Error
       );
     });
+  });
+});
+
+describe('remote storage with default options', () => {
+  it('should use http://0.0.0.0:3000/ as the default base URL', () => {
+    const storage = createRemoteStorage();
+
+    nock('http://0.0.0.0:3000').head('/people/john').reply(200);
+
+    return expect(storage.has('people', 'john')).resolves.toBe(true);
   });
 });

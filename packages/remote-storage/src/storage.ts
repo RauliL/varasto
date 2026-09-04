@@ -4,12 +4,10 @@ import {
   ItemDoesNotExistError,
   Storage,
 } from '@varasto/storage';
-import type { Got, HTTPError } from 'got' with { 'resolution-mode': 'import' };
+import got, { HTTPError } from 'got';
 import { JsonObject } from 'type-fest';
 
 import { RemoteStorageOptions } from './types.js';
-
-const gotModule = import('got');
 
 const getStatusCode = (err: unknown): number | undefined => {
   if (
@@ -39,19 +37,17 @@ const errorHandler = (err: unknown) => {
 export const createRemoteStorage = (
   options: Partial<RemoteStorageOptions> = {}
 ): Storage => {
-  const clientPromise: Promise<Got> = gotModule.then(({ default: got }) =>
-    got.extend({
-      prefixUrl: options.url ?? 'http://0.0.0.0:3000/',
-      username: options.auth?.username,
-      password: options.auth?.password,
-      retry: { limit: 0 },
-    })
-  );
+  const client = got.extend({
+    prefixUrl: options.url ?? 'http://0.0.0.0:3000/',
+    username: options.auth?.username,
+    password: options.auth?.password,
+    retry: { limit: 0 },
+  });
 
   return new (class extends Storage {
     has(namespace: string, key: string): Promise<boolean> {
-      return clientPromise
-        .then((client) => client.head(`${namespace}/${key}`))
+      return client
+        .head(`${namespace}/${key}`)
         .then(() => true)
         .catch((err: unknown) =>
           getStatusCode(err) === 404 ? false : Promise.reject(err)
@@ -59,7 +55,6 @@ export const createRemoteStorage = (
     }
 
     async *keys(namespace: string): AsyncGenerator<string> {
-      const client = await clientPromise;
       const data = await client
         .get(namespace)
         .json<Record<string, JsonObject>>();
@@ -70,7 +65,6 @@ export const createRemoteStorage = (
     }
 
     async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
-      const client = await clientPromise;
       const data = await client.get(namespace).json<Record<string, T>>();
 
       for (const value of Object.values(data) as T[]) {
@@ -81,7 +75,6 @@ export const createRemoteStorage = (
     async *entries<T extends JsonObject>(
       namespace: string
     ): AsyncGenerator<Entry<T>> {
-      const client = await clientPromise;
       const data = await client.get(namespace).json<Record<string, T>>();
 
       for (const key of Object.keys(data)) {
@@ -93,9 +86,7 @@ export const createRemoteStorage = (
       namespace: string,
       key: string
     ): Promise<T | undefined> {
-      return clientPromise
-        .then((client) => client.get(`${namespace}/${key}`).json<T>())
-        .catch(errorHandler);
+      return client.get(`${namespace}/${key}`).json<T>().catch(errorHandler);
     }
 
     set<T extends JsonObject>(
@@ -103,8 +94,8 @@ export const createRemoteStorage = (
       key: string,
       value: T
     ): Promise<void> {
-      return clientPromise
-        .then((client) => client.post(`${namespace}/${key}`, { json: value }))
+      return client
+        .post(`${namespace}/${key}`, { json: value })
         .then(() => undefined)
         .catch(errorHandler);
     }
@@ -114,10 +105,9 @@ export const createRemoteStorage = (
       key: string,
       value: Partial<T>
     ): Promise<T> {
-      return clientPromise
-        .then((client) =>
-          client.patch(`${namespace}/${key}`, { json: value }).json<T>()
-        )
+      return client
+        .patch(`${namespace}/${key}`, { json: value })
+        .json<T>()
         .catch((err: unknown) => {
           const status = getStatusCode(err);
 
@@ -134,8 +124,8 @@ export const createRemoteStorage = (
     }
 
     delete(namespace: string, key: string): Promise<boolean> {
-      return clientPromise
-        .then((client) => client.delete(`${namespace}/${key}`))
+      return client
+        .delete(`${namespace}/${key}`)
         .then(() => true)
         .catch((err: unknown) =>
           getStatusCode(err) === 404 ? false : Promise.reject(err)
