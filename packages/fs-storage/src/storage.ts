@@ -104,7 +104,9 @@ export const createFileSystemStorage = (
               return;
             }
 
-            writeItem(filename, serialize(value), encoding).then(resolve).catch(reject);
+            writeItem(filename, serialize(value), encoding)
+              .then(resolve)
+              .catch(reject);
           })
       );
     }

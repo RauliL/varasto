@@ -89,10 +89,14 @@ describe('fileExists()', () => {
   });
 
   it('should return true if the file exists', () =>
-    expect(fileExists(path.join('data', 'foo', '1.json'))).resolves.toBe(true));
+    expect(fileExists(path.join('data', 'foo', '1.json'))).resolves.toBe(
+      true
+    ));
 
   it('should return false if the file does not exist', () =>
-    expect(fileExists(path.join('data', 'foo', '2.json'))).resolves.toBe(false));
+    expect(fileExists(path.join('data', 'foo', '2.json'))).resolves.toBe(
+      false
+    ));
 });
 
 describe('globNamespace()', () => {
@@ -193,7 +197,9 @@ describe('readNamespaceItems()', () => {
 
   it('should read all valid items from the namespace', async () => {
     const filenames = await globNamespace('data', 'foo');
-    const items = await all(readNamespaceItems(filenames, 'utf-8', JSON.parse));
+    const items = await all(
+      readNamespaceItems(filenames, 'utf-8', JSON.parse)
+    );
 
     expect(items).toHaveLength(2);
     expect(items).toContainEqual({
@@ -251,7 +257,9 @@ describe('writeItem()', () => {
     await writeItem(filename, '{"a":2}', 'utf-8');
 
     expect(
-      fs.readdirSync(path.join('data', 'foo')).some((file) => file.endsWith('.tmp'))
+      fs
+        .readdirSync(path.join('data', 'foo'))
+        .some((file) => file.endsWith('.tmp'))
     ).toBe(false);
   });
 
