@@ -1,4 +1,5 @@
 import { InvalidSlugError } from '@varasto/storage';
+import { randomUUID } from 'node:crypto';
 import fs from 'fs';
 import { isValidSlug } from 'is-valid-slug';
 import { mkdirp } from 'mkdirp';
@@ -103,5 +104,29 @@ export const readItem = <T extends JsonObject>(
       } catch (err) {
         reject(err);
       }
+    });
+  });
+
+export const writeItem = (
+  filename: string,
+  data: string,
+  encoding: BufferEncoding
+): Promise<void> =>
+  new Promise<void>((resolve, reject) => {
+    const tempFilename = `${filename}.${randomUUID()}.tmp`;
+
+    fs.writeFile(tempFilename, data, encoding, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+
+      fs.rename(tempFilename, filename, (err) => {
+        if (err) {
+          fs.unlink(tempFilename, () => reject(err));
+        } else {
+          resolve();
+        }
+      });
     });
   });

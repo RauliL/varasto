@@ -9,6 +9,7 @@ import {
   createNamespace,
   globNamespace,
   readItem,
+  writeItem,
 } from './utils';
 
 /**
@@ -101,13 +102,7 @@ export const createFileSystemStorage = (
               return;
             }
 
-            fs.writeFile(filename, serialize(value), encoding, (err) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve();
-              }
-            });
+            writeItem(filename, serialize(value), encoding).then(resolve).catch(reject);
           })
       );
     }
@@ -129,15 +124,9 @@ export const createFileSystemStorage = (
         if (oldValue !== undefined) {
           const newValue = { ...oldValue, ...value } as T;
 
-          return new Promise<T>((resolve, reject) => {
-            fs.writeFile(filename, serialize(newValue), encoding, (err) => {
-              if (err) {
-                reject(err);
-              } else {
-                resolve(newValue);
-              }
-            });
-          });
+          return writeItem(filename, serialize(newValue), encoding).then(
+            () => newValue
+          );
         }
 
         return Promise.reject(

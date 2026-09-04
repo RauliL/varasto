@@ -10,6 +10,7 @@ import {
   createNamespace,
   globNamespace,
   readItem,
+  writeItem,
 } from './utils';
 
 describe('createNamespace()', () => {
@@ -146,4 +147,53 @@ describe('readItem()', () => {
         throw new SyntaxError('Failure.');
       })
     ).rejects.toBeInstanceOf(SyntaxError));
+});
+
+describe('writeItem()', () => {
+  beforeEach(() => {
+    setupVol({
+      data: {
+        foo: {
+          '1.json': '{"a":1}',
+        },
+        unwriteable: {},
+      },
+    });
+    fs.chmodSync('data/unwriteable', 0);
+  });
+
+  afterEach(() => {
+    resetVol();
+  });
+
+  it('should write data to the target file atomically', async () => {
+    const filename = path.join('data', 'foo', '2.json');
+
+    await writeItem(filename, '{"a":2}', 'utf-8');
+
+    expect(fs.readFileSync(filename, 'utf-8')).toBe('{"a":2}');
+  });
+
+  it('should replace existing file contents', async () => {
+    const filename = path.join('data', 'foo', '1.json');
+
+    await writeItem(filename, '{"a":4}', 'utf-8');
+
+    expect(fs.readFileSync(filename, 'utf-8')).toBe('{"a":4}');
+  });
+
+  it('should not leave temporary files behind', async () => {
+    const filename = path.join('data', 'foo', '2.json');
+
+    await writeItem(filename, '{"a":2}', 'utf-8');
+
+    expect(
+      fs.readdirSync(path.join('data', 'foo')).some((file) => file.endsWith('.tmp'))
+    ).toBe(false);
+  });
+
+  it('should fail if the file cannot be written', () =>
+    expect(
+      writeItem(path.join('data', 'unwriteable', '1.json'), '{"a":1}', 'utf-8')
+    ).rejects.toBeInstanceOf(Error));
 });
