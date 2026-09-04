@@ -3,10 +3,10 @@ import all from 'it-all';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import './test-memfs';
+import './test-memfs.js';
 import fs from 'fs';
-import { resetVol, setupVol } from './test-memfs';
-import { createFileSystemStorage } from './storage';
+import { resetVol, setupVol } from './test-memfs.js';
+import { createFileSystemStorage } from './storage.js';
 
 describe('file system storage', () => {
   const storage = createFileSystemStorage({ dir: 'data' });

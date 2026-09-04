@@ -3,9 +3,9 @@ import all from 'it-all';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import './test-memfs';
+import './test-memfs.js';
 import fs from 'fs';
-import { resetVol, setupVol } from './test-memfs';
+import { resetVol, setupVol } from './test-memfs.js';
 import {
   buildFilename,
   createNamespace,
@@ -14,7 +14,7 @@ import {
   readItem,
   readNamespaceItems,
   writeItem,
-} from './utils';
+} from './utils.js';
 
 describe('createNamespace()', () => {
   beforeEach(() => {

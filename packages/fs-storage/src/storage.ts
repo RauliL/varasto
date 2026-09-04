@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { JsonObject } from 'type-fest';
 
-import { FileSystemStorageOptions } from './types';
+import { FileSystemStorageOptions } from './types.js';
 import {
   buildFilename,
   createNamespace,
@@ -12,7 +12,7 @@ import {
   readItem,
   readNamespaceItems,
   writeItem,
-} from './utils';
+} from './utils.js';
 
 /**
  * Creates new file system storage with given options.
