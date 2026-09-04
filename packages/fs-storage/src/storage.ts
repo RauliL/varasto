@@ -10,6 +10,7 @@ import {
   fileExists,
   globNamespace,
   readItem,
+  readNamespaceItems,
   writeItem,
 } from './utils';
 
@@ -48,12 +49,12 @@ export const createFileSystemStorage = (
     async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
       const filenames = await globNamespace(dir, namespace);
 
-      for (const filename of filenames) {
-        const value = await readItem<T>(filename, encoding, deserialize);
-
-        if (value !== undefined) {
-          yield value;
-        }
+      for await (const { value } of readNamespaceItems<T>(
+        filenames,
+        encoding,
+        deserialize
+      )) {
+        yield value;
       }
     }
 
@@ -62,12 +63,12 @@ export const createFileSystemStorage = (
     ): AsyncGenerator<Entry<T>> {
       const filenames = await globNamespace(dir, namespace);
 
-      for (const filename of filenames) {
-        const value = await readItem<T>(filename, encoding, deserialize);
-
-        if (value !== undefined) {
-          yield [path.basename(filename, '.json'), value];
-        }
+      for await (const { filename, value } of readNamespaceItems<T>(
+        filenames,
+        encoding,
+        deserialize
+      )) {
+        yield [path.basename(filename, '.json'), value];
       }
     }
 

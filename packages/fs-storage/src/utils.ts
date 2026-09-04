@@ -114,6 +114,31 @@ export const readItem = <T extends JsonObject>(
     });
   });
 
+export const DEFAULT_READ_CONCURRENCY = 16;
+
+export async function* readNamespaceItems<T extends JsonObject>(
+  filenames: string[],
+  encoding: BufferEncoding,
+  deserialize: (data: string) => JsonObject,
+  concurrency = DEFAULT_READ_CONCURRENCY
+): AsyncGenerator<{ filename: string; value: T }> {
+  for (let i = 0; i < filenames.length; i += concurrency) {
+    const batch = filenames.slice(i, i + concurrency);
+    const items = await Promise.all(
+      batch.map(async (filename) => ({
+        filename,
+        value: await readItem<T>(filename, encoding, deserialize),
+      }))
+    );
+
+    for (const { filename, value } of items) {
+      if (value !== undefined) {
+        yield { filename, value };
+      }
+    }
+  }
+}
+
 export const writeItem = (
   filename: string,
   data: string,

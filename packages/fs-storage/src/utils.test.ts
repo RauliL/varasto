@@ -1,4 +1,5 @@
 import { InvalidSlugError } from '@varasto/storage';
+import all from 'it-all';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -11,6 +12,7 @@ import {
   fileExists,
   globNamespace,
   readItem,
+  readNamespaceItems,
   writeItem,
 } from './utils';
 
@@ -170,6 +172,44 @@ describe('readItem()', () => {
         throw new SyntaxError('Failure.');
       })
     ).rejects.toBeInstanceOf(SyntaxError));
+});
+
+describe('readNamespaceItems()', () => {
+  beforeEach(() => {
+    setupVol({
+      data: {
+        foo: {
+          '1.json': '{"a":1}',
+          '2.json': '"foo"',
+          '3.json': '{"a":3}',
+        },
+      },
+    });
+  });
+
+  afterEach(() => {
+    resetVol();
+  });
+
+  it('should read all valid items from the namespace', async () => {
+    const filenames = await globNamespace('data', 'foo');
+    const items = await all(readNamespaceItems(filenames, 'utf-8', JSON.parse));
+
+    expect(items).toHaveLength(2);
+    expect(items).toContainEqual({
+      filename: path.join('data', 'foo', '1.json'),
+      value: { a: 1 },
+    });
+    expect(items).toContainEqual({
+      filename: path.join('data', 'foo', '3.json'),
+      value: { a: 3 },
+    });
+  });
+
+  it('should yield nothing if the namespace is empty', async () =>
+    expect(all(readNamespaceItems([], 'utf-8', JSON.parse))).resolves.toEqual(
+      []
+    ));
 });
 
 describe('writeItem()', () => {
