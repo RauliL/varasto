@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@varasto/storage": "workspace:^",
-    "glob": "^13.0.6",
     "is-valid-slug": "^1.0.0",
     "mkdirp": "^3.0.1"
   },
