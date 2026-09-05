@@ -1,6 +1,6 @@
 {
   "name": "@varasto/validator-storage",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Varasto storage implementation that performs validation",
   "license": "MIT",
   "keywords": [

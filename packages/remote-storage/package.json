@@ -1,6 +1,6 @@
 {
   "name": "@varasto/remote-storage",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Varasto HTTP client that connects to remote storage",
   "license": "MIT",
   "keywords": [

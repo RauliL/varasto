@@ -3192,12 +3192,12 @@ __metadata:
     vite: "npm:^8.2.2"
     vitest: "npm:^5.0.0"
   peerDependencies:
-    "@varasto/fs-storage": ^3.0.0
-    "@varasto/memory-storage": ^3.0.0
-    "@varasto/postgres-storage": ^3.0.0
-    "@varasto/redis-storage": ^3.0.0
-    "@varasto/remote-storage": ^4.0.0
-    "@varasto/sqlite-storage": ^4.0.0
+    "@varasto/fs-storage": ^4.0.0
+    "@varasto/memory-storage": ^4.0.0
+    "@varasto/postgres-storage": ^4.0.0
+    "@varasto/redis-storage": ^4.0.0
+    "@varasto/remote-storage": ^5.0.0
+    "@varasto/sqlite-storage": ^5.0.0
   languageName: unknown
   linkType: soft
 
