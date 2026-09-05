@@ -44,6 +44,23 @@ describe('class FieldMetadata', () => {
         ValidationError
       );
     });
+
+    it('should deserialize ISO date strings in array fields', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'dates', {
+        type: 'date[]',
+      });
+      const instance = {};
+
+      metadata.load(instance, {
+        dates: ['2024-01-15T12:00:00.000Z', '2024-06-01T00:00:00.000Z'],
+      });
+
+      const dates = (instance as { dates: Date[] }).dates;
+
+      expect(dates).toHaveLength(2);
+      expect(dates[0]).toBeInstanceOf(Date);
+      expect(dates[1].toISOString()).toEqual('2024-06-01T00:00:00.000Z');
+    });
   });
 
   describe('save()', () => {
@@ -64,6 +81,29 @@ describe('class FieldMetadata', () => {
       });
 
       expect(() => metadata.save({ foo: 6 }, {})).toThrow(ValidationError);
+    });
+
+    it('should throw `ValidationError` if an array value contains disallowed choice', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'tags', {
+        type: 'string[]',
+        choices: ['a', 'b', 'c'],
+      });
+
+      expect(() => metadata.save({ tags: ['a', 'd'] }, {})).toThrow(
+        ValidationError
+      );
+    });
+
+    it('should accept array values when every element is in choices', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'tags', {
+        type: 'string[]',
+        choices: ['a', 'b', 'c'],
+      });
+      const data: JsonObject = {};
+
+      metadata.save({ tags: ['a', 'c'] }, data);
+
+      expect(data).toHaveProperty('tags', ['a', 'c']);
     });
 
     it('should run validator functions given to the field', () => {
@@ -87,6 +127,28 @@ describe('class FieldMetadata', () => {
       metadata.save({ createdAt }, data);
 
       expect(data).toHaveProperty('createdAt', '2024-01-15T12:00:00.000Z');
+    });
+
+    it('should serialize `Date` arrays into ISO strings', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'dates', {
+        type: 'date[]',
+      });
+      const data: JsonObject = {};
+
+      metadata.save(
+        {
+          dates: [
+            new Date('2024-01-15T12:00:00.000Z'),
+            new Date('2024-06-01T00:00:00.000Z'),
+          ],
+        },
+        data
+      );
+
+      expect(data).toHaveProperty('dates', [
+        '2024-01-15T12:00:00.000Z',
+        '2024-06-01T00:00:00.000Z',
+      ]);
     });
   });
 });

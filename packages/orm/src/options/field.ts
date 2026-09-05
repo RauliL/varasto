@@ -1,4 +1,9 @@
-import { FieldType, OptionalFieldValue, Validator } from '../types.js';
+import {
+  FieldType,
+  OptionalFieldValue,
+  ScalarFieldType,
+  Validator,
+} from '../types.js';
 
 /**
  * Various options that can be passed to an model field.
@@ -14,6 +19,12 @@ export type FieldOptions = {
    * stored and the field's value is `undefined`.
    */
   default?: OptionalFieldValue;
+
+  /**
+   * Element type for array fields. Required when the property is an array and
+   * `type` is not given explicitly.
+   */
+  items?: ScalarFieldType;
 
   /**
    * Type of the field. If omitted, it will be determined from the property

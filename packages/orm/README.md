@@ -31,7 +31,6 @@ very basic and can store only simple data.
 This ORM implementation is still on very early stage. Some missing features
 that would make it more complete and usable are:
 
-- Support for arrays.
 - Support for enumerations. (Kind of already implemented.)
 - One-to-one and one-to-many relations.
 

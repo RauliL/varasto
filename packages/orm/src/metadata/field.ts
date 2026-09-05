@@ -1,41 +1,14 @@
 import { JsonObject } from 'type-fest';
 import { ValidationError } from '../error.js';
+import {
+  deserializeFieldValue,
+  isValueAllowedByChoices,
+  serializeFieldValue,
+} from '../field-value.js';
 
 import { FieldOptions } from '../options/index.js';
 import { ModelMetadata } from './model.js';
-import { FieldType, OptionalFieldValue } from '../types.js';
-
-const serializeFieldValue = (
-  type: FieldType,
-  value: OptionalFieldValue
-): OptionalFieldValue => {
-  if (type === 'date' && value instanceof Date) {
-    return value.toISOString();
-  }
-
-  return value;
-};
-
-const deserializeFieldValue = (
-  type: FieldType,
-  value: OptionalFieldValue
-): OptionalFieldValue => {
-  if (type !== 'date' || value == null) {
-    return value;
-  }
-
-  if (typeof value !== 'string') {
-    throw new ValidationError('Invalid date value');
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    throw new ValidationError('Invalid date value');
-  }
-
-  return date;
-};
+import { OptionalFieldValue } from '../types.js';
 
 export class FieldMetadata {
   public readonly model: ModelMetadata;
@@ -66,7 +39,7 @@ export class FieldMetadata {
     Reflect.set(
       instance,
       this.propertyName,
-      deserializeFieldValue(this.options.type!, value)
+      deserializeFieldValue(this.options.type, value)
     );
   }
 
@@ -80,7 +53,10 @@ export class FieldMetadata {
 
     // TODO: Validate type.
 
-    if (this.options.choices && !this.options.choices.includes(value)) {
+    if (
+      this.options.choices &&
+      !isValueAllowedByChoices(value, this.options.choices)
+    ) {
       throw new ValidationError(
         'Given value is not included in the accepted list of values'
       );
@@ -91,7 +67,7 @@ export class FieldMetadata {
     Reflect.set(
       data,
       this.propertyName,
-      serializeFieldValue(this.options.type!, value)
+      serializeFieldValue(this.options.type, value)
     );
   }
 }

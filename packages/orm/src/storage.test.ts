@@ -121,6 +121,49 @@ describe('storage utilities', () => {
         '2024-01-15T12:00:00.000Z'
       );
     });
+
+    it('should serialize and deserialize array field values', async () => {
+      @Model({ namespace: 'articles' })
+      class Article {
+        @Key()
+        id?: string;
+
+        @Field({ items: 'string' })
+        tags: string[];
+
+        @Field({ type: 'date[]' })
+        publishedAt: Date[];
+
+        constructor(tags: string[], publishedAt: Date[]) {
+          this.tags = tags;
+          this.publishedAt = publishedAt;
+        }
+      }
+
+      const article = new Article(
+        ['typescript', 'orm'],
+        [
+          new Date('2024-01-15T12:00:00.000Z'),
+          new Date('2024-06-01T00:00:00.000Z'),
+        ]
+      );
+
+      await save(storage, article);
+
+      expect(await storage.get('articles', article.id ?? '')).toEqual({
+        tags: ['typescript', 'orm'],
+        publishedAt: ['2024-01-15T12:00:00.000Z', '2024-06-01T00:00:00.000Z'],
+      });
+
+      const loaded = await get(storage, Article, article.id ?? '');
+
+      expect(loaded.tags).toEqual(['typescript', 'orm']);
+      expect(loaded.publishedAt).toHaveLength(2);
+      expect(loaded.publishedAt[0]).toBeInstanceOf(Date);
+      expect(loaded.publishedAt[1].toISOString()).toEqual(
+        '2024-06-01T00:00:00.000Z'
+      );
+    });
   });
 
   describe('updateAll()', () => {

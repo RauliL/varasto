@@ -25,4 +25,34 @@ describe('Field decorator', () => {
       }
     }).not.toThrow();
   });
+
+  it('should accept array properties when `items` is provided', () => {
+    expect(() => {
+      @Model()
+      class MockModel {
+        @Field({ items: 'string' })
+        tags?: string[];
+      }
+    }).not.toThrow();
+  });
+
+  it('should accept array properties when array `type` is provided', () => {
+    expect(() => {
+      @Model()
+      class MockModel {
+        @Field({ type: 'number[]' })
+        scores?: number[];
+      }
+    }).not.toThrow();
+  });
+
+  it('should throw `ConfigurationError` if array property has no element type', () => {
+    expect(() => {
+      @Model()
+      class MockModel {
+        @Field()
+        tags?: string[];
+      }
+    }).toThrow(ConfigurationError);
+  });
 });
