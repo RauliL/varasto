@@ -46,7 +46,7 @@
     "@eslint/js": "^10.0.1",
     "@varasto/memory-storage": "workspace:^",
     "@vitest/coverage-v8": "^5.0.0",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.9.6",
     "rimraf": "^6.1.3",

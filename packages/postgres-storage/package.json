@@ -48,7 +48,7 @@
     "@types/pg": "^8.23.1",
     "@types/pg-format": "^1.0.5",
     "@vitest/coverage-v8": "^5.0.0",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "it-all": "^3.0.11",
     "pg-mem": "^3.0.14",

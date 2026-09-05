@@ -45,10 +45,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@swc/core": "^1.16.1",
+    "@swc/core": "^1.16.2",
     "@varasto/memory-storage": "workspace:^",
     "@vitest/coverage-v8": "^5.0.0",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "it-all": "^3.0.11",
     "prettier": "^3.9.6",
