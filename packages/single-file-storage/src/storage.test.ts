@@ -2,10 +2,10 @@ import { InvalidSlugError, ItemDoesNotExistError } from '@varasto/storage';
 import all from 'it-all';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import './test-memfs';
+import './test-memfs.js';
 import fs from 'fs';
-import { resetVol, setupVolFiles } from './test-memfs';
-import { createSingleFileStorage } from './storage';
+import { resetVol, setupVolFiles } from './test-memfs.js';
+import { createSingleFileStorage } from './storage.js';
 
 describe('single file storage', () => {
   const storage = createSingleFileStorage();

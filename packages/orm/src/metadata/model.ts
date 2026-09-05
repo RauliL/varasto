@@ -6,8 +6,8 @@ import { isValidSlug } from 'is-valid-slug';
 import { Class, JsonObject } from 'type-fest';
 import { v4 as uuid } from 'uuid';
 
-import { ConfigurationError, ModelMissingMetadataError } from '../error';
-import { FieldMetadata } from './field';
+import { ConfigurationError, ModelMissingMetadataError } from '../error.js';
+import { FieldMetadata } from './field.js';
 
 const METADATA_KEY = 'varasto:metadata';
 

@@ -2,7 +2,7 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createMultiStorage } from './storage';
+import { createMultiStorage } from './storage.js';
 
 describe('multi storage', () => {
   const memoryStorage1 = createMemoryStorage();

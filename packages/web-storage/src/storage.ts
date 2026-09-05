@@ -1,13 +1,13 @@
 import {
   Entry,
-  InvalidSlugError,
   Storage as VarastoStorage,
+  validateNamespace,
+  validateNamespaceAndKey,
 } from '@varasto/storage';
 import isArray from 'isarray';
-import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 
-import { WebStorageOptions } from './types';
+import { WebStorageOptions } from './types.js';
 
 /**
  * Creates new Web storage.
@@ -23,19 +23,13 @@ export const createWebStorage = (
   const deserialize = options.deserialize ?? JSON.parse;
 
   const buildKey = async (namespace: string, key: string): Promise<string> => {
-    if (!isValidSlug(namespace)) {
-      throw new InvalidSlugError('Given namespace is not valid slug');
-    } else if (!isValidSlug(key)) {
-      throw new InvalidSlugError('Given key is not valid slug');
-    }
+    validateNamespaceAndKey(namespace, key);
 
     return `${namespace}:${key}`;
   };
 
   const getAllKeys = async (namespace: string): Promise<string[]> => {
-    if (!isValidSlug(namespace)) {
-      throw new InvalidSlugError('Given namespace is not valid slug');
-    }
+    validateNamespace(namespace);
 
     const data = storage.getItem(`${namespace}:[[keys]]`);
 

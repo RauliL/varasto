@@ -8,6 +8,7 @@
     "varasto"
   ],
   "author": "Rauli Laine <rauli.laine@iki.fi>",
+  "type": "module",
   "main": "./dist/index.js",
   "main:src": "./src/index.ts",
   "types": "./dist/index.d.ts",
@@ -44,10 +45,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@swc/core": "^1.16.1",
+    "@swc/core": "^1.16.2",
     "@varasto/memory-storage": "workspace:^",
     "@vitest/coverage-v8": "^5.0.0",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "it-all": "^3.0.11",
     "prettier": "^3.9.6",
@@ -55,6 +56,7 @@
     "typescript": "^7.0.2",
     "typescript-eslint": "^8.69.0",
     "unplugin-swc": "^1.5.11",
+    "vite": "^8.2.2",
     "vitest": "^5.0.0"
   }
 }

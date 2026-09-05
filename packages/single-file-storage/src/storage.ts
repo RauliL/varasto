@@ -1,14 +1,15 @@
 import {
   Entry,
-  InvalidSlugError,
   ItemDoesNotExistError,
   Storage,
+  validateKey,
+  validateNamespace,
+  validateNamespaceAndKey,
 } from '@varasto/storage';
 import fs from 'fs';
-import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 
-import { SingleFileStorageOptions } from './types';
+import { SingleFileStorageOptions } from './types.js';
 
 type Namespace = Record<string, JsonObject>;
 type Container = Record<string, Namespace>;
@@ -53,26 +54,22 @@ export const createSingleFileStorage = (
       });
     });
 
-  const getNamespace = (namespace: string) =>
-    new Promise<Namespace>((resolve, reject) => {
-      if (isValidSlug(namespace)) {
-        getContainer()
-          .then((container) => resolve(container[namespace] ?? {}))
-          .catch(reject);
-      } else {
-        reject(new InvalidSlugError('Given namespace is not valid slug'));
-      }
-    });
+  const getNamespace = async (namespace: string): Promise<Namespace> => {
+    validateNamespace(namespace);
 
-  const getItem = <T extends JsonObject>(
+    const container = await getContainer();
+
+    return container[namespace] ?? {};
+  };
+
+  const getItem = async <T extends JsonObject>(
     namespace: string,
     key: string
-  ): Promise<T | undefined> =>
-    getNamespace(namespace).then((namespace) =>
-      isValidSlug(key)
-        ? (namespace[key] as T | undefined)
-        : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
-    );
+  ): Promise<T | undefined> => {
+    validateKey(key);
+
+    return (await getNamespace(namespace))[key] as T | undefined;
+  };
 
   const serializeContainer = (container: Container) =>
     new Promise<void>((resolve, reject) => {
@@ -95,12 +92,12 @@ export const createSingleFileStorage = (
     });
 
   return new (class extends Storage {
-    has(namespace: string, key: string): Promise<boolean> {
-      return getNamespace(namespace).then((namespace) =>
-        isValidSlug(key)
-          ? namespace[key] != null
-          : Promise.reject(new InvalidSlugError('Given key is not valid slug'))
-      );
+    async has(namespace: string, key: string): Promise<boolean> {
+      validateKey(key);
+
+      const ns = await getNamespace(namespace);
+
+      return ns[key] != null;
     }
 
     async *entries<T extends JsonObject>(
@@ -120,102 +117,67 @@ export const createSingleFileStorage = (
       return getItem(namespace, key);
     }
 
-    set<T extends JsonObject>(
+    async set<T extends JsonObject>(
       namespace: string,
       key: string,
       value: T
     ): Promise<void> {
-      if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
+      validateNamespaceAndKey(namespace, key);
+
+      const container = await getContainer();
+      let namespaceContainer = container[namespace];
+
+      if (!namespaceContainer) {
+        namespaceContainer = {};
+        container[namespace] = namespaceContainer;
       }
+      namespaceContainer[key] = value;
 
-      if (!isValidSlug(key)) {
-        return Promise.reject(
-          new InvalidSlugError('Given key is not valid slug')
-        );
-      }
-
-      return getContainer().then((container) => {
-        let namespaceContainer = container[namespace];
-
-        if (!namespaceContainer) {
-          namespaceContainer = {};
-          container[namespace] = namespaceContainer;
-        }
-        namespaceContainer[key] = value;
-
-        return serializeContainer(container);
-      });
+      return serializeContainer(container);
     }
 
-    update<T extends JsonObject>(
+    async update<T extends JsonObject>(
       namespace: string,
       key: string,
       value: Partial<T>
     ): Promise<T> {
-      if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
-      }
+      validateNamespaceAndKey(namespace, key);
 
-      if (!isValidSlug(key)) {
-        return Promise.reject(
-          new InvalidSlugError('Given key is not valid slug')
-        );
-      }
+      const container = await getContainer();
+      const namespaceContainer = container[namespace];
 
-      return getContainer().then((container) => {
-        const namespaceContainer = container[namespace];
+      if (namespaceContainer) {
+        const oldValue = namespaceContainer[key];
 
-        if (namespaceContainer) {
-          const oldValue = namespaceContainer[key];
+        if (oldValue != null) {
+          const newValue = { ...oldValue, ...value } as T;
 
-          if (oldValue != null) {
-            const newValue = { ...oldValue, ...value } as T;
+          namespaceContainer[key] = newValue;
 
-            namespaceContainer[key] = newValue;
-
-            return serializeContainer(container).then(() => newValue);
-          }
+          return serializeContainer(container).then(() => newValue);
         }
+      }
 
-        return Promise.reject(
-          new ItemDoesNotExistError('Item does not exist')
-        );
-      });
+      throw new ItemDoesNotExistError('Item does not exist');
     }
 
-    delete(namespace: string, key: string): Promise<boolean> {
-      if (!isValidSlug(namespace)) {
-        return Promise.reject(
-          new InvalidSlugError('Given namespace is not valid slug')
-        );
-      }
+    async delete(namespace: string, key: string): Promise<boolean> {
+      validateNamespaceAndKey(namespace, key);
 
-      if (!isValidSlug(key)) {
-        return Promise.reject(
-          new InvalidSlugError('Given key is not valid slug')
-        );
-      }
+      const container = await getContainer();
+      const namespaceContainer = container[namespace];
 
-      return getContainer().then((container) => {
-        const namespaceContainer = container[namespace];
+      if (namespaceContainer) {
+        const value = namespaceContainer[key];
 
-        if (namespaceContainer) {
-          const value = namespaceContainer[key];
+        if (value != null) {
+          delete namespaceContainer[key];
 
-          if (value != null) {
-            delete namespaceContainer[key];
-
-            return serializeContainer(container).then(() => true);
-          }
+          return serializeContainer(container).then(() => true);
         }
+      }
 
-        return false;
-      });
+      return false;
     }
   })();
 };

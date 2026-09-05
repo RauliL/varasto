@@ -1,6 +1,7 @@
 import { Entry, Storage } from '@varasto/storage';
-import match, { Schema } from 'simple-json-match';
 import { JsonObject } from 'type-fest';
+
+import { match, Schema } from './match.js';
 
 /**
  * Splits values of entries from given namespace into two arrays depending on

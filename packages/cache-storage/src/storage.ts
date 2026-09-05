@@ -1,7 +1,7 @@
 import { Entry, Storage } from '@varasto/storage';
 import { JsonObject } from 'type-fest';
 
-import { Cache, NamespaceCache } from './cache';
+import { Cache, NamespaceCache } from './cache.js';
 
 /**
  * Constructs storage that acts as an cache for another storage.

@@ -1,6 +1,7 @@
 import { Entry, Storage } from '@varasto/storage';
-import match, { Schema } from 'simple-json-match';
 import { JsonObject } from 'type-fest';
+
+import { match, Schema } from './match.js';
 
 /**
  * Searches for entries from given namespace that match given schema and

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, expect, it } from 'vitest';
 
-import { ConfigurationError } from '../error';
-import { Key } from './key';
-import { Model } from './model';
+import { ConfigurationError } from '../error.js';
+import { Key } from './key.js';
+import { Model } from './model.js';
 
 describe('Key decorator', () => {
   it('should throw `ConfigurationError` if the decorator is applied to non-string property', () => {

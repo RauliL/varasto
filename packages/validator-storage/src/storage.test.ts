@@ -3,9 +3,9 @@ import all from 'it-all';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
 
-import { UnrecognizedNamespaceError } from './errors';
-import { createValidatorStorage } from './storage';
-import { NamespaceMapping } from './types';
+import { UnrecognizedNamespaceError } from './errors.js';
+import { createValidatorStorage } from './storage.js';
+import { NamespaceMapping } from './types.js';
 
 const personSchema = z.object({
   name: z.string(),

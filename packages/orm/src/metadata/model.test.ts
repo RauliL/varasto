@@ -1,9 +1,9 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import { describe, expect, it, vi } from 'vitest';
 
-import { Field, Key, Model } from '../decorator';
-import { ConfigurationError, ModelMissingMetadataError } from '../error';
-import { ModelMetadata } from './model';
+import { Field, Key, Model } from '../decorator/index.js';
+import { ConfigurationError, ModelMissingMetadataError } from '../error.js';
+import { ModelMetadata } from './model.js';
 
 describe('class ModelMetadata', () => {
   describe('requireFor()', () => {

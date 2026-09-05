@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { open } from '.';
+import { open } from './index.js';
 
 describe('open()', () => {
   const expectStorage = (result: object) => {

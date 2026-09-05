@@ -3,7 +3,7 @@ import all from 'it-all';
 import { mockStorage } from 'mock-storage';
 import { describe, expect, it } from 'vitest';
 
-import { createWebStorage } from './storage';
+import { createWebStorage } from './storage.js';
 
 const createMockWebStorage = (initialData?: [string, string][]) =>
   createWebStorage(

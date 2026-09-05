@@ -1,11 +1,11 @@
-import { isValidSlug } from 'is-valid-slug';
 import all from 'it-all';
 import { JsonObject } from 'type-fest';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { InvalidSlugError, ItemDoesNotExistError } from './errors';
-import { Storage } from './storage';
-import { Entry } from './types';
+import { InvalidSlugError, ItemDoesNotExistError } from './errors.js';
+import { Storage } from './storage.js';
+import { Entry } from './types.js';
+import { validateNamespace, validateNamespaceAndKey } from './validators.js';
 
 class MockStorage extends Storage {
   readonly data: Map<string, Map<string, JsonObject>>;
@@ -19,16 +19,14 @@ class MockStorage extends Storage {
   async *entries<T extends JsonObject>(
     namespace: string
   ): AsyncGenerator<Entry<T>> {
-    if (isValidSlug(namespace)) {
-      const mapping = this.data.get(namespace);
+    validateNamespace(namespace);
 
-      if (mapping != null) {
-        for (const entry of mapping.entries()) {
-          yield entry as Entry<T>;
-        }
+    const mapping = this.data.get(namespace);
+
+    if (mapping != null) {
+      for (const entry of mapping.entries()) {
+        yield entry as Entry<T>;
       }
-    } else {
-      throw new InvalidSlugError('Given namespace is not valid slug');
     }
   }
 
@@ -37,32 +35,24 @@ class MockStorage extends Storage {
     key: string,
     value: T
   ): Promise<void> {
-    if (!isValidSlug(namespace)) {
-      throw new InvalidSlugError('Given namespace is not valid slug');
-    } else if (!isValidSlug(key)) {
-      throw new InvalidSlugError('Given key is not valid slug');
-    } else {
-      let mapping = this.data.get(namespace);
+    validateNamespaceAndKey(namespace, key);
 
-      if (!mapping) {
-        mapping = new Map<string, JsonObject>();
-        this.data.set(namespace, mapping);
-      }
-      mapping.set(key, value);
+    let mapping = this.data.get(namespace);
+
+    if (!mapping) {
+      mapping = new Map<string, JsonObject>();
+      this.data.set(namespace, mapping);
     }
+    mapping.set(key, value);
   }
 
   async delete(namespace: string, key: string): Promise<boolean> {
-    if (!isValidSlug(namespace)) {
-      throw new InvalidSlugError('Given namespace is not valid slug');
-    } else if (!isValidSlug(key)) {
-      throw new InvalidSlugError('Given key is not valid slug');
-    } else {
-      const mapping = this.data.get(namespace);
+    validateNamespaceAndKey(namespace, key);
 
-      if (mapping != null) {
-        return mapping.delete(key);
-      }
+    const mapping = this.data.get(namespace);
+
+    if (mapping != null) {
+      return mapping.delete(key);
     }
 
     return false;

@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { ValidationError } from './error';
+import { ValidationError } from './error.js';
 import {
   maxValidator,
   minMaxValidator,
   minValidator,
   regexpValidator,
-} from './validators';
+} from './validators.js';
 
 describe('validator functions', () => {
   describe('minValidator()', () => {

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import slugify from 'slugify';
 
-import { ModelMetadata } from '../metadata';
-import { ModelOptions } from '../options';
+import { ModelMetadata } from '../metadata/index.js';
+import { ModelOptions } from '../options/index.js';
 
 export const Model =
   (options: ModelOptions = {}): ClassDecorator =>

@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 
-export * from './decorator';
-export * from './error';
-export * from './options';
-export * from './query';
-export * from './storage';
-export * from './types';
-export * from './validators';
+export * from './decorator/index.js';
+export * from './error.js';
+export * from './options/index.js';
+export * from './query.js';
+export * from './storage.js';
+export * from './types.js';
+export * from './validators.js';

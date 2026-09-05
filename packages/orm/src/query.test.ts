@@ -2,9 +2,9 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { Field, Key, Model } from './decorator';
-import { ModelDoesNotExistError } from './error';
-import { count, exists, find, findAll, get, keys, list } from './query';
+import { Field, Key, Model } from './decorator/index.js';
+import { ModelDoesNotExistError } from './error.js';
+import { count, exists, find, findAll, get, keys, list } from './query.js';
 
 describe('query utilities', () => {
   const storage = createMemoryStorage();

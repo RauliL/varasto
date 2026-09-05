@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { tokenize } from './tokenizer';
+import { tokenize } from './tokenizer.js';
 
 describe('tokenize()', () => {
   it('should split string into whitespace separated tokens', () => {

@@ -1,21 +1,7 @@
-import { InvalidSlugError } from '@varasto/storage';
-import { isValidSlug } from 'is-valid-slug';
+import { validateNamespaceAndKey } from '@varasto/storage';
 import { Client } from 'pg';
 import format from 'pg-format';
 import { JsonObject } from 'type-fest';
-
-export const validateNamespace = (namespace: string) => {
-  if (!isValidSlug(namespace)) {
-    throw new InvalidSlugError('Given namespace is not valid slug');
-  }
-};
-
-export const validateNamespaceAndKey = (namespace: string, key: string) => {
-  validateNamespace(namespace);
-  if (!isValidSlug(key)) {
-    throw new InvalidSlugError('Given key is not valid slug');
-  }
-};
 
 export const doesNamespaceExist = async (
   client: Client,

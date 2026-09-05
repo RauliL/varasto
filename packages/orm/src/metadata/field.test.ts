@@ -1,9 +1,9 @@
 import { JsonObject } from 'type-fest';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ValidationError } from '../error';
-import { FieldMetadata } from './field';
-import { ModelMetadata } from './model';
+import { ValidationError } from '../error.js';
+import { FieldMetadata } from './field.js';
+import { ModelMetadata } from './model.js';
 
 describe('class FieldMetadata', () => {
   const mockModelMetadata = new ModelMetadata(String);

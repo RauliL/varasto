@@ -1,7 +1,7 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import { describe, expect, it, vi } from 'vitest';
 
-import { CommandError, commandNames, runCommand } from './command';
+import { CommandError, commandNames, runCommand } from './command.js';
 
 describe('runCommand()', () => {
   it('should list all commands when help is called without arguments', async () => {

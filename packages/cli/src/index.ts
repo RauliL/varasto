@@ -1,2 +1,2 @@
-export { runCommand } from './command';
-export { repl } from './repl';
+export { runCommand } from './command.js';
+export { repl } from './repl.js';

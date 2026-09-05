@@ -10,6 +10,7 @@
     "varasto"
   ],
   "author": "Rauli Laine <rauli.laine@iki.fi>",
+  "type": "module",
   "main": "./dist/index.js",
   "main:src": "./src/index.ts",
   "types": "./dist/index.d.ts",
@@ -40,14 +41,13 @@
   },
   "dependencies": {
     "@varasto/storage": "workspace:^",
-    "is-valid-slug": "^1.0.0",
     "isarray": "^2.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/isarray": "^2.0.3",
     "@vitest/coverage-v8": "^5.0.0",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "it-all": "^3.0.11",
     "mock-storage": "^1.1.0",
@@ -55,6 +55,7 @@
     "rimraf": "^6.1.3",
     "typescript": "^7.0.2",
     "typescript-eslint": "^8.69.0",
+    "vite": "^8.2.2",
     "vitest": "^5.0.0"
   }
 }

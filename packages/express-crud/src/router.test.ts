@@ -6,8 +6,8 @@ import request from 'supertest';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { z } from 'zod/v4';
 
-import { createRouter } from './router';
-import { RouterOptions } from './types';
+import { createRouter } from './router.js';
+import { RouterOptions } from './types.js';
 
 const personSchema = z.object({
   name: z.string(),
