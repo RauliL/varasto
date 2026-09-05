@@ -3,6 +3,9 @@
  *
  * Validators accept both numbers and Date boundaries. Dates are stored as ISO
  * 8601 strings and restored as Date instances on load.
+ *
+ * Use a factory default such as `() => new Date()` when each instance should
+ * receive its own timestamp instead of sharing one fixed value.
  */
 import 'reflect-metadata';
 
@@ -31,6 +34,12 @@ class Event {
 
   @Field({ type: 'string' })
   title: string;
+
+  @Field({
+    type: 'date',
+    default: () => new Date(),
+  })
+  createdAt: Date;
 
   @Field({
     type: 'date',
@@ -78,8 +87,9 @@ console.log(
 const loaded = await get(storage, Event, validEvent.id!);
 
 console.log('\nLoaded event:');
+console.log('  createdAt:', loaded.createdAt.toISOString());
+console.log('  createdAt is Date:', loaded.createdAt instanceof Date);
 console.log('  scheduledAt:', loaded.scheduledAt.toISOString());
-console.log('  scheduledAt is Date:', loaded.scheduledAt instanceof Date);
 console.log('  summerSlot:', loaded.summerSlot?.toISOString());
 
 console.log('\nValidation failures:');

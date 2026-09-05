@@ -74,6 +74,10 @@ const deserializeScalarFieldValue = (
     return value;
   }
 
+  if (value instanceof Date) {
+    return value;
+  }
+
   if (typeof value !== 'string') {
     throw new ValidationError('Invalid date value');
   }

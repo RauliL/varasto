@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { JsonObject } from 'type-fest';
 import { ValidationError } from '../error.js';
+import { resolveFieldDefault } from '../field-default.js';
 import {
   deserializeFieldValue,
   isValueAllowedByChoices,
@@ -35,7 +36,7 @@ export class FieldMetadata implements EmbeddedField {
     let value = Reflect.get(data, this.propertyName) as OptionalFieldValue;
 
     if (value === undefined) {
-      value = this.options.default;
+      value = resolveFieldDefault(this.options.default);
     }
 
     // TODO: Validate type.
@@ -62,7 +63,7 @@ export class FieldMetadata implements EmbeddedField {
     let value = Reflect.get(instance, this.propertyName) as OptionalFieldValue;
 
     if (value === undefined) {
-      value = this.options.default;
+      value = resolveFieldDefault(this.options.default);
       Reflect.set(instance, this.propertyName, value);
     }
 

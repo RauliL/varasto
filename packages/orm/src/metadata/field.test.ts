@@ -21,6 +21,20 @@ describe('class FieldMetadata', () => {
       expect(instance).toHaveProperty('foo', 'bar');
     });
 
+    it('should invoke factory default when the actual value is missing', () => {
+      const factory = vi.fn(() => new Date('2024-01-15T12:00:00.000Z'));
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+        default: factory,
+      });
+      const instance = {};
+
+      metadata.load(instance, {});
+
+      expect(factory).toBeCalledTimes(1);
+      expect((instance as { createdAt: Date }).createdAt).toBeInstanceOf(Date);
+    });
+
     it('should deserialize ISO date strings into `Date` instances', () => {
       const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
         type: 'date',
@@ -74,6 +88,20 @@ describe('class FieldMetadata', () => {
       metadata.save({}, data);
 
       expect(data).toHaveProperty('foo', 'bar');
+    });
+
+    it('should invoke factory default on each save when value is missing', () => {
+      let counter = 0;
+      const metadata = new FieldMetadata(mockModelMetadata, 'foo', {
+        default: () => ++counter,
+      });
+      const data: JsonObject = {};
+
+      metadata.save({}, data);
+      metadata.save({}, data);
+
+      expect(counter).toEqual(2);
+      expect(data).toHaveProperty('foo', 2);
     });
 
     it('should throw `ValidationError` is value is not in the given array of choices', () => {

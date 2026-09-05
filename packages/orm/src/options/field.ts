@@ -1,6 +1,7 @@
 import {
   EmbeddedClass,
   EnumObject,
+  FieldDefault,
   FieldType,
   OptionalFieldValue,
   ScalarFieldType,
@@ -18,9 +19,10 @@ export type FieldOptions = {
 
   /**
    * Default value for the field that will be used when the model instance is
-   * stored and the field's value is `undefined`.
+   * stored and the field's value is `undefined`. A factory function may be
+   * given to produce a new value on each use, e.g. `() => new Date()`.
    */
-  default?: OptionalFieldValue;
+  default?: FieldDefault;
 
   /**
    * TypeScript enum object whose values are accepted for the field. When given,

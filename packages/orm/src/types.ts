@@ -19,6 +19,8 @@ export type FieldValue =
 
 export type OptionalFieldValue = FieldValue | null | undefined;
 
+export type FieldDefault = OptionalFieldValue | (() => OptionalFieldValue);
+
 export type FieldConstructor =
   BooleanConstructor | DateConstructor | NumberConstructor | StringConstructor;
 
