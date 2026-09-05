@@ -44,16 +44,14 @@
   "dependencies": {
     "@varasto/fs-storage": "workspace:^",
     "@varasto/memory-storage": "workspace:^",
+    "@varasto/postgres-storage": "workspace:^",
+    "@varasto/redis-storage": "workspace:^",
     "@varasto/remote-storage": "workspace:^",
     "@varasto/sqlite-storage": "workspace:^",
     "@varasto/url": "workspace:^",
     "json-colorizer": "^3.0.1",
     "json5": "^2.2.3",
     "yargs": "^18.1.0"
-  },
-  "peerDependencies": {
-    "@varasto/postgres-storage": "^3.0.0",
-    "@varasto/redis-storage": "^3.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

@@ -1497,6 +1497,8 @@ __metadata:
     "@types/node": "npm:^26.4.0"
     "@varasto/fs-storage": "workspace:^"
     "@varasto/memory-storage": "workspace:^"
+    "@varasto/postgres-storage": "workspace:^"
+    "@varasto/redis-storage": "workspace:^"
     "@varasto/remote-storage": "workspace:^"
     "@varasto/sqlite-storage": "workspace:^"
     "@varasto/url": "workspace:^"
@@ -1512,9 +1514,6 @@ __metadata:
     vite: "npm:^8.2.2"
     vitest: "npm:^5.0.0"
     yargs: "npm:^18.1.0"
-  peerDependencies:
-    "@varasto/postgres-storage": ^3.0.0
-    "@varasto/redis-storage": ^3.0.0
   bin:
     varasto-cli: ./bin/varasto-cli
   languageName: unknown
@@ -1660,7 +1659,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@varasto/postgres-storage@workspace:packages/postgres-storage":
+"@varasto/postgres-storage@workspace:^, @varasto/postgres-storage@workspace:packages/postgres-storage":
   version: 0.0.0-use.local
   resolution: "@varasto/postgres-storage@workspace:packages/postgres-storage"
   dependencies:
@@ -1706,7 +1705,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@varasto/redis-storage@workspace:packages/redis-storage":
+"@varasto/redis-storage@workspace:^, @varasto/redis-storage@workspace:packages/redis-storage":
   version: 0.0.0-use.local
   resolution: "@varasto/redis-storage@workspace:packages/redis-storage"
   dependencies:
@@ -1872,7 +1871,7 @@ __metadata:
     "@varasto/memory-storage": ^3.0.0
     "@varasto/postgres-storage": ^3.0.0
     "@varasto/redis-storage": ^3.0.0
-    "@varasto/remote-storage": ^3.0.0
+    "@varasto/remote-storage": ^4.0.0
     "@varasto/sqlite-storage": ^4.0.0
   languageName: unknown
   linkType: soft
