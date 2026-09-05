@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import { JsonObject } from 'type-fest';
 import { ValidationError } from '../error.js';
 import {
@@ -7,20 +8,25 @@ import {
 } from '../field-value.js';
 
 import { FieldOptions } from '../options/index.js';
-import { ModelMetadata } from './model.js';
 import { OptionalFieldValue } from '../types.js';
+import { EmbeddedField } from './embedded.js';
 
-export class FieldMetadata {
-  public readonly model: ModelMetadata;
+export interface FieldOwner {
+  readonly fields: EmbeddedField[];
+  readonly target: Function;
+}
+
+export class FieldMetadata implements EmbeddedField {
+  public readonly owner: FieldOwner;
   public readonly propertyName: string | symbol;
   public readonly options: Readonly<FieldOptions>;
 
   public constructor(
-    model: ModelMetadata,
+    owner: FieldOwner,
     propertyName: string | symbol,
     options: Readonly<FieldOptions>
   ) {
-    this.model = model;
+    this.owner = owner;
     this.propertyName = propertyName;
     this.options = options;
   }
@@ -39,7 +45,7 @@ export class FieldMetadata {
     Reflect.set(
       instance,
       this.propertyName,
-      deserializeFieldValue(this.options.type, value)
+      deserializeFieldValue(this.options, value)
     );
   }
 
@@ -67,7 +73,7 @@ export class FieldMetadata {
     Reflect.set(
       data,
       this.propertyName,
-      serializeFieldValue(this.options.type, value)
+      serializeFieldValue(this.options, value)
     );
   }
 }

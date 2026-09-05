@@ -1,6 +1,7 @@
 import { JsonObject } from 'type-fest';
 import { describe, expect, it, vi } from 'vitest';
 
+import { Embedded, Field } from '../decorator/index.js';
 import { ValidationError } from '../error.js';
 import { FieldMetadata } from './field.js';
 import { ModelMetadata } from './model.js';
@@ -77,6 +78,7 @@ describe('class FieldMetadata', () => {
 
     it('should throw `ValidationError` is value is not in the given array of choices', () => {
       const metadata = new FieldMetadata(mockModelMetadata, 'foo', {
+        type: 'number',
         choices: [1, 2, 3, 4, 5],
       });
 
@@ -109,6 +111,7 @@ describe('class FieldMetadata', () => {
     it('should run validator functions given to the field', () => {
       const mockValidator = vi.fn();
       const metadata = new FieldMetadata(mockModelMetadata, 'foo', {
+        type: 'string',
         validators: [mockValidator],
       });
 
@@ -150,5 +153,78 @@ describe('class FieldMetadata', () => {
         '2024-06-01T00:00:00.000Z',
       ]);
     });
+  });
+});
+
+describe('embedded field metadata', () => {
+  @Embedded()
+  class Person {
+    @Field()
+    name: string;
+
+    @Field()
+    age: number;
+
+    constructor(name: string = '', age: number = 0) {
+      this.name = name;
+      this.age = age;
+    }
+  }
+
+  const mockModelMetadata = new ModelMetadata(String);
+
+  it('should serialize and deserialize embedded object fields', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'owner', {
+      type: 'embedded',
+      of: Person,
+    });
+    const data: JsonObject = {};
+    const owner = new Person('Ada', 36);
+
+    metadata.save({ owner }, data);
+
+    expect(data).toEqual({ owner: { name: 'Ada', age: 36 } });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+
+    expect((instance as { owner: Person }).owner).toBeInstanceOf(Person);
+    expect((instance as { owner: Person }).owner).toMatchObject({
+      name: 'Ada',
+      age: 36,
+    });
+  });
+
+  it('should serialize and deserialize embedded object arrays', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'members', {
+      type: 'embedded[]',
+      items: Person,
+    });
+    const data: JsonObject = {};
+
+    metadata.save(
+      {
+        members: [new Person('Ada', 36), new Person('Bob', 28)],
+      },
+      data
+    );
+
+    expect(data).toEqual({
+      members: [
+        { name: 'Ada', age: 36 },
+        { name: 'Bob', age: 28 },
+      ],
+    });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+
+    const members = (instance as { members: Person[] }).members;
+
+    expect(members).toHaveLength(2);
+    expect(members[0]).toBeInstanceOf(Person);
+    expect(members[1]).toMatchObject({ name: 'Bob', age: 28 });
   });
 });

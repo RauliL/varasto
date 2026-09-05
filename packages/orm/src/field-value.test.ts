@@ -15,26 +15,26 @@ describe('field value utilities', () => {
         new Date('2024-06-01T00:00:00.000Z'),
       ];
 
-      expect(serializeFieldValue('date[]', dates)).toEqual([
+      expect(serializeFieldValue({ type: 'date[]' }, dates)).toEqual([
         '2024-01-15T12:00:00.000Z',
         '2024-06-01T00:00:00.000Z',
       ]);
     });
 
     it('should pass through primitive array values unchanged', () => {
-      expect(serializeFieldValue('string[]', ['foo', 'bar'])).toEqual([
-        'foo',
-        'bar',
+      expect(
+        serializeFieldValue({ type: 'string[]' }, ['foo', 'bar'])
+      ).toEqual(['foo', 'bar']);
+      expect(serializeFieldValue({ type: 'number[]' }, [1, 2, 3])).toEqual([
+        1, 2, 3,
       ]);
-      expect(serializeFieldValue('number[]', [1, 2, 3])).toEqual([1, 2, 3]);
-      expect(serializeFieldValue('boolean[]', [true, false])).toEqual([
-        true,
-        false,
-      ]);
+      expect(
+        serializeFieldValue({ type: 'boolean[]' }, [true, false])
+      ).toEqual([true, false]);
     });
 
     it('should throw `ValidationError` if an array field value is not an array', () => {
-      expect(() => serializeFieldValue('string[]', 'foo')).toThrow(
+      expect(() => serializeFieldValue({ type: 'string[]' }, 'foo')).toThrow(
         ValidationError
       );
     });
@@ -42,7 +42,7 @@ describe('field value utilities', () => {
 
   describe('deserializeFieldValue()', () => {
     it('should deserialize ISO strings into `Date` instances for `date[]` fields', () => {
-      const result = deserializeFieldValue('date[]', [
+      const result = deserializeFieldValue({ type: 'date[]' }, [
         '2024-01-15T12:00:00.000Z',
         '2024-06-01T00:00:00.000Z',
       ]) as Date[];
@@ -54,20 +54,22 @@ describe('field value utilities', () => {
     });
 
     it('should pass through primitive array values unchanged', () => {
-      expect(deserializeFieldValue('string[]', ['foo', 'bar'])).toEqual([
-        'foo',
-        'bar',
-      ]);
+      expect(
+        deserializeFieldValue({ type: 'string[]' }, ['foo', 'bar'])
+      ).toEqual(['foo', 'bar']);
     });
 
     it('should throw `ValidationError` if stored date array contains invalid value', () => {
       expect(() =>
-        deserializeFieldValue('date[]', ['2024-01-15T12:00:00.000Z', 'nope'])
+        deserializeFieldValue({ type: 'date[]' }, [
+          '2024-01-15T12:00:00.000Z',
+          'nope',
+        ])
       ).toThrow(ValidationError);
     });
 
     it('should throw `ValidationError` if an array field value is not an array', () => {
-      expect(() => deserializeFieldValue('string[]', 'foo')).toThrow(
+      expect(() => deserializeFieldValue({ type: 'string[]' }, 'foo')).toThrow(
         ValidationError
       );
     });

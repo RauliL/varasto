@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { ConfigurationError } from '../error.js';
-import { Field } from './field.js';
+import { Embedded, Field } from './index.js';
 import { Model } from './model.js';
 
 describe('Field decorator', () => {
@@ -54,5 +54,53 @@ describe('Field decorator', () => {
         tags?: string[];
       }
     }).toThrow(ConfigurationError);
+  });
+
+  it('should accept embedded array properties when `items` is an embedded class', () => {
+    @Embedded()
+    class Person {
+      @Field()
+      name: string;
+    }
+
+    expect(() => {
+      @Model()
+      class Team {
+        @Field({ items: Person })
+        members?: Person[];
+      }
+    }).not.toThrow();
+  });
+
+  it('should accept embedded object properties when `of` is provided', () => {
+    @Embedded()
+    class Person {
+      @Field()
+      name: string;
+    }
+
+    expect(() => {
+      @Model()
+      class Team {
+        @Field({ type: 'embedded', of: Person })
+        owner?: Person;
+      }
+    }).not.toThrow();
+  });
+
+  it('should infer embedded object type from property declaration', () => {
+    @Embedded()
+    class Person {
+      @Field()
+      name: string;
+    }
+
+    expect(() => {
+      @Model()
+      class Team {
+        @Field()
+        owner?: Person;
+      }
+    }).not.toThrow();
   });
 });

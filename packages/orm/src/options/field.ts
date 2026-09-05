@@ -1,4 +1,5 @@
 import {
+  EmbeddedClass,
   FieldType,
   OptionalFieldValue,
   ScalarFieldType,
@@ -21,10 +22,15 @@ export type FieldOptions = {
   default?: OptionalFieldValue;
 
   /**
-   * Element type for array fields. Required when the property is an array and
-   * `type` is not given explicitly.
+   * Element type for array fields. Use a scalar field type for primitive arrays
+   * or an embedded class for arrays of embedded objects.
    */
-  items?: ScalarFieldType;
+  items?: EmbeddedClass | ScalarFieldType;
+
+  /**
+   * Embedded class for single embedded object fields.
+   */
+  of?: EmbeddedClass;
 
   /**
    * Type of the field. If omitted, it will be determined from the property

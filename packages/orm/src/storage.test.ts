@@ -2,7 +2,7 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Field, Key, Model } from './decorator/index.js';
+import { Embedded, Field, Key, Model } from './decorator/index.js';
 import { ConfigurationError, ModelDoesNotExistError } from './error.js';
 import { get } from './query.js';
 import { remove, removeAll, save, updateAll } from './storage.js';
@@ -163,6 +163,82 @@ describe('storage utilities', () => {
       expect(loaded.publishedAt[1].toISOString()).toEqual(
         '2024-06-01T00:00:00.000Z'
       );
+    });
+
+    it('should serialize and deserialize embedded object and array fields', async () => {
+      @Embedded()
+      class Address {
+        @Field()
+        city: string;
+
+        constructor(city: string = '') {
+          this.city = city;
+        }
+      }
+
+      @Embedded()
+      class Person {
+        @Field()
+        name: string;
+
+        @Field()
+        age: number;
+
+        @Field({ type: 'embedded', of: Address })
+        address: Address;
+
+        constructor(name: string, age: number, address: Address) {
+          this.name = name;
+          this.age = age;
+          this.address = address;
+        }
+      }
+
+      @Model({ namespace: 'teams' })
+      class Team {
+        @Key()
+        id?: string;
+
+        @Field({ type: 'embedded', of: Person })
+        captain: Person;
+
+        @Field({ items: Person })
+        members: Person[];
+
+        constructor(captain: Person, members: Person[]) {
+          this.captain = captain;
+          this.members = members;
+        }
+      }
+
+      const captain = new Person('Ada', 36, new Address('London'));
+      const team = new Team(captain, [
+        captain,
+        new Person('Bob', 28, new Address('Paris')),
+      ]);
+
+      await save(storage, team);
+
+      expect(await storage.get('teams', team.id ?? '')).toEqual({
+        captain: { name: 'Ada', age: 36, address: { city: 'London' } },
+        members: [
+          { name: 'Ada', age: 36, address: { city: 'London' } },
+          { name: 'Bob', age: 28, address: { city: 'Paris' } },
+        ],
+      });
+
+      const loaded = await get(storage, Team, team.id ?? '');
+
+      expect(loaded.captain).toBeInstanceOf(Person);
+      expect(loaded.captain.address).toBeInstanceOf(Address);
+      expect(loaded.captain).toMatchObject({
+        name: 'Ada',
+        age: 36,
+        address: { city: 'London' },
+      });
+      expect(loaded.members).toHaveLength(2);
+      expect(loaded.members[1]).toBeInstanceOf(Person);
+      expect(loaded.members[1].address.city).toEqual('Paris');
     });
   });
 
