@@ -103,4 +103,44 @@ describe('Field decorator', () => {
       }
     }).not.toThrow();
   });
+
+  it('should accept enum fields when `enum` is provided', () => {
+    enum Status {
+      Active = 'active',
+      Inactive = 'inactive',
+    }
+
+    expect(() => {
+      @Model()
+      class Task {
+        @Field({ enum: Status })
+        status?: Status;
+      }
+    }).not.toThrow();
+  });
+
+  it('should accept enum array fields when `enum` is provided', () => {
+    enum Status {
+      Active = 'active',
+      Inactive = 'inactive',
+    }
+
+    expect(() => {
+      @Model()
+      class Task {
+        @Field({ enum: Status, type: 'enum[]' })
+        history?: Status[];
+      }
+    }).not.toThrow();
+  });
+
+  it('should throw if enum array field has no `enum` option', () => {
+    expect(() => {
+      @Model()
+      class Task {
+        @Field({ type: 'enum[]' })
+        history?: string[];
+      }
+    }).toThrow(ConfigurationError);
+  });
 });

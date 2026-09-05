@@ -13,6 +13,7 @@ import {
 const ARRAY_FIELD_TYPES = new Set<FieldType>([
   'boolean[]',
   'date[]',
+  'enum[]',
   'number[]',
   'string[]',
   'embedded[]',
@@ -23,19 +24,24 @@ const isEmbeddedClassReference = (value: unknown): value is EmbeddedClass =>
 
 export const isArrayFieldType = (
   type: FieldType | undefined
-): type is Exclude<FieldType, ScalarFieldType | 'embedded'> =>
-  type?.endsWith('[]') ?? false;
+): type is `${ScalarFieldType}[]` | 'embedded[]' =>
+  type === 'boolean[]' ||
+  type === 'date[]' ||
+  type === 'number[]' ||
+  type === 'string[]' ||
+  type === 'embedded[]';
 
 export const isValidFieldType = (type: FieldType): boolean =>
   ARRAY_FIELD_TYPES.has(type) ||
   type === 'boolean' ||
   type === 'date' ||
   type === 'embedded' ||
+  type === 'enum' ||
   type === 'number' ||
   type === 'string';
 
 export const scalarFieldType = (
-  type: Exclude<FieldType, ScalarFieldType | 'embedded'>
+  type: `${ScalarFieldType}[]` | 'embedded[]'
 ): ScalarFieldType | 'embedded' =>
   type.slice(0, -2) as ScalarFieldType | 'embedded';
 
@@ -129,6 +135,18 @@ export const serializeFieldValue = (
     ) as OptionalFieldValue;
   }
 
+  if (options.type === 'enum[]') {
+    if (!Array.isArray(value)) {
+      throw new ValidationError('Expected an array value');
+    }
+
+    return value;
+  }
+
+  if (options.type === 'enum') {
+    return value;
+  }
+
   if (isArrayFieldType(options.type)) {
     if (!Array.isArray(value)) {
       throw new ValidationError('Expected an array value');
@@ -174,6 +192,18 @@ export const deserializeFieldValue = (
     return value.map((item) =>
       metadata.load(item as JsonObject)
     ) as OptionalFieldValue;
+  }
+
+  if (options.type === 'enum[]') {
+    if (!Array.isArray(value)) {
+      throw new ValidationError('Expected an array value');
+    }
+
+    return value;
+  }
+
+  if (options.type === 'enum') {
+    return value;
   }
 
   if (isArrayFieldType(options.type)) {

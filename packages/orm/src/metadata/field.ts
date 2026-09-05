@@ -40,6 +40,15 @@ export class FieldMetadata implements EmbeddedField {
 
     // TODO: Validate type.
 
+    if (
+      this.options.choices &&
+      !isValueAllowedByChoices(value, this.options.choices)
+    ) {
+      throw new ValidationError(
+        'Given value is not included in the accepted list of values'
+      );
+    }
+
     // TODO: Validate choices also here?
 
     Reflect.set(

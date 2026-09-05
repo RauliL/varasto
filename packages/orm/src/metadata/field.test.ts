@@ -228,3 +228,80 @@ describe('embedded field metadata', () => {
     expect(members[1]).toMatchObject({ name: 'Bob', age: 28 });
   });
 });
+
+describe('enum field metadata', () => {
+  enum Status {
+    Active = 'active',
+    Inactive = 'inactive',
+  }
+
+  enum Priority {
+    Low = 0,
+    High = 2,
+  }
+
+  const mockModelMetadata = new ModelMetadata(String);
+
+  it('should validate enum values on save and load', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'status', {
+      type: 'enum',
+      enum: Status,
+      choices: ['active', 'inactive'],
+    });
+    const data: JsonObject = {};
+
+    metadata.save({ status: Status.Active }, data);
+    expect(data).toEqual({ status: 'active' });
+
+    expect(() => metadata.save({ status: 'unknown' }, {})).toThrow(
+      ValidationError
+    );
+
+    const instance = {};
+
+    metadata.load(instance, { status: 'inactive' });
+    expect(instance).toHaveProperty('status', 'inactive');
+
+    expect(() => metadata.load({}, { status: 'invalid' })).toThrow(
+      ValidationError
+    );
+  });
+
+  it('should serialize and deserialize numeric enum values', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'priority', {
+      type: 'enum',
+      enum: Priority,
+      choices: [0, 2],
+    });
+    const data: JsonObject = {};
+
+    metadata.save({ priority: Priority.High }, data);
+    expect(data).toEqual({ priority: 2 });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+    expect(instance).toHaveProperty('priority', 2);
+  });
+
+  it('should serialize and deserialize enum arrays', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'history', {
+      type: 'enum[]',
+      enum: Status,
+      choices: ['active', 'inactive'],
+    });
+    const data: JsonObject = {};
+
+    metadata.save({ history: [Status.Active, Status.Inactive] }, data);
+    expect(data).toEqual({ history: ['active', 'inactive'] });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+    expect(instance).toHaveProperty('history', ['active', 'inactive']);
+
+    expect(() =>
+      metadata.save({ history: [Status.Active, 'invalid'] }, {})
+    ).toThrow(ValidationError);
+  });
+});

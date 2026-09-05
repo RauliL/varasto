@@ -1,5 +1,6 @@
 import {
   EmbeddedClass,
+  EnumObject,
   FieldType,
   OptionalFieldValue,
   ScalarFieldType,
@@ -20,6 +21,12 @@ export type FieldOptions = {
    * stored and the field's value is `undefined`.
    */
   default?: OptionalFieldValue;
+
+  /**
+   * TypeScript enum object whose values are accepted for the field. When given,
+   * allowed values are derived automatically unless `choices` is also set.
+   */
+  enum?: EnumObject;
 
   /**
    * Element type for array fields. Use a scalar field type for primitive arrays

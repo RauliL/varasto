@@ -240,6 +240,58 @@ describe('storage utilities', () => {
       expect(loaded.members[1]).toBeInstanceOf(Person);
       expect(loaded.members[1].address.city).toEqual('Paris');
     });
+
+    it('should serialize and deserialize enum field values', async () => {
+      enum Role {
+        Admin = 'admin',
+        User = 'user',
+      }
+
+      enum Priority {
+        Low = 0,
+        High = 2,
+      }
+
+      @Model({ namespace: 'tasks' })
+      class Task {
+        @Key()
+        id?: string;
+
+        @Field({ enum: Role, default: Role.User })
+        role: Role;
+
+        @Field({ enum: Priority })
+        priority: Priority;
+
+        @Field({ enum: Role, type: 'enum[]' })
+        allowedRoles: Role[];
+
+        constructor(role: Role, priority: Priority, allowedRoles: Role[]) {
+          this.role = role;
+          this.priority = priority;
+          this.allowedRoles = allowedRoles;
+        }
+      }
+
+      const task = new Task(Role.Admin, Priority.High, [
+        Role.Admin,
+        Role.User,
+      ]);
+
+      await save(storage, task);
+
+      expect(await storage.get('tasks', task.id ?? '')).toEqual({
+        role: 'admin',
+        priority: 2,
+        allowedRoles: ['admin', 'user'],
+      });
+
+      const loaded = await get(storage, Task, task.id ?? '');
+
+      expect(loaded.role).toEqual(Role.Admin);
+      expect(loaded.priority).toEqual(Priority.High);
+      expect(loaded.allowedRoles).toEqual([Role.Admin, Role.User]);
+    });
   });
 
   describe('updateAll()', () => {

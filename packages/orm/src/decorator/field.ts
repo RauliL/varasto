@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 
+import { applyEnumConfiguration } from '../enum.js';
 import { ConfigurationError } from '../error.js';
 import { isValidFieldType } from '../field-value.js';
 import { EmbeddedMetadata } from '../metadata/embedded.js';
@@ -22,6 +23,10 @@ const resolveArrayFieldType = (options: FieldOptions): FieldType => {
     return options.type;
   }
 
+  if (options.enum) {
+    return 'enum[]';
+  }
+
   if (isEmbeddedClassReference(options.items)) {
     EmbeddedMetadata.requireFor(options.items);
 
@@ -33,7 +38,7 @@ const resolveArrayFieldType = (options: FieldOptions): FieldType => {
   }
 
   throw new ConfigurationError(
-    'Array fields require `items` or an array `type` (e.g. "string[]")'
+    'Array fields require `items`, `enum`, or an array `type` (e.g. "string[]")'
   );
 };
 
@@ -49,6 +54,14 @@ const resolveEmbeddedFieldType = (options: FieldOptions): FieldType => {
   EmbeddedMetadata.requireFor(embeddedClass);
 
   return 'embedded';
+};
+
+const finalizeFieldOptions = (fieldOptions: FieldOptions): void => {
+  if (fieldOptions.enum && !fieldOptions.type) {
+    fieldOptions.type = 'enum';
+  }
+
+  applyEnumConfiguration(fieldOptions);
 };
 
 export const Field =
@@ -72,6 +85,12 @@ export const Field =
       }
 
       EmbeddedMetadata.requireFor(fieldOptions.items);
+    } else if (type === 'enum[]' && !fieldOptions.enum) {
+      throw new ConfigurationError(
+        'Enum array fields require an `enum` option'
+      );
+    } else if (type === 'enum' && !fieldOptions.enum) {
+      throw new ConfigurationError('Enum fields require an `enum` option');
     }
 
     if (!type) {
@@ -81,7 +100,11 @@ export const Field =
         propertyKey
       );
 
-      if (!reflectType) {
+      if (fieldOptions.enum && reflectType === Array) {
+        type = 'enum[]';
+      } else if (fieldOptions.enum) {
+        type = 'enum';
+      } else if (!reflectType) {
         throw new ConfigurationError('Unable to process field type');
       } else if (reflectType === Array) {
         type = resolveArrayFieldType(fieldOptions);
@@ -94,6 +117,7 @@ export const Field =
     }
 
     fieldOptions.type = type;
+    finalizeFieldOptions(fieldOptions);
 
     modelMetadata.fields.push(
       new FieldMetadata(modelMetadata, propertyKey, fieldOptions)
