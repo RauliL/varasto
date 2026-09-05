@@ -1,5 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { FieldType } from '../types.js';
+import {
+  EmbeddedClass,
+  EnumObject,
+  FieldDefault,
+  FieldType,
+  OptionalFieldValue,
+  ScalarFieldType,
+  Validator,
+} from '../types.js';
 
 /**
  * Various options that can be passed to an model field.
@@ -8,13 +15,31 @@ export type FieldOptions = {
   /**
    * Array of values that are valid choices for the field.
    */
-  choices?: any[];
+  choices?: OptionalFieldValue[];
 
   /**
    * Default value for the field that will be used when the model instance is
-   * stored and the field's value is `undefined`.
+   * stored and the field's value is `undefined`. A factory function may be
+   * given to produce a new value on each use, e.g. `() => new Date()`.
    */
-  default?: boolean | number | string | null;
+  default?: FieldDefault;
+
+  /**
+   * TypeScript enum object whose values are accepted for the field. When given,
+   * allowed values are derived automatically unless `choices` is also set.
+   */
+  enum?: EnumObject;
+
+  /**
+   * Element type for array fields. Use a scalar field type for primitive arrays
+   * or an embedded class for arrays of embedded objects.
+   */
+  items?: EmbeddedClass | ScalarFieldType;
+
+  /**
+   * Embedded class for single embedded object fields.
+   */
+  of?: EmbeddedClass;
 
   /**
    * Type of the field. If omitted, it will be determined from the property
@@ -26,5 +51,5 @@ export type FieldOptions = {
    * Array of validator functions that throw `ValidationError` if the given
    * value does not pass the validation.
    */
-  validators?: Array<(value: any) => void>;
+  validators?: Validator[];
 };

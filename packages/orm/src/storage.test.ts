@@ -2,8 +2,9 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Field, Key, Model } from './decorator/index.js';
+import { Embedded, Field, Key, Model } from './decorator/index.js';
 import { ConfigurationError, ModelDoesNotExistError } from './error.js';
+import { get } from './query.js';
 import { remove, removeAll, save, updateAll } from './storage.js';
 
 describe('storage utilities', () => {
@@ -87,6 +88,209 @@ describe('storage utilities', () => {
         'isActive',
         true
       );
+    });
+
+    it('should serialize and deserialize `Date` field values', async () => {
+      @Model({ namespace: 'events' })
+      class Event {
+        @Key()
+        id?: string;
+
+        @Field()
+        createdAt: Date;
+
+        constructor(createdAt: Date) {
+          this.createdAt = createdAt;
+        }
+      }
+
+      const createdAt = new Date('2024-01-15T12:00:00.000Z');
+      const event = new Event(createdAt);
+
+      await save(storage, event);
+
+      expect(event.id).not.toHaveLength(0);
+      expect(await storage.get('events', event.id ?? '')).toEqual({
+        createdAt: '2024-01-15T12:00:00.000Z',
+      });
+
+      const loaded = await get(storage, Event, event.id ?? '');
+
+      expect(loaded.createdAt).toBeInstanceOf(Date);
+      expect(loaded.createdAt.toISOString()).toEqual(
+        '2024-01-15T12:00:00.000Z'
+      );
+    });
+
+    it('should serialize and deserialize array field values', async () => {
+      @Model({ namespace: 'articles' })
+      class Article {
+        @Key()
+        id?: string;
+
+        @Field({ items: 'string' })
+        tags: string[];
+
+        @Field({ type: 'date[]' })
+        publishedAt: Date[];
+
+        constructor(tags: string[], publishedAt: Date[]) {
+          this.tags = tags;
+          this.publishedAt = publishedAt;
+        }
+      }
+
+      const article = new Article(
+        ['typescript', 'orm'],
+        [
+          new Date('2024-01-15T12:00:00.000Z'),
+          new Date('2024-06-01T00:00:00.000Z'),
+        ]
+      );
+
+      await save(storage, article);
+
+      expect(await storage.get('articles', article.id ?? '')).toEqual({
+        tags: ['typescript', 'orm'],
+        publishedAt: ['2024-01-15T12:00:00.000Z', '2024-06-01T00:00:00.000Z'],
+      });
+
+      const loaded = await get(storage, Article, article.id ?? '');
+
+      expect(loaded.tags).toEqual(['typescript', 'orm']);
+      expect(loaded.publishedAt).toHaveLength(2);
+      expect(loaded.publishedAt[0]).toBeInstanceOf(Date);
+      expect(loaded.publishedAt[1].toISOString()).toEqual(
+        '2024-06-01T00:00:00.000Z'
+      );
+    });
+
+    it('should serialize and deserialize embedded object and array fields', async () => {
+      @Embedded()
+      class Address {
+        @Field()
+        city: string;
+
+        constructor(city: string = '') {
+          this.city = city;
+        }
+      }
+
+      @Embedded()
+      class Person {
+        @Field()
+        name: string;
+
+        @Field()
+        age: number;
+
+        @Field({ type: 'embedded', of: Address })
+        address: Address;
+
+        constructor(name: string, age: number, address: Address) {
+          this.name = name;
+          this.age = age;
+          this.address = address;
+        }
+      }
+
+      @Model({ namespace: 'teams' })
+      class Team {
+        @Key()
+        id?: string;
+
+        @Field({ type: 'embedded', of: Person })
+        captain: Person;
+
+        @Field({ items: Person })
+        members: Person[];
+
+        constructor(captain: Person, members: Person[]) {
+          this.captain = captain;
+          this.members = members;
+        }
+      }
+
+      const captain = new Person('Ada', 36, new Address('London'));
+      const team = new Team(captain, [
+        captain,
+        new Person('Bob', 28, new Address('Paris')),
+      ]);
+
+      await save(storage, team);
+
+      expect(await storage.get('teams', team.id ?? '')).toEqual({
+        captain: { name: 'Ada', age: 36, address: { city: 'London' } },
+        members: [
+          { name: 'Ada', age: 36, address: { city: 'London' } },
+          { name: 'Bob', age: 28, address: { city: 'Paris' } },
+        ],
+      });
+
+      const loaded = await get(storage, Team, team.id ?? '');
+
+      expect(loaded.captain).toBeInstanceOf(Person);
+      expect(loaded.captain.address).toBeInstanceOf(Address);
+      expect(loaded.captain).toMatchObject({
+        name: 'Ada',
+        age: 36,
+        address: { city: 'London' },
+      });
+      expect(loaded.members).toHaveLength(2);
+      expect(loaded.members[1]).toBeInstanceOf(Person);
+      expect(loaded.members[1].address.city).toEqual('Paris');
+    });
+
+    it('should serialize and deserialize enum field values', async () => {
+      enum Role {
+        Admin = 'admin',
+        User = 'user',
+      }
+
+      enum Priority {
+        Low = 0,
+        High = 2,
+      }
+
+      @Model({ namespace: 'tasks' })
+      class Task {
+        @Key()
+        id?: string;
+
+        @Field({ enum: Role, default: Role.User })
+        role: Role;
+
+        @Field({ enum: Priority })
+        priority: Priority;
+
+        @Field({ enum: Role, type: 'enum[]' })
+        allowedRoles: Role[];
+
+        constructor(role: Role, priority: Priority, allowedRoles: Role[]) {
+          this.role = role;
+          this.priority = priority;
+          this.allowedRoles = allowedRoles;
+        }
+      }
+
+      const task = new Task(Role.Admin, Priority.High, [
+        Role.Admin,
+        Role.User,
+      ]);
+
+      await save(storage, task);
+
+      expect(await storage.get('tasks', task.id ?? '')).toEqual({
+        role: 'admin',
+        priority: 2,
+        allowedRoles: ['admin', 'user'],
+      });
+
+      const loaded = await get(storage, Task, task.id ?? '');
+
+      expect(loaded.role).toEqual(Role.Admin);
+      expect(loaded.priority).toEqual(Priority.High);
+      expect(loaded.allowedRoles).toEqual([Role.Admin, Role.User]);
     });
   });
 

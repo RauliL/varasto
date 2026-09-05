@@ -17,6 +17,15 @@ describe('validator functions', () => {
     it('should throw error if given value is less than the minimum value', () => {
       expect(() => minValidator(5, '')(4)).toThrow(ValidationError);
     });
+
+    it('should accept `Date` values and boundaries', () => {
+      const min = new Date('2024-01-01T00:00:00.000Z');
+      const valid = new Date('2024-06-01T00:00:00.000Z');
+      const invalid = new Date('2023-06-01T00:00:00.000Z');
+
+      expect(() => minValidator(min, '')(valid)).not.toThrow();
+      expect(() => minValidator(min, '')(invalid)).toThrow(ValidationError);
+    });
   });
 
   describe('maxValidator()', () => {
@@ -26,6 +35,15 @@ describe('validator functions', () => {
 
     it('should throw error if given value is greater than the maximum value', () => {
       expect(() => maxValidator(5, '')(10)).toThrow(ValidationError);
+    });
+
+    it('should accept `Date` values and boundaries', () => {
+      const max = new Date('2024-12-31T00:00:00.000Z');
+      const valid = new Date('2024-06-01T00:00:00.000Z');
+      const invalid = new Date('2025-06-01T00:00:00.000Z');
+
+      expect(() => maxValidator(max, '')(valid)).not.toThrow();
+      expect(() => maxValidator(max, '')(invalid)).toThrow(ValidationError);
     });
   });
 
@@ -42,6 +60,22 @@ describe('validator functions', () => {
         );
       }
     );
+
+    it('should accept `Date` values and boundaries', () => {
+      const min = new Date('2024-01-01T00:00:00.000Z');
+      const max = new Date('2024-12-31T00:00:00.000Z');
+      const valid = new Date('2024-06-01T00:00:00.000Z');
+      const tooEarly = new Date('2023-06-01T00:00:00.000Z');
+      const tooLate = new Date('2025-06-01T00:00:00.000Z');
+
+      expect(() => minMaxValidator(min, max, '')(valid)).not.toThrow();
+      expect(() => minMaxValidator(min, max, '')(tooEarly)).toThrow(
+        ValidationError
+      );
+      expect(() => minMaxValidator(min, max, '')(tooLate)).toThrow(
+        ValidationError
+      );
+    });
   });
 
   describe('regexpValidator()', () => {

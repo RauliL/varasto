@@ -1,6 +1,7 @@
 import { JsonObject } from 'type-fest';
 import { describe, expect, it, vi } from 'vitest';
 
+import { Embedded, Field } from '../decorator/index.js';
 import { ValidationError } from '../error.js';
 import { FieldMetadata } from './field.js';
 import { ModelMetadata } from './model.js';
@@ -19,6 +20,62 @@ describe('class FieldMetadata', () => {
 
       expect(instance).toHaveProperty('foo', 'bar');
     });
+
+    it('should invoke factory default when the actual value is missing', () => {
+      const factory = vi.fn(() => new Date('2024-01-15T12:00:00.000Z'));
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+        default: factory,
+      });
+      const instance = {};
+
+      metadata.load(instance, {});
+
+      expect(factory).toBeCalledTimes(1);
+      expect((instance as { createdAt: Date }).createdAt).toBeInstanceOf(Date);
+    });
+
+    it('should deserialize ISO date strings into `Date` instances', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+      });
+      const instance = {};
+
+      metadata.load(instance, { createdAt: '2024-01-15T12:00:00.000Z' });
+
+      expect(instance).toHaveProperty('createdAt');
+      expect((instance as { createdAt: Date }).createdAt).toBeInstanceOf(Date);
+      expect(
+        (instance as { createdAt: Date }).createdAt.toISOString()
+      ).toEqual('2024-01-15T12:00:00.000Z');
+    });
+
+    it('should throw `ValidationError` if stored date value is invalid', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+      });
+
+      expect(() => metadata.load({}, { createdAt: 'not-a-date' })).toThrow(
+        ValidationError
+      );
+    });
+
+    it('should deserialize ISO date strings in array fields', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'dates', {
+        type: 'date[]',
+      });
+      const instance = {};
+
+      metadata.load(instance, {
+        dates: ['2024-01-15T12:00:00.000Z', '2024-06-01T00:00:00.000Z'],
+      });
+
+      const dates = (instance as { dates: Date[] }).dates;
+
+      expect(dates).toHaveLength(2);
+      expect(dates[0]).toBeInstanceOf(Date);
+      expect(dates[1].toISOString()).toEqual('2024-06-01T00:00:00.000Z');
+    });
   });
 
   describe('save()', () => {
@@ -33,17 +90,56 @@ describe('class FieldMetadata', () => {
       expect(data).toHaveProperty('foo', 'bar');
     });
 
+    it('should invoke factory default on each save when value is missing', () => {
+      let counter = 0;
+      const metadata = new FieldMetadata(mockModelMetadata, 'foo', {
+        default: () => ++counter,
+      });
+      const data: JsonObject = {};
+
+      metadata.save({}, data);
+      metadata.save({}, data);
+
+      expect(counter).toEqual(2);
+      expect(data).toHaveProperty('foo', 2);
+    });
+
     it('should throw `ValidationError` is value is not in the given array of choices', () => {
       const metadata = new FieldMetadata(mockModelMetadata, 'foo', {
+        type: 'number',
         choices: [1, 2, 3, 4, 5],
       });
 
       expect(() => metadata.save({ foo: 6 }, {})).toThrow(ValidationError);
     });
 
+    it('should throw `ValidationError` if an array value contains disallowed choice', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'tags', {
+        type: 'string[]',
+        choices: ['a', 'b', 'c'],
+      });
+
+      expect(() => metadata.save({ tags: ['a', 'd'] }, {})).toThrow(
+        ValidationError
+      );
+    });
+
+    it('should accept array values when every element is in choices', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'tags', {
+        type: 'string[]',
+        choices: ['a', 'b', 'c'],
+      });
+      const data: JsonObject = {};
+
+      metadata.save({ tags: ['a', 'c'] }, data);
+
+      expect(data).toHaveProperty('tags', ['a', 'c']);
+    });
+
     it('should run validator functions given to the field', () => {
       const mockValidator = vi.fn();
       const metadata = new FieldMetadata(mockModelMetadata, 'foo', {
+        type: 'string',
         validators: [mockValidator],
       });
 
@@ -51,5 +147,189 @@ describe('class FieldMetadata', () => {
 
       expect(mockValidator).toBeCalledWith('value');
     });
+
+    it('should serialize `Date` instances into ISO strings', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+      });
+      const data: JsonObject = {};
+      const createdAt = new Date('2024-01-15T12:00:00.000Z');
+
+      metadata.save({ createdAt }, data);
+
+      expect(data).toHaveProperty('createdAt', '2024-01-15T12:00:00.000Z');
+    });
+
+    it('should serialize `Date` arrays into ISO strings', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'dates', {
+        type: 'date[]',
+      });
+      const data: JsonObject = {};
+
+      metadata.save(
+        {
+          dates: [
+            new Date('2024-01-15T12:00:00.000Z'),
+            new Date('2024-06-01T00:00:00.000Z'),
+          ],
+        },
+        data
+      );
+
+      expect(data).toHaveProperty('dates', [
+        '2024-01-15T12:00:00.000Z',
+        '2024-06-01T00:00:00.000Z',
+      ]);
+    });
+  });
+});
+
+describe('embedded field metadata', () => {
+  @Embedded()
+  class Person {
+    @Field()
+    name: string;
+
+    @Field()
+    age: number;
+
+    constructor(name: string = '', age: number = 0) {
+      this.name = name;
+      this.age = age;
+    }
+  }
+
+  const mockModelMetadata = new ModelMetadata(String);
+
+  it('should serialize and deserialize embedded object fields', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'owner', {
+      type: 'embedded',
+      of: Person,
+    });
+    const data: JsonObject = {};
+    const owner = new Person('Ada', 36);
+
+    metadata.save({ owner }, data);
+
+    expect(data).toEqual({ owner: { name: 'Ada', age: 36 } });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+
+    expect((instance as { owner: Person }).owner).toBeInstanceOf(Person);
+    expect((instance as { owner: Person }).owner).toMatchObject({
+      name: 'Ada',
+      age: 36,
+    });
+  });
+
+  it('should serialize and deserialize embedded object arrays', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'members', {
+      type: 'embedded[]',
+      items: Person,
+    });
+    const data: JsonObject = {};
+
+    metadata.save(
+      {
+        members: [new Person('Ada', 36), new Person('Bob', 28)],
+      },
+      data
+    );
+
+    expect(data).toEqual({
+      members: [
+        { name: 'Ada', age: 36 },
+        { name: 'Bob', age: 28 },
+      ],
+    });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+
+    const members = (instance as { members: Person[] }).members;
+
+    expect(members).toHaveLength(2);
+    expect(members[0]).toBeInstanceOf(Person);
+    expect(members[1]).toMatchObject({ name: 'Bob', age: 28 });
+  });
+});
+
+describe('enum field metadata', () => {
+  enum Status {
+    Active = 'active',
+    Inactive = 'inactive',
+  }
+
+  enum Priority {
+    Low = 0,
+    High = 2,
+  }
+
+  const mockModelMetadata = new ModelMetadata(String);
+
+  it('should validate enum values on save and load', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'status', {
+      type: 'enum',
+      enum: Status,
+      choices: ['active', 'inactive'],
+    });
+    const data: JsonObject = {};
+
+    metadata.save({ status: Status.Active }, data);
+    expect(data).toEqual({ status: 'active' });
+
+    expect(() => metadata.save({ status: 'unknown' }, {})).toThrow(
+      ValidationError
+    );
+
+    const instance = {};
+
+    metadata.load(instance, { status: 'inactive' });
+    expect(instance).toHaveProperty('status', 'inactive');
+
+    expect(() => metadata.load({}, { status: 'invalid' })).toThrow(
+      ValidationError
+    );
+  });
+
+  it('should serialize and deserialize numeric enum values', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'priority', {
+      type: 'enum',
+      enum: Priority,
+      choices: [0, 2],
+    });
+    const data: JsonObject = {};
+
+    metadata.save({ priority: Priority.High }, data);
+    expect(data).toEqual({ priority: 2 });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+    expect(instance).toHaveProperty('priority', 2);
+  });
+
+  it('should serialize and deserialize enum arrays', () => {
+    const metadata = new FieldMetadata(mockModelMetadata, 'history', {
+      type: 'enum[]',
+      enum: Status,
+      choices: ['active', 'inactive'],
+    });
+    const data: JsonObject = {};
+
+    metadata.save({ history: [Status.Active, Status.Inactive] }, data);
+    expect(data).toEqual({ history: ['active', 'inactive'] });
+
+    const instance = {};
+
+    metadata.load(instance, data);
+    expect(instance).toHaveProperty('history', ['active', 'inactive']);
+
+    expect(() =>
+      metadata.save({ history: [Status.Active, 'invalid'] }, {})
+    ).toThrow(ValidationError);
   });
 });
