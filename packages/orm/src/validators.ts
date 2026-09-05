@@ -1,13 +1,32 @@
 import { ValidationError } from './error.js';
 import { OptionalFieldValue } from './types.js';
 
+const toComparable = (value: OptionalFieldValue): number | undefined => {
+  if (typeof value === 'number') {
+    return value;
+  }
+
+  if (value instanceof Date) {
+    return value.getTime();
+  }
+
+  return undefined;
+};
+
+const boundaryToComparable = (boundary: number | Date): number =>
+  boundary instanceof Date ? boundary.getTime() : boundary;
+
 /**
  * Creates an validator function that will throw an validation error with given
  * error message if the value is less than the given minimum value.
  */
 export const minValidator =
-  (min: number, errorMessage: string) => (value: OptionalFieldValue) => {
-    if (typeof value !== 'number' || value < min) {
+  (min: number | Date, errorMessage: string) =>
+  (value: OptionalFieldValue) => {
+    const comparable = toComparable(value);
+    const minComparable = boundaryToComparable(min);
+
+    if (comparable === undefined || comparable < minComparable) {
       throw new ValidationError(errorMessage);
     }
   };
@@ -17,8 +36,12 @@ export const minValidator =
  * error message if the value is greater than the given maximum value.
  */
 export const maxValidator =
-  (max: number, errorMessage: string) => (value: OptionalFieldValue) => {
-    if (typeof value !== 'number' || value > max) {
+  (max: number | Date, errorMessage: string) =>
+  (value: OptionalFieldValue) => {
+    const comparable = toComparable(value);
+    const maxComparable = boundaryToComparable(max);
+
+    if (comparable === undefined || comparable > maxComparable) {
       throw new ValidationError(errorMessage);
     }
   };
@@ -29,9 +52,17 @@ export const maxValidator =
  * values.
  */
 export const minMaxValidator =
-  (min: number, max: number, errorMessage: string) =>
+  (min: number | Date, max: number | Date, errorMessage: string) =>
   (value: OptionalFieldValue) => {
-    if (typeof value !== 'number' || value < min || value > max) {
+    const comparable = toComparable(value);
+    const minComparable = boundaryToComparable(min);
+    const maxComparable = boundaryToComparable(max);
+
+    if (
+      comparable === undefined ||
+      comparable < minComparable ||
+      comparable > maxComparable
+    ) {
       throw new ValidationError(errorMessage);
     }
   };

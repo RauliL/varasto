@@ -7,6 +7,7 @@ import { FieldConstructor, FieldType } from '../types.js';
 
 const TYPE_MAPPING = new Map<FieldConstructor, FieldType>([
   [Boolean, 'boolean'],
+  [Date, 'date'],
   [Number, 'number'],
   [String, 'string'],
 ]);

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Field, Key, Model } from './decorator/index.js';
 import { ConfigurationError, ModelDoesNotExistError } from './error.js';
+import { get } from './query.js';
 import { remove, removeAll, save, updateAll } from './storage.js';
 
 describe('storage utilities', () => {
@@ -86,6 +87,38 @@ describe('storage utilities', () => {
       return expect(storage.get('users', 'mike')).resolves.toHaveProperty(
         'isActive',
         true
+      );
+    });
+
+    it('should serialize and deserialize `Date` field values', async () => {
+      @Model({ namespace: 'events' })
+      class Event {
+        @Key()
+        id?: string;
+
+        @Field()
+        createdAt: Date;
+
+        constructor(createdAt: Date) {
+          this.createdAt = createdAt;
+        }
+      }
+
+      const createdAt = new Date('2024-01-15T12:00:00.000Z');
+      const event = new Event(createdAt);
+
+      await save(storage, event);
+
+      expect(event.id).not.toHaveLength(0);
+      expect(await storage.get('events', event.id ?? '')).toEqual({
+        createdAt: '2024-01-15T12:00:00.000Z',
+      });
+
+      const loaded = await get(storage, Event, event.id ?? '');
+
+      expect(loaded.createdAt).toBeInstanceOf(Date);
+      expect(loaded.createdAt.toISOString()).toEqual(
+        '2024-01-15T12:00:00.000Z'
       );
     });
   });

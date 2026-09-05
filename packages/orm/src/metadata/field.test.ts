@@ -19,6 +19,31 @@ describe('class FieldMetadata', () => {
 
       expect(instance).toHaveProperty('foo', 'bar');
     });
+
+    it('should deserialize ISO date strings into `Date` instances', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+      });
+      const instance = {};
+
+      metadata.load(instance, { createdAt: '2024-01-15T12:00:00.000Z' });
+
+      expect(instance).toHaveProperty('createdAt');
+      expect((instance as { createdAt: Date }).createdAt).toBeInstanceOf(Date);
+      expect(
+        (instance as { createdAt: Date }).createdAt.toISOString()
+      ).toEqual('2024-01-15T12:00:00.000Z');
+    });
+
+    it('should throw `ValidationError` if stored date value is invalid', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+      });
+
+      expect(() => metadata.load({}, { createdAt: 'not-a-date' })).toThrow(
+        ValidationError
+      );
+    });
   });
 
   describe('save()', () => {
@@ -50,6 +75,18 @@ describe('class FieldMetadata', () => {
       metadata.save({ foo: 'value' }, {});
 
       expect(mockValidator).toBeCalledWith('value');
+    });
+
+    it('should serialize `Date` instances into ISO strings', () => {
+      const metadata = new FieldMetadata(mockModelMetadata, 'createdAt', {
+        type: 'date',
+      });
+      const data: JsonObject = {};
+      const createdAt = new Date('2024-01-15T12:00:00.000Z');
+
+      metadata.save({ createdAt }, data);
+
+      expect(data).toHaveProperty('createdAt', '2024-01-15T12:00:00.000Z');
     });
   });
 });

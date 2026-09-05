@@ -15,4 +15,14 @@ describe('Field decorator', () => {
       }
     }).toThrow(ConfigurationError);
   });
+
+  it('should accept `Date` properties', () => {
+    expect(() => {
+      @Model()
+      class MockModel {
+        @Field()
+        createdAt?: Date;
+      }
+    }).not.toThrow();
+  });
 });
