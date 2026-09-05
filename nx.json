@@ -4,16 +4,16 @@
     "projects": ["packages/*"],
     "projectsRelationship": "independent",
     "version": {
-      "preVersionCommand": "yarn build"
+      "preVersionCommand": "yarn build",
+      "git": {
+        "commit": true,
+        "tag": true
+      }
     },
     "changelog": {
       "projectChangelogs": {
         "createRelease": false
       }
-    },
-    "git": {
-      "commit": true,
-      "tag": true
     },
     "releaseTag": {
       "checkAllBranchesWhen": "master",
