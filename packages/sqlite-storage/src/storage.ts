@@ -1,15 +1,15 @@
-import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
+import {
+  Entry,
+  ItemDoesNotExistError,
+  Storage,
+  validateNamespace,
+  validateNamespaceAndKey,
+} from '@varasto/storage';
 import { Database } from 'sqlite';
 import { JsonObject } from 'type-fest';
 
 import { SqliteStorageOptions } from './types.js';
-import {
-  createNamespace,
-  doesNamespaceExist,
-  getItem,
-  validateNamespace,
-  validateNamespaceAndKey,
-} from './utils.js';
+import { createNamespace, doesNamespaceExist, getItem } from './utils.js';
 
 /**
  * Construct and returns storage implementation that stores values into given

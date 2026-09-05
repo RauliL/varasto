@@ -1,46 +1,32 @@
-import { InvalidSlugError } from '@varasto/storage';
+import { validateNamespace, validateNamespaceAndKey } from '@varasto/storage';
 import { randomUUID } from 'node:crypto';
+import { access, readdir } from 'node:fs/promises';
 import fs from 'fs';
-import { isValidSlug } from 'is-valid-slug';
 import { mkdirp } from 'mkdirp';
 import path from 'path';
 import { JsonObject } from 'type-fest';
 
-export const createNamespace = (
+export const createNamespace = async (
   dir: string,
   namespace: string
-): Promise<void> =>
-  new Promise<void>((resolve, reject) => {
-    if (!isValidSlug(namespace)) {
-      reject(new InvalidSlugError('Given namespace is not valid slug'));
-      return;
-    }
+): Promise<void> => {
+  validateNamespace(namespace);
 
-    const filename = path.join(dir, namespace);
+  const filename = path.join(dir, namespace);
 
-    fs.exists(filename, (exists) => {
-      if (exists) {
-        resolve();
-      } else {
-        mkdirp(filename)
-          .then(() => resolve())
-          .catch(reject);
-      }
-    });
-  });
+  try {
+    await access(filename);
+  } catch {
+    await mkdirp(filename);
+  }
+};
 
 export const buildFilename = (
   dir: string,
   namespace: string,
   key: string
 ): string => {
-  if (!isValidSlug(namespace)) {
-    throw new InvalidSlugError('Given namespace is not valid slug');
-  }
-
-  if (!isValidSlug(key)) {
-    throw new InvalidSlugError('Given key is not valid slug');
-  }
+  validateNamespaceAndKey(namespace, key);
 
   return path.join(dir, namespace, `${key}.json`);
 };
@@ -52,36 +38,30 @@ export const fileExists = (filename: string): Promise<boolean> =>
     });
   });
 
-export const globNamespace = (
+export const globNamespace = async (
   dir: string,
   namespace: string
 ): Promise<string[]> => {
-  if (!isValidSlug(namespace)) {
-    return Promise.reject(
-      new InvalidSlugError('Given namespace is not valid slug')
-    );
-  }
+  validateNamespace(namespace);
 
   const namespaceDir = path.join(dir, namespace);
 
-  return new Promise<string[]>((resolve, reject) => {
-    fs.readdir(namespaceDir, (err, files) => {
-      if (err) {
-        if (err.code === 'ENOENT') {
-          resolve([]);
-        } else {
-          reject(err);
-        }
-        return;
-      }
+  try {
+    return (await readdir(namespaceDir))
+      .filter((file) => file.endsWith('.json'))
+      .map((file) => path.join(namespaceDir, file));
+  } catch (err) {
+    if (
+      err != null &&
+      typeof err === 'object' &&
+      'code' in err &&
+      err.code === 'ENOENT'
+    ) {
+      return [];
+    }
 
-      resolve(
-        files
-          .filter((file) => file.endsWith('.json'))
-          .map((file) => path.join(namespaceDir, file))
-      );
-    });
-  });
+    throw err;
+  }
 };
 
 export const readItem = <T extends JsonObject>(

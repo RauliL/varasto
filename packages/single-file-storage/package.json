@@ -37,8 +37,7 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": "workspace:^",
-    "is-valid-slug": "^1.0.0"
+    "@varasto/storage": "workspace:^"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

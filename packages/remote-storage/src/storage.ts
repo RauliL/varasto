@@ -9,18 +9,8 @@ import { JsonObject } from 'type-fest';
 
 import { RemoteStorageOptions } from './types.js';
 
-const getStatusCode = (err: unknown): number | undefined => {
-  if (
-    typeof err === 'object' &&
-    err !== null &&
-    'response' in err &&
-    typeof (err as HTTPError).response?.statusCode === 'number'
-  ) {
-    return (err as HTTPError).response.statusCode;
-  }
-
-  return undefined;
-};
+const getStatusCode = (err: unknown): number | undefined =>
+  err instanceof HTTPError ? err.response?.statusCode : undefined;
 
 const errorHandler = (err: unknown) => {
   const status = getStatusCode(err);

@@ -1,4 +1,10 @@
-import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
+import {
+  Entry,
+  ItemDoesNotExistError,
+  Storage,
+  validateNamespace,
+  validateNamespaceAndKey,
+} from '@varasto/storage';
 import { Client } from 'pg';
 import format from 'pg-format';
 import { JsonObject } from 'type-fest';
@@ -10,8 +16,6 @@ import {
   getItem,
   hasItem,
   parseValue,
-  validateNamespace,
-  validateNamespaceAndKey,
 } from './utils.js';
 
 /**

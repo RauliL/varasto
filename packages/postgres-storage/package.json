@@ -39,7 +39,6 @@
   },
   "dependencies": {
     "@varasto/storage": "workspace:^",
-    "is-valid-slug": "^1.0.0",
     "pg": "^8.23.0",
     "pg-format": "^1.0.4"
   },

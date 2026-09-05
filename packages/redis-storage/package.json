@@ -39,8 +39,7 @@
   },
   "dependencies": {
     "@redis/client": "~6.2.0",
-    "@varasto/storage": "workspace:^",
-    "is-valid-slug": "^1.0.0"
+    "@varasto/storage": "workspace:^"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

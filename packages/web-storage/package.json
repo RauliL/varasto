@@ -41,7 +41,6 @@
   },
   "dependencies": {
     "@varasto/storage": "workspace:^",
-    "is-valid-slug": "^1.0.0",
     "isarray": "^2.0.5"
   },
   "devDependencies": {

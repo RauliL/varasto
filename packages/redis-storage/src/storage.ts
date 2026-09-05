@@ -1,12 +1,12 @@
 import {
   Entry,
-  InvalidSlugError,
   ItemDoesNotExistError,
   Storage,
+  validateNamespace,
+  validateNamespaceAndKey,
 } from '@varasto/storage';
 import { RedisClientType } from '@redis/client';
 
-import { isValidSlug } from 'is-valid-slug';
 import { JsonObject } from 'type-fest';
 
 import { RedisStorageOptions } from './types.js';
@@ -26,9 +26,7 @@ export const createRedisStorage = (
 
   return new (class extends Storage {
     async *keys(namespace: string): AsyncGenerator<string> {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      }
+      validateNamespace(namespace);
 
       for (const key of await client.hKeys(namespace)) {
         yield key;
@@ -36,9 +34,7 @@ export const createRedisStorage = (
     }
 
     async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      }
+      validateNamespace(namespace);
 
       for (const data of await client.hVals(namespace)) {
         yield deserialize(data);
@@ -48,9 +44,7 @@ export const createRedisStorage = (
     async *entries<T extends JsonObject>(
       namespace: string
     ): AsyncGenerator<Entry<T>> {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      }
+      validateNamespace(namespace);
 
       const reply = await client.hGetAll(namespace);
 
@@ -62,11 +56,7 @@ export const createRedisStorage = (
     }
 
     async has(namespace: string, key: string): Promise<boolean> {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      } else if (!isValidSlug(key)) {
-        throw new InvalidSlugError('Given key is not valid slug');
-      }
+      validateNamespaceAndKey(namespace, key);
 
       return (await client.hExists(namespace, key)) === 1;
     }
@@ -75,11 +65,7 @@ export const createRedisStorage = (
       namespace: string,
       key: string
     ): Promise<T | undefined> {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      } else if (!isValidSlug(key)) {
-        throw new InvalidSlugError('Given key is not valid slug');
-      }
+      validateNamespaceAndKey(namespace, key);
 
       const reply = await client.hGet(namespace, key);
 
@@ -95,11 +81,7 @@ export const createRedisStorage = (
       key: string,
       value: T
     ): Promise<void> {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      } else if (!isValidSlug(key)) {
-        throw new InvalidSlugError('Given key is not valid slug');
-      }
+      validateNamespaceAndKey(namespace, key);
 
       await client.hSet(namespace, key, serialize(value));
     }
@@ -123,11 +105,7 @@ export const createRedisStorage = (
     }
 
     async delete(namespace: string, key: string): Promise<boolean> {
-      if (!isValidSlug(namespace)) {
-        throw new InvalidSlugError('Given namespace is not valid slug');
-      } else if (!isValidSlug(key)) {
-        throw new InvalidSlugError('Given key is not valid slug');
-      }
+      validateNamespaceAndKey(namespace, key);
 
       return (await client.hDel(namespace, key)) > 0;
     }
