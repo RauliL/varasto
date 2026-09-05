@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
-import { ConfigurationError } from '../error';
-import { ModelMetadata } from '../metadata';
-import { KeyOptions } from '../options';
+import { ConfigurationError } from '../error.js';
+import { ModelMetadata } from '../metadata/index.js';
+import { KeyOptions } from '../options/index.js';
 
 export const Key =
   (options: KeyOptions = {}): PropertyDecorator =>

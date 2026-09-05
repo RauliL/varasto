@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import format from 'pg-format';
 import { JsonObject } from 'type-fest';
 
-import { PostgresStorageOptions } from './types';
+import { PostgresStorageOptions } from './types.js';
 import {
   createNamespace,
   doesNamespaceExist,
@@ -12,7 +12,7 @@ import {
   parseValue,
   validateNamespace,
   validateNamespaceAndKey,
-} from './utils';
+} from './utils.js';
 
 /**
  * Creates new PostgreSQL storage with given PostgreSQL client and options.

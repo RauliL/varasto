@@ -3,8 +3,8 @@ import { Storage } from '@varasto/storage';
 import { Schema } from 'simple-json-match';
 import { Class } from 'type-fest';
 
-import { ModelDoesNotExistError } from './error';
-import { ModelMetadata } from './metadata';
+import { ModelDoesNotExistError } from './error.js';
+import { ModelMetadata } from './metadata/index.js';
 
 /**
  * Tests whether an model instance with given key exists in the given storage.

@@ -1,7 +1,7 @@
 import { JsonObject } from 'type-fest';
 
-import { ItemDoesNotExistError } from './errors';
-import { Entry, FilterCallback, MapCallback } from './types';
+import { ItemDoesNotExistError } from './errors.js';
+import { Entry, FilterCallback, MapCallback } from './types.js';
 
 /**
  * JSON key-value store that persists JSON objects identified by namespace and

@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { JsonObject } from 'type-fest';
 import { ZodError } from 'zod/v4';
 
-import { RouterOptions } from './types';
+import { RouterOptions } from './types.js';
 
 /**
  * Using `instanceof` doesn't work in the CI for some reason, which is why I

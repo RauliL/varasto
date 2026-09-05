@@ -1,2 +1,2 @@
-export * from './field';
-export * from './model';
+export * from './field.js';
+export * from './model.js';

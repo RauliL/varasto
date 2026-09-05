@@ -3,8 +3,8 @@ import { Storage } from '@varasto/storage';
 import { Schema } from 'simple-json-match';
 import { Class } from 'type-fest';
 
-import { ConfigurationError, ModelDoesNotExistError } from './error';
-import { ModelMetadata } from './metadata';
+import { ConfigurationError, ModelDoesNotExistError } from './error.js';
+import { ModelMetadata } from './metadata/index.js';
 
 /**
  * Stores given model instance into given storage.

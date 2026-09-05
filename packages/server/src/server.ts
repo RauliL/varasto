@@ -8,7 +8,7 @@ import express from 'express';
 import { Express } from 'express-serve-static-core';
 import { JsonObject } from 'type-fest';
 
-import { ServerOptions } from './types';
+import { ServerOptions } from './types.js';
 
 export const createServer = (
   storage: Storage,

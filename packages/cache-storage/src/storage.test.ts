@@ -2,7 +2,7 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 import all from 'it-all';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createCacheStorage } from './storage';
+import { createCacheStorage } from './storage.js';
 
 const TEN_SECONDS = 10 * 1000;
 

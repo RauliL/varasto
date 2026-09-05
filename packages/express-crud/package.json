@@ -11,6 +11,7 @@
     "storage"
   ],
   "author": "Rauli Laine <rauli.laine@iki.fi>",
+  "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",
   "main:src": "./src/index.ts",

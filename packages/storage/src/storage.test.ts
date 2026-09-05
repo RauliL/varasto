@@ -3,9 +3,9 @@ import all from 'it-all';
 import { JsonObject } from 'type-fest';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { InvalidSlugError, ItemDoesNotExistError } from './errors';
-import { Storage } from './storage';
-import { Entry } from './types';
+import { InvalidSlugError, ItemDoesNotExistError } from './errors.js';
+import { Storage } from './storage.js';
+import { Entry } from './types.js';
 
 class MockStorage extends Storage {
   readonly data: Map<string, Map<string, JsonObject>>;

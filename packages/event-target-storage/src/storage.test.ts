@@ -1,9 +1,9 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { OperationPreventedError } from './errors';
-import { createEventTargetStorage } from './storage';
-import { StorageEventType } from './events';
+import { OperationPreventedError } from './errors.js';
+import { createEventTargetStorage } from './storage.js';
+import { StorageEventType } from './events.js';
 
 describe('event target storage', () => {
   const backendStorage = createMemoryStorage();

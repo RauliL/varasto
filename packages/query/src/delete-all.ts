@@ -1,7 +1,7 @@
 import { Storage } from '@varasto/storage';
-import { Schema } from 'simple-json-match';
 
-import { findAllKeys } from './find-all';
+import { findAllKeys } from './find-all.js';
+import { Schema } from './match.js';
 
 /**
  * Performs an bulk deletion where all entries from the given namespace that

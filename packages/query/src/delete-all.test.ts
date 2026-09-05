@@ -1,7 +1,7 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
 import { describe, expect, it } from 'vitest';
 
-import { deleteAll } from './delete-all';
+import { deleteAll } from './delete-all.js';
 
 describe('deleteAll()', () => {
   it('should delete all entries that match the given schema', async () => {

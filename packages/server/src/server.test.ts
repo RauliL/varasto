@@ -2,7 +2,7 @@ import { createMemoryStorage } from '@varasto/memory-storage';
 import request from 'supertest';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { createServer } from './server';
+import { createServer } from './server.js';
 
 describe('HTTP interface', () => {
   const storage = createMemoryStorage();

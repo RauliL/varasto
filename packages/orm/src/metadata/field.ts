@@ -1,8 +1,8 @@
 import { JsonObject } from 'type-fest';
-import { ValidationError } from '../error';
+import { ValidationError } from '../error.js';
 
-import { FieldOptions } from '../options';
-import { ModelMetadata } from './model';
+import { FieldOptions } from '../options/index.js';
+import { ModelMetadata } from './model.js';
 
 export class FieldMetadata {
   public readonly model: ModelMetadata;

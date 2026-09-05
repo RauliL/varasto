@@ -1,17 +1,11 @@
 #!/usr/bin/env node
 
-const { createFileSystemStorage } = require('@varasto/fs-storage');
-const { open } = require('@varasto/url');
-const fs = require('node:fs');
-const path = require('node:path');
-const yargs = require('yargs');
-const { hideBin } = require('yargs/helpers');
+import { createFileSystemStorage } from '@varasto/fs-storage';
+import { open } from '@varasto/url';
+import yargs from 'yargs';
+import { hideBin } from 'yargs/helpers';
 
-const { repl, runCommand } = require(path.join(
-  path.dirname(fs.realpathSync(__filename)),
-  '..',
-  'dist'
-));
+import { repl, runCommand } from '../dist/index.js';
 
 const args = yargs()
   .usage('$0 <url> [command]', 'Start the CLI.')
