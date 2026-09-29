@@ -2896,7 +2896,7 @@ __metadata:
   peerDependencies:
     "@varasto/storage": "workspace:^"
     express: "*"
-    zod: ^3.25.0
+    zod: ^4.0.0
   languageName: unknown
   linkType: soft
 
