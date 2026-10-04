@@ -3,12 +3,12 @@
 [![npm][npm-image]][npm-url]
 
 [Storage] implementation which routes namespaces to one or more other storage
-instances using [path-to-regexp] patterns.
+instances using [picomatch] patterns.
 
 [npm-image]: https://img.shields.io/npm/v/@varasto/multi-storage.svg
 [npm-url]: https://npmjs.org/package/@varasto/multi-storage
 [storage]: https://www.npmjs.com/package/@varasto/storage
-[path-to-regexp]: https://github.com/pillarjs/path-to-regexp
+[picomatch]: https://github.com/micromatch/picomatch
 
 ## Installation
 
@@ -20,7 +20,7 @@ $ npm install --save @varasto/multi-storage
 
 The package provides a function called `createMultiStorage` which takes a
 configuration object that maps namespace patterns to storage instances. Patterns
-are matched with [path-to-regexp]; the first matching pattern wins.
+are matched with [picomatch]; the first matching pattern wins.
 
 ```TypeScript
 import { createMemoryStorage } from '@varasto/memory-storage';
@@ -33,9 +33,8 @@ const fallbackStorage = createMemoryStorage();
 
 const multiStorage = createMultiStorage({
   users: usersStorage,
-  'posts-:id': [postsStorage, postsReplica],
-  // Catch-all must use a named wildcard in path-to-regexp v8.
-  '*path': fallbackStorage,
+  'posts-*': [postsStorage, postsReplica],
+  '*': fallbackStorage,
 });
 
 // Routed to `usersStorage`.

@@ -1,21 +1,21 @@
 import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
-import { match, MatchFunction, ParamData } from 'path-to-regexp';
+import picomatch from 'picomatch';
 import { JsonObject } from 'type-fest';
 
 import { MultiStorageConfig } from './types.js';
 
 type Route = {
-  match: MatchFunction<ParamData>;
+  match: picomatch.Matcher;
   storages: Storage[];
 };
 
 /**
  * Constructs a storage that routes namespaces to other storages using
- * path-to-regexp patterns. The first matching pattern wins.
+ * picomatch patterns. The first matching pattern wins.
  */
 export const createMultiStorage = (config: MultiStorageConfig): Storage => {
   const routes: Route[] = Object.entries(config).map(([pattern, value]) => ({
-    match: match(pattern),
+    match: picomatch(pattern),
     storages: Array.isArray(value) ? value : [value],
   }));
 

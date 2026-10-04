@@ -1,6 +1,6 @@
 {
   "name": "@varasto/multi-storage",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "description": "Combines multiple Varasto storages into one",
   "license": "MIT",
   "keywords": [
@@ -39,10 +39,11 @@
   },
   "dependencies": {
     "@varasto/storage": "workspace:^",
-    "path-to-regexp": "^8.4.2"
+    "picomatch": "^4.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/picomatch": "^4.0.3",
     "@varasto/memory-storage": "workspace:^",
     "@vitest/coverage-v8": "^5.0.3",
     "eslint": "^10.12.0",

@@ -9,7 +9,7 @@ describe('multi storage', () => {
   const memoryStorage1 = createMemoryStorage();
   const memoryStorage2 = createMemoryStorage();
   const multiStorage = createMultiStorage({
-    '*path': [memoryStorage1, memoryStorage2],
+    '*': [memoryStorage1, memoryStorage2],
   });
 
   beforeEach(() => {
@@ -155,8 +155,8 @@ describe('multi storage', () => {
     const fallbackStorage = createMemoryStorage();
     const routedStorage = createMultiStorage({
       users: usersStorage,
-      'posts-:id': [postsStorage, postsReplica],
-      '*path': fallbackStorage,
+      'posts-*': [postsStorage, postsReplica],
+      '*': fallbackStorage,
     });
 
     beforeEach(() => {
@@ -198,7 +198,7 @@ describe('multi storage', () => {
       const second = createMemoryStorage();
       const storage = createMultiStorage({
         items: first,
-        '*path': second,
+        '*': second,
       });
 
       await storage.set('items', '1', { id: 1 });
