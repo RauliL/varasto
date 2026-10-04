@@ -1,4 +1,5 @@
 import { createMemoryStorage } from '@varasto/memory-storage';
+import { ItemDoesNotExistError } from '@varasto/storage';
 import all from 'it-all';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -7,7 +8,9 @@ import { createMultiStorage } from './storage.js';
 describe('multi storage', () => {
   const memoryStorage1 = createMemoryStorage();
   const memoryStorage2 = createMemoryStorage();
-  const multiStorage = createMultiStorage(memoryStorage1, memoryStorage2);
+  const multiStorage = createMultiStorage({
+    '*path': [memoryStorage1, memoryStorage2],
+  });
 
   beforeEach(() => {
     memoryStorage1.clear();
@@ -29,8 +32,8 @@ describe('multi storage', () => {
       ]);
     });
 
-    it('should return empty array if no storages are given', async () => {
-      expect(await all(createMultiStorage().keys('items'))).toEqual([]);
+    it('should return empty array if no storages match', async () => {
+      expect(await all(createMultiStorage({}).keys('items'))).toEqual([]);
     });
   });
 
@@ -49,8 +52,8 @@ describe('multi storage', () => {
       ]);
     });
 
-    it('should return empty array if no storages are given', async () => {
-      expect(await all(createMultiStorage().values('items'))).toEqual([]);
+    it('should return empty array if no storages match', async () => {
+      expect(await all(createMultiStorage({}).values('items'))).toEqual([]);
     });
   });
 
@@ -72,8 +75,8 @@ describe('multi storage', () => {
       ]);
     });
 
-    it('should return empty array if no storages are given', async () => {
-      expect(await all(createMultiStorage().entries('items'))).toEqual([]);
+    it('should return empty array if no storages match', async () => {
+      expect(await all(createMultiStorage({}).entries('items'))).toEqual([]);
     });
   });
 
@@ -142,6 +145,82 @@ describe('multi storage', () => {
 
     it('should return false if none of the given storages has the entry', async () => {
       expect(await multiStorage.delete('items', '1')).toBe(false);
+    });
+  });
+
+  describe('namespace routing', () => {
+    const usersStorage = createMemoryStorage();
+    const postsStorage = createMemoryStorage();
+    const postsReplica = createMemoryStorage();
+    const fallbackStorage = createMemoryStorage();
+    const routedStorage = createMultiStorage({
+      users: usersStorage,
+      'posts-:id': [postsStorage, postsReplica],
+      '*path': fallbackStorage,
+    });
+
+    beforeEach(() => {
+      usersStorage.clear();
+      postsStorage.clear();
+      postsReplica.clear();
+      fallbackStorage.clear();
+    });
+
+    it('should route exact namespace matches', async () => {
+      await routedStorage.set('users', '1', { name: 'Alice' });
+
+      expect(await usersStorage.get('users', '1')).toEqual({ name: 'Alice' });
+      expect(await fallbackStorage.has('users', '1')).toBe(false);
+    });
+
+    it('should route parameterized patterns', async () => {
+      await routedStorage.set('posts-123', '1', { title: 'Hello' });
+
+      expect(await postsStorage.get('posts-123', '1')).toEqual({
+        title: 'Hello',
+      });
+      expect(await postsReplica.get('posts-123', '1')).toEqual({
+        title: 'Hello',
+      });
+      expect(await fallbackStorage.has('posts-123', '1')).toBe(false);
+    });
+
+    it('should use catch-all as fallback', async () => {
+      await routedStorage.set('other', '1', { value: 1 });
+
+      expect(await fallbackStorage.get('other', '1')).toEqual({ value: 1 });
+      expect(await usersStorage.has('other', '1')).toBe(false);
+      expect(await postsStorage.has('other', '1')).toBe(false);
+    });
+
+    it('should use the first matching pattern', async () => {
+      const first = createMemoryStorage();
+      const second = createMemoryStorage();
+      const storage = createMultiStorage({
+        items: first,
+        '*path': second,
+      });
+
+      await storage.set('items', '1', { id: 1 });
+
+      expect(await first.get('items', '1')).toEqual({ id: 1 });
+      expect(await second.has('items', '1')).toBe(false);
+    });
+
+    it('should no-op when no pattern matches', async () => {
+      const storage = createMultiStorage({
+        users: usersStorage,
+      });
+
+      await storage.set('items', '1', { id: 1 });
+
+      expect(await storage.get('items', '1')).toBeUndefined();
+      expect(await storage.has('items', '1')).toBe(false);
+      expect(await storage.delete('items', '1')).toBe(false);
+      expect(await all(storage.keys('items'))).toEqual([]);
+      await expect(
+        storage.update('items', '1', { id: 2 })
+      ).rejects.toBeInstanceOf(ItemDoesNotExistError);
     });
   });
 });

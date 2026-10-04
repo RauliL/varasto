@@ -1,12 +1,37 @@
 import { Entry, ItemDoesNotExistError, Storage } from '@varasto/storage';
+import { match, MatchFunction, ParamData } from 'path-to-regexp';
 import { JsonObject } from 'type-fest';
 
+import { MultiStorageConfig } from './types.js';
+
+type Route = {
+  match: MatchFunction<ParamData>;
+  storages: Storage[];
+};
+
 /**
- * Constructs an storage that uses multiple other storages for storing data.
+ * Constructs a storage that routes namespaces to other storages using
+ * path-to-regexp patterns. The first matching pattern wins.
  */
-export const createMultiStorage = (...storages: Storage[]): Storage =>
-  new (class extends Storage {
+export const createMultiStorage = (config: MultiStorageConfig): Storage => {
+  const routes: Route[] = Object.entries(config).map(([pattern, value]) => ({
+    match: match(pattern),
+    storages: Array.isArray(value) ? value : [value],
+  }));
+
+  const resolveStorages = (namespace: string): Storage[] => {
+    for (const route of routes) {
+      if (route.match(namespace)) {
+        return route.storages;
+      }
+    }
+
+    return [];
+  };
+
+  return new (class extends Storage {
     async *keys(namespace: string): AsyncGenerator<string> {
+      const storages = resolveStorages(namespace);
       const allKeys = new Set<string>();
       const { length } = storages;
 
@@ -22,6 +47,7 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
     }
 
     async *values<T extends JsonObject>(namespace: string): AsyncGenerator<T> {
+      const storages = resolveStorages(namespace);
       const mapping = new Map<string, T>();
       const { length } = storages;
 
@@ -39,6 +65,7 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
     async *entries<T extends JsonObject>(
       namespace: string
     ): AsyncGenerator<Entry<T>> {
+      const storages = resolveStorages(namespace);
       const mapping = new Map<string, T>();
       const { length } = storages;
 
@@ -54,6 +81,7 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
     }
 
     async has(namespace: string, key: string) {
+      const storages = resolveStorages(namespace);
       const { length } = storages;
 
       for (let i = 0; i < length; ++i) {
@@ -66,6 +94,7 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
     }
 
     async get<T extends JsonObject>(namespace: string, key: string) {
+      const storages = resolveStorages(namespace);
       const { length } = storages;
 
       for (let i = 0; i < length; ++i) {
@@ -80,6 +109,8 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
     }
 
     set<T extends JsonObject>(namespace: string, key: string, value: T) {
+      const storages = resolveStorages(namespace);
+
       return storages.length > 0
         ? Promise.all(
             storages.map((storage) => storage.set<T>(namespace, key, value))
@@ -92,6 +123,8 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
       key: string,
       value: Partial<T>
     ): Promise<T> {
+      const storages = resolveStorages(namespace);
+
       return storages.length > 0
         ? Promise.all(
             storages.map((storage) => storage.update<T>(namespace, key, value))
@@ -106,6 +139,7 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
     }
 
     async delete(namespace: string, key: string) {
+      const storages = resolveStorages(namespace);
       const { length } = storages;
       let found = false;
 
@@ -120,3 +154,4 @@ export const createMultiStorage = (...storages: Storage[]): Storage =>
       return found;
     }
   })();
+};

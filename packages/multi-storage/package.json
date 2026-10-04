@@ -1,6 +1,6 @@
 {
   "name": "@varasto/multi-storage",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Combines multiple Varasto storages into one",
   "license": "MIT",
   "keywords": [
@@ -38,7 +38,8 @@
     "prepack": "$npm_execpath run build"
   },
   "dependencies": {
-    "@varasto/storage": "workspace:^"
+    "@varasto/storage": "workspace:^",
+    "path-to-regexp": "^8.4.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
